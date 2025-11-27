@@ -77,15 +77,18 @@ document.addEventListener("DOMContentLoaded", () => {
         progressFill.style.width = percent + "%";
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-  const themeToggleBtn = document.getElementById("themeToggle");
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      console.log("Theme toggled");
-    });
+    
+    // Theme toggle button
+const themeToggleBtn = document.getElementById("themeToggle");
+
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+
+  // Optional: change button icon depending on mode
+  if (document.body.classList.contains("dark")) {
+    themeToggle.textContent = "☀️"; // switch to sun icon
   } else {
-    console.error("themeToggle button not found");
+    themeToggle.textContent = "🌙"; // switch to moon icon
   }
 });
 
