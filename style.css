@@ -238,7 +238,10 @@ body.dark .ai-dropdown input:focus {
     padding: 10px 15px;
     font-size: 16px;
 }
-
+#askAIArrow {
+  margin-left: 5px;
+  font-size: 14px;
+}
 
 /* ------------------------------
    Task Section
@@ -276,7 +279,7 @@ body.dark .input-area {
 body.dark .input-area input {
     background-color: #1a1a1a;
     border-color: #555;
-    color: #f0f0f0;
+    color: #000000;
 }
 
 body.dark .input-area input:focus {

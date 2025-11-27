@@ -87,13 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
 // Ask AI Dropdown Toggle
 // ------------------------------
-document.getElementById("askAIToggle").addEventListener("click", function () {
-  const dropdown = document.getElementById("aiDropdown");
-  dropdown.classList.toggle("open");
+const askAIToggle = document.getElementById("askAIToggle");
+const aiDropdown = document.getElementById("aiDropdown");
+const askAIArrow = document.getElementById("askAIArrow"); // span inside button
 
-  // Auto-focus input when opening
-  if (dropdown.classList.contains("open")) {
-    document.getElementById("AIInput").focus();
+askAIToggle.addEventListener("click", () => {
+  aiDropdown.classList.toggle("open");
+
+  if (aiDropdown.classList.contains("open")) {
+    askAIArrow.textContent = "▲"; // up arrow
+  } else {
+    askAIArrow.textContent = "▼"; // down arrow
   }
 });
 
