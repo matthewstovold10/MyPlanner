@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ------------------------------
     // TASK SYSTEM
     // ------------------------------
+    console.log("Script loaded");
+
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
     const taskInput = document.getElementById("taskInput");
@@ -75,9 +77,17 @@ document.addEventListener("DOMContentLoaded", () => {
         progressFill.style.width = percent + "%";
     }
 
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
+    document.addEventListener("DOMContentLoaded", () => {
+  const themeToggleBtn = document.getElementById("themeToggle");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      console.log("Theme toggled");
     });
+  } else {
+    console.error("themeToggle button not found");
+  }
+});
 
     renderTasks();
 
@@ -103,19 +113,16 @@ document.getElementById("askAIToggle").addEventListener("click", function () {
 document.getElementById("askAISubmit").addEventListener("click", function () {
   const query = document.getElementById("AIInput").value.trim();
   const output = document.getElementById("AIOutput");
-  const resonseSection = document.querySelector(".ai-response");
+  const responseSection = document.querySelector(".ai-response");
+
   if (query) {
-    // Show the response section
-    responseSection.classList.add("show");
-    
-    // For now just echo the query — replace with real AI logic later
+    responseSection.classList.add("show");   // reveal the response box
     output.textContent = "You asked AI: " + query;
     document.getElementById("AIInput").value = "";
   } else {
     responseSection.classList.add("show");
     output.textContent = "Please enter a question for the AI.";
   }
-});
 });
 
 
@@ -209,20 +216,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
 // Ask AI Dropdown Toggle
 // ------------------------------
-const askAIToggle = document.getElementById("askAIToggle");
-const aiDropdown = document.getElementById("aiDropdown");
-const askAIArrow = document.getElementById("askAIArrow"); // span inside button
+const askAIToggleBtn = document.getElementById("askAIToggle");
+  const aiDropdown = document.getElementById("aiDropdown");
+  const askAIArrow = document.getElementById("askAIArrow");
 
-askAIToggle.addEventListener("click", () => {
-  aiDropdown.classList.toggle("open");
-
-  if (aiDropdown.classList.contains("open")) {
-    askAIArrow.textContent = "▲"; // up arrow
-  } else {
-    askAIArrow.textContent = "▼"; // down arrow
-  }
+  askAIToggleBtn?.addEventListener("click", () => {
+    aiDropdown.classList.toggle("open");
+    askAIArrow.classList.toggle("rotated");
+    console.log("AI dropdown:", aiDropdown.classList.contains("open") ? "open" : "closed");
+  });
 });
-
 // ------------------------------
 // Ask AI Submit
 // ------------------------------
@@ -242,6 +245,6 @@ document.getElementById("askAISubmit").addEventListener("click", function () {
     output.textContent = "Please enter a question for the AI.";
   }
 });
+
+
 });
-
-

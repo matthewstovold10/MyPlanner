@@ -239,6 +239,41 @@ body.dark .ai-dropdown input:focus {
     font-size: 16px;
 }
 
+/* Ensure arrow can rotate smoothly */
+#askAIArrow {
+  margin-left: 5px;
+  font-size: 14px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+#askAIArrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Dropdown animation is already set via max-height/padding */
+.ai-dropdown {
+  display: flex;
+  gap: 10px;              /* keep spacing inside visible when open */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 0 15px;        /* collapsed padding */
+}
+
+.ai-dropdown.open {
+  max-height: 200px;      /* enough space for input + button */
+  padding: 15px;
+}
+
+body.dark #askAIArrow {
+  color: #f0f0f0;
+}
 
 /* ------------------------------
    Task Section
