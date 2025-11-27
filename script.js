@@ -102,8 +102,12 @@ themeToggle.addEventListener("click", () => {
 // ------------------------------
 document.getElementById("askAIToggle").addEventListener("click", function () {
   const dropdown = document.getElementById("aiDropdown");
-  dropdown.classList.toggle("open");
-
+  askAIToggleBtn?.addEventListener("click", () => {
+    aiDropdown.classList.toggle("open");
+    askAIArrow.classList.toggle("rotated");
+    console.log("AI dropdown:", aiDropdown.classList.contains("open") ? "open" : "closed");
+  });
+});
   // Auto-focus input when opening
   if (dropdown.classList.contains("open")) {
     document.getElementById("AIInput").focus();
@@ -207,9 +211,9 @@ document.addEventListener("DOMContentLoaded", () => {
         progressFill.style.width = percent + "%";
     }
 
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-    });
+    
+    
+
 
     renderTasks();
 
@@ -250,4 +254,4 @@ document.getElementById("askAISubmit").addEventListener("click", function () {
 });
 
 
-});
+
