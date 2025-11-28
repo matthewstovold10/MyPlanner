@@ -181,7 +181,10 @@ if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
     setTimeout(() => { dateAdd.style.pointerEvents = 'none'; }, 0);
   });
 }
-
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+    .then(() => console.log("Service Worker registered"));
+}
   // ------------------------------
   // INITIAL RENDER
   // ------------------------------
