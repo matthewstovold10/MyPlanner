@@ -55,7 +55,11 @@
 
       const li = document.createElement("li");
       li.dataset.id = task.id;
-
+      
+      if (task.completed) {
+        li.classList.add("completed");
+      }
+        
       const completeBtn = document.createElement("button");
       completeBtn.textContent = "✔";
 
