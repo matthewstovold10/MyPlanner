@@ -21,3 +21,5 @@ This project was created as part of my preparation for applying to the **Accentu
 - Categories (school, work, personal)
 - Login system (using Firebase)
 - Goals section
+
+git commit -m "Updated task input layout"
