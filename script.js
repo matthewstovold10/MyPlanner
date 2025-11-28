@@ -66,7 +66,7 @@
       taskTextSpan.textContent = task.text;
 
       const dateSpan = document.createElement("span");
-      dateSpan.textContent = task.date ? `${task.date}` : "";
+      dateSpan.textContent = task.date ? formatDate(task.date) : "";
       dateSpan.className = "task-date";
 
       contentSpan.appendChild(taskTextSpan);
@@ -85,6 +85,12 @@
     saveTasks(); // update localStorage with fixed IDs
     updateProgress();
   }
+
+// Helper to format date nicely
+function formatDate(dateString) {
+  const options = { day: "numeric", month: "short", year: "numeric" };
+  return new Date(dateString).toLocaleDateString("en-GB", options);
+}
 
   // ------------------------------
   // SAVE TASKS
