@@ -107,11 +107,12 @@ h1 {
    General Buttons (Add, Ask AI, Theme Toggle)
 ------------------------------ */
 .general-btn {
+    flex: 0 0 auto;
     cursor: pointer;
     border: none;
     background: #4CAF50;
     color: white;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     margin-left: 5px;
     font-size: 16px;
@@ -275,434 +276,46 @@ body.dark #askAIArrow {
   color: #f0f0f0;
 }
 
+
+
 /* ------------------------------
    Task Section
 ------------------------------ */
 .input-area {
-    display: flex;
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 20px;
-}
-
-body.dark .input-area {
-    border-color: #444;
-    background-color: #2c2c2c;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-.input-area input {
-    flex: 1;
-    padding: 10px;
-    font-size: 16px;
-    outline: none;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.input-area input:focus {
-    border-color: #4CAF50;
-}
-
-body.dark .input-area input {
-    background-color: #1a1a1a;
-    border-color: #555;
-    color: #f0f0f0;
-}
-
-body.dark .input-area input:focus {
-    border-color: #3a7afe;
-}
-
-.task-list ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-.task-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    margin-bottom: 5px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    gap: 10px; /* spacing between button and text */
-}
-
-body.dark .task-list li {
-    background-color: #2c2c2c;
-}
-
-/* Buttons inside tasks - remove default browser styles */
-.task-list li button {
-    margin-left: 0;
-    background-color: transparent;
-    outline: none; /* removes default focus outline */
-    box-shadow: none; /* ensures no box shadow on buttons */
-    border: none; /* remove default border */
-}   
-
-/* Optional: Add a subtle focus style for accessibility */
-.task-list li button:focus {
-    outline: 2px solid #4CAF50;
-    outline-offset: 2px;
-}
-
-.task-list li span {
-    flex-grow: 1;  /* text takes up remaining space */
-    text-align: left;
-}
-
-.task-list li.completed span {
-    position: relative;
-    display: inline-block;
-    opacity: 0.5;
-}
-
-/* Tick button default */
-.task-list li button:first-child {
-    background-color: transparent;
-    color: transparent;           /* hide tick initially */
-    border: 2px solid #4CAF50;    /* green border */
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-/* Tick button when task is completed */
-.task-list li.completed button:first-child {
-    color: #4CAF50;               /* tick visible */
-    background-color: #fafafa;    /* light green background */
-    border-color: #4CAF50;
-}
-
-/* Tick button hover effect */
-.task-list li button:first-child:hover {
-    background-color: #d0f0d6;      /* slightly lighter green on hover */
-}
-
-/* Dark mode support */
-body.dark .task-list li.completed button:first-child {
-    background-color: transparent;
-    color: #4CAF50;
-}
-
-/* Delete button (last button in li) */
-.task-list li button:last-child {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f45045; /* red */
-    color: white;
-    border-radius: 5px;
-}
-
-/* Delete button hover effect */
-.task-list li button:last-child:hover {
-    background-color: #a2150b;    /* darker red on hover */
-}
-
-/* ------------------------------
-   Progress Bar
------------------------------- */
-/* Progress bar spacing so page doesn't end abruptly */
-.progress {
-  margin: 24px 0 40px; /* extra bottom margin so there's visible space after bar */
-}
-
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  background-color: #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-#progressFill {
-  height: 100%;
-  width: 0%;
-  background-color: #4CAF50;
-  transition: width 0.3s ease;
-}
-
-body.dark #progressFill {
-    background-color: #3a7afe;
-}
-/* ------------------------------
-   General Styles
------------------------------- */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
-    margin: 0;
-    padding: 0 20px;
-}
-
-body.dark {
-    background-color: #1e1e1e;
-    color: #f0f0f0;
-}
-
-/* Base sizing so min-height calculations work predictably */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0 20px;
-  box-sizing: border-box;
-}
-
-/* Make wrapper fill viewport and use column flex layout */
-.main-wrapper {
-  min-height: 100vh;           /* ensures wrapper is at least viewport tall */
   display: flex;
-  flex-direction: column;
-}
-
-/* Main content grows to fill available space so footer sits at bottom */
-.main-content {
-  flex: 1 0 auto;              /* grow, don't shrink below content */
-  display: block;
-  padding-bottom: 20px;        /* extra breathing room under content */
-}
-
-/* Keep your existing styles below — example snippets */
-header {
-  display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap; /* allows wrapping on smaller screens */
+  gap: 10px;
   align-items: center;
-  padding: 20px;
-  margin: 0 -40px;
-  background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-body.dark header {
-    background: linear-gradient(90deg, #1e1e1e, #3a3a3a); /* darker banner */
-    color: #f0f0f0;
-}
-
-/* Intro Area */
-.intro-area {
-    text-align: center;   /* centres ALL text inside */
-    padding: 70px 20px;   /* adds space around the section */
-    margin: 20px 0;       /* optional spacing above/below */
-      /*background: radial-gradient(circle at top left, rgba(76, 175, 80, 0.2), transparent 70%),
-                radial-gradient(circle at bottom right, rgba(58, 122, 254, 0.2), transparent 70%);
-    border-radius: 12px; *//* optional for rounded edges */
-}
-
-
-
-.intro-area h1 {
-    margin-bottom: 10px;  /* spacing between heading and paragraph */
-    font-size: 40px;
-    
-}
-
-.intro-area p {
-    font-size: 18px;
-    color: #555;
-}
-
-h1 {
-    margin: 0;
-    text-align: center;
-}
-
-.intro-area::before,
-.intro-area::after {
-    content: "";
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    filter: blur(200px);
-    z-index: -1;
-}
-
-.intro-area::before {
-    background: rgba(76, 175, 80, 0.4); /* green */
-    top: -100px;
-    left: -100px;
-}
-
-.intro-area::after {
-    background: rgba(58, 122, 254, 0.4); /* blue */
-    bottom: -100px;
-    right: -100px;
-}
-
-/* ------------------------------
-   General Buttons (Add, Ask AI, Theme Toggle)
------------------------------- */
-.general-btn {
-    cursor: pointer;
-    border: none;
-    background: #4CAF50;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-left: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-/* Hover for general buttons only (not task buttons) */
-.general-btn:hover {
-    background-color: #237627; /* darker green */
-}
-
-/* Dark mode for general buttons */
-body.dark .general-btn {
-    background-color: #3a7afe;
-}
-
-body.dark .general-btn:hover {
-    background-color: #103fa6; /* darker blue for dark mode */
-}
-
-/* ------------------------------
-   AI Section
------------------------------- */
-/*.ai-area {
-    margin-bottom: 20px;
-}
-
-.ai-input {
-    display: flex;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    gap: 10px;
-}
-
-body.dark .ai-input {
-    border-color: #444;
-    background-color: #2c2c2c;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-.ai-input input {
-    flex: 1;
-    padding: 10px;
-    font-size: 16px;
-    outline: none;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.ai-input input:focus {
-    border-color: #4CAF50;
-}
-
-body.dark .ai-input input {
-    background-color: #1a1a1a;
-    border-color: #555;
-    color: #000000;
-}
-
-body.dark .ai-input input:focus {
-    border-color: #3a7afe;
-}*/
-
-.ai-input button {
-    padding: 10px;
-}
-
-.ai-response {
-    display: none;
-    margin-bottom: 20px;
-}
-
-.ai-response.show{
-    display: block;
-}
-
-.ai-dropdown {
-  display: flex;
-  max-height: 0;             /* collapsed */
-  overflow: hidden;          /* hide content when collapsed */
-  transition: max-height 0.4s ease, padding 0.4s ease;
-  margin-top: 10px;
+  margin-bottom: 10px;
   border: 1px solid #e0e0e0;
+  padding: 15px;
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  padding: 0 15px;           /* collapsed padding */
+  margin-top: 20px;
 }
 
-.ai-dropdown.open {
-  max-height: 200px;         /* enough space for input + button */
-  padding: 15px;             /* expand padding */
+#taskInput {
+  flex: 1 1 auto;
+  min-width: 200px;
+  max-width: 100%;
+  padding: 10px;
+  font-size: 1rem;
 }
 
-body.dark .ai-dropdown {
-  border-color: #444;
-  background-color: #2c2c2c;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+#dateAdd {
+  flex: 0 0 160px;
+  width: 160px;
+  padding: 10px;
+  font-size: 0.9rem;
 }
 
-.ai-dropdown input{
-    flex: 1;
-    padding: 10px;
-    font-size: 15px;
-    outline: none;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.general-btn {
+  flex: 0 0 auto;
+  padding: 10px 15px;
+  font-size: 16px;
 }
 
-body.dark .ai-dropdown input {
-    background-color: #1a1a1a;
-    border-color: #555;
-    color: #f0f0f0;
-}
-
-body.dark .ai-dropdown input:focus {
-    border-color: #3a7afe; /* same focus accent as task input */
-}
-
-.ai-dropdown .general-btn {
-    padding: 10px 15px;
-    font-size: 16px;
-}
-#askAIArrow {
-  margin-left: 5px;
-  font-size: 14px;
-}
-
-/* ------------------------------
-   Task Section
------------------------------- */
-.input-area {
-    display: flex;
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 20px;
-}
 
 body.dark .input-area {
     border-color: #444;
@@ -726,7 +339,7 @@ body.dark .input-area {
 body.dark .input-area input {
     background-color: #1a1a1a;
     border-color: #555;
-    color: #000000;
+    color: #f0f0f0;
 }
 
 body.dark .input-area input:focus {
@@ -739,16 +352,33 @@ body.dark .input-area input:focus {
 }
 
 .task-list li {
-    display: flex;
-    justify-content: space-between;
+    display: flex; /* switch from grid to flex */
     align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
     padding: 8px 10px;
     margin-bottom: 5px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    gap: 10px; /* spacing between button and text */
+    
 }
+
+.task-list li span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* spacing between text and date */
+    flex-grow: 1 1 auto;
+}
+
+.task-date {
+    font-size: 0.9rem;
+    color: #777;
+    margin-left: 0px;
+    padding: 7px;
+    border-left: 1px solid #ccc;
+}
+
 
 body.dark .task-list li {
     background-color: #2c2c2c;
@@ -769,10 +399,7 @@ body.dark .task-list li {
     outline-offset: 2px;
 }
 
-.task-list li span {
-    flex-grow: 1;  /* text takes up remaining space */
-    text-align: left;
-}
+
 
 .task-list li.completed span {
     position: relative;
@@ -816,6 +443,7 @@ body.dark .task-list li.completed button:first-child {
 
 /* Delete button (last button in li) */
 .task-list li button:last-child {
+    margin-left: auto;
     width: 30px;
     height: 30px;
     font-size: 16px;

@@ -1,259 +1,164 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // ------------------------------
-    // TASK SYSTEM
-    // ------------------------------
-    console.log("Script loaded");
+  document.addEventListener("DOMContentLoaded", () => {
+  console.log("Script loaded");
 
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    const taskInput = document.getElementById("taskInput");
-    const addTaskBtn = document.getElementById("addTask");
-    const tasksList = document.getElementById("tasks");
-    const progressFill = document.getElementById("progressFill");
-    const themeToggle = document.getElementById("themeToggle");
-
-    // Add new task
-    addTaskBtn.addEventListener("click", () => {
-        const text = taskInput.value.trim();
-        if (text) {
-            tasks.push({ text, completed: false });
-            taskInput.value = "";
-            saveTasks();
-            renderTasks();
-        }
-    });
-
-    // Event delegation for task buttons
-    tasksList.addEventListener("click", (e) => {
-        const li = e.target.closest("li");
-        if (!li) return;
-        const index = Array.from(tasksList.children).indexOf(li);
-
-        if (e.target.textContent === "✔") {
-            tasks[index].completed = !tasks[index].completed;
-            li.classList.toggle("completed");
-            saveTasks();
-            updateProgress();
-        } else if (e.target.textContent === "Ｘ") {
-          tasks = tasks.filter(t => t.id != taskId); // remove from array
-          saveTasks();
-          li.remove(); // remove only this task from DOM
-          updateProgress(); // recalc progress bar
-}
-    });
-
-    function renderTasks() {
-        tasksList.innerHTML = "";
-
-        tasks.forEach((task) => {
-            const li = document.createElement("li");
-
-            const completeBtn = document.createElement("button");
-            completeBtn.textContent = "✔";
-
-            const span = document.createElement("span");
-            span.textContent = task.text;
-            span.className = task.completed ? "completed" : "";
-            
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Ｘ";
-
-            li.appendChild(completeBtn);
-            li.appendChild(span);
-            li.appendChild(deleteBtn);
-
-            tasksList.appendChild(li);
-        });
-
-        updateProgress();
-    }
-
-    function saveTasks() {
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    function updateProgress() {
-        const completed = tasks.filter(t => t.completed).length;
-        const percent = tasks.length ? (completed / tasks.length) * 100 : 0;
-        progressFill.style.width = percent + "%";
-    }
-
-    
-    // Theme toggle button
-const themeToggleBtn = document.getElementById("themeToggle");
-
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-
-  // Optional: change button icon depending on mode
-  if (document.body.classList.contains("dark")) {
-    themeToggle.textContent = "☀️"; // switch to sun icon
-  } else {
-    themeToggle.textContent = "🌙"; // switch to moon icon
-  }
-});
-
-    renderTasks();
-
-    // ------------------------------
-    // AI FEATURE (SAFE FRONTEND)
-    // ------------------------------
   // ------------------------------
-// Ask AI Dropdown Toggle
-// ------------------------------
-document.getElementById("askAIToggle").addEventListener("click", function () {
-  const dropdown = document.getElementById("aiDropdown");
-  askAIToggleBtn?.addEventListener("click", () => {
-    aiDropdown.classList.toggle("open");
-    askAIArrow.classList.toggle("rotated");
-    console.log("AI dropdown:", aiDropdown.classList.contains("open") ? "open" : "closed");
-  });
-});
-  // Auto-focus input when opening
-  if (dropdown.classList.contains("open")) {
-    document.getElementById("AIInput").focus();
-  }
-});
-
-// ------------------------------
-// Ask AI Submit
-// ------------------------------
-document.getElementById("askAISubmit").addEventListener("click", function () {
-  const query = document.getElementById("AIInput").value.trim();
-  const output = document.getElementById("AIOutput");
+  // GLOBAL ELEMENTS
+  // ------------------------------
+  const taskInput = document.getElementById("taskInput");
+  const dateInput = document.getElementById("dateAdd");
+  const addTaskBtn = document.getElementById("addTask");
+  const tasksList = document.getElementById("tasks");
+  const progressFill = document.getElementById("progressFill");
+  const themeToggle = document.getElementById("themeToggle");
+  const askAIToggleBtn = document.getElementById("askAIToggle");
+  const aiDropdown = document.getElementById("aiDropdown");
+  const askAIArrow = document.getElementById("askAIArrow");
+  const askAISubmit = document.getElementById("askAISubmit");
+  const AIInput = document.getElementById("AIInput");
+  const AIOutput = document.getElementById("AIOutput");
   const responseSection = document.querySelector(".ai-response");
 
-  if (query) {
-    responseSection.classList.add("show");   // reveal the response box
-    output.textContent = "You asked AI: " + query;
-    document.getElementById("AIInput").value = "";
-  } else {
-    responseSection.classList.add("show");
-    output.textContent = "Please enter a question for the AI.";
-  }
-});
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+  // ------------------------------
+  // ADD TASK
+  // ------------------------------
+  addTaskBtn.addEventListener("click", () => {
+    const text = taskInput.value.trim();
+    const date = dateInput.value;
 
+    if (text) {
+      tasks.push({
+        id: Date.now(),
+        text,
+        date: date || null,
+        completed: false
+      });
 
-    // ------------------------------
-    // TASK SYSTEM
-    // ------------------------------
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    const taskInput = document.getElementById("taskInput");
-    const addTaskBtn = document.getElementById("addTask");
-    const tasksList = document.getElementById("tasks");
-    const progressFill = document.getElementById("progressFill");
-    const themeToggle = document.getElementById("themeToggle");
-
-    // Add new task
-    addTaskBtn.addEventListener("click", () => {
-        const text = taskInput.value.trim();
-        if (text) {
-            tasks.push({ id: Date.now(), text, completed: false }); // unique ID
-            taskInput.value = "";
-            saveTasks();
-            renderTasks();
-        }
-    });
-
-    // Event delegation for task buttons
-    tasksList.addEventListener("click", (e) => {
-        const li = e.target.closest("li");
-        if (!li) return;
-          const taskId = li.dataset.id; // read ID from li
-        if (e.target.textContent === "✔") {
-            const task = tasks.find(t => t.id == taskId);
-            task.completed = !task.completed;
-            li.classList.toggle("completed");
-          saveTasks();
-          updateProgress();
-        } else if (e.target.textContent === "Ｘ") {
-            tasks = tasks.filter(t => t.id != taskId); // delete only that task
-          saveTasks();
-          renderTasks();
+      taskInput.value = "";
+      dateInput.value = "";
+      saveTasks();
+      renderTasks();
     }
-});
+  });
 
-    function renderTasks() {
+  // ------------------------------
+  // RENDER TASKS
+  // ------------------------------
+  function renderTasks() {
     tasksList.innerHTML = "";
 
     tasks.forEach((task) => {
-        const li = document.createElement("li");
-        li.dataset.id = task.id; // attach ID to li
+      if (!task.id) {
+      task.id = Date.now() + Math.random(); // fallback for legacy tasks
+    }
 
-        const completeBtn = document.createElement("button");
-        completeBtn.textContent = "✔";
+      const li = document.createElement("li");
+      li.dataset.id = task.id;
 
-        const span = document.createElement("span");
-        span.textContent = task.text;
-        span.className = task.completed ? "completed" : "";
-        
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Ｘ";
+      const completeBtn = document.createElement("button");
+      completeBtn.textContent = "✔";
 
-        li.appendChild(completeBtn);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
+      const contentSpan = document.createElement("span");
+      contentSpan.className = task.completed ? "completed" : "";
 
-        tasksList.appendChild(li);
+      const taskTextSpan = document.createElement("span");
+      taskTextSpan.textContent = task.text;
+
+      const dateSpan = document.createElement("span");
+      dateSpan.textContent = task.date ? `${task.date}` : "";
+      dateSpan.className = "task-date";
+
+      contentSpan.appendChild(taskTextSpan);
+      contentSpan.appendChild(dateSpan);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Ｘ";
+
+      li.appendChild(completeBtn);
+      li.appendChild(taskTextSpan);
+      li.appendChild(dateSpan);
+      li.appendChild(deleteBtn);
+
+      tasksList.appendChild(li);
     });
+    saveTasks(); // update localStorage with fixed IDs
+    updateProgress();
+  }
 
-
-        updateProgress();
-    }
-
-    function saveTasks() {
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    function updateProgress() {
-        const completed = tasks.filter(t => t.completed).length;
-        const percent = tasks.length ? (completed / tasks.length) * 100 : 0;
-        progressFill.style.width = percent + "%";
-    }
-
-    
-    
-
-
-    renderTasks();
-
-    // ------------------------------
-    // AI FEATURE (SAFE FRONTEND)
-    // ------------------------------
   // ------------------------------
-// Ask AI Dropdown Toggle
-// ------------------------------
-const askAIToggleBtn = document.getElementById("askAIToggle");
-  const aiDropdown = document.getElementById("aiDropdown");
-  const askAIArrow = document.getElementById("askAIArrow");
+  // SAVE TASKS
+  // ------------------------------
+  function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
 
-  askAIToggleBtn?.addEventListener("click", () => {
-    aiDropdown.classList.toggle("open");
-    askAIArrow.classList.toggle("rotated");
-    console.log("AI dropdown:", aiDropdown.classList.contains("open") ? "open" : "closed");
+  // ------------------------------
+  // UPDATE PROGRESS
+  // ------------------------------
+  function updateProgress() {
+    const completed = tasks.filter(t => t.completed).length;
+    const percent = tasks.length ? (completed / tasks.length) * 100 : 0;
+    progressFill.style.width = percent + "%";
+  }
+
+  // ------------------------------
+  // TASK BUTTONS (COMPLETE / DELETE)
+  // ------------------------------
+  tasksList.addEventListener("click", (e) => {
+    const li = e.target.closest("li");
+    if (!li) return;
+
+    const taskId = li.dataset.id;
+    const task = tasks.find(t => t.id == taskId);
+
+    if (e.target.textContent === "✔") {
+      task.completed = !task.completed;
+      saveTasks();
+      renderTasks();
+    } else if (e.target.textContent === "Ｘ") {
+      tasks = tasks.filter(t => t.id != taskId);
+      saveTasks();
+      renderTasks();
+    }
   });
 
-// ------------------------------
-// Ask AI Submit
-// ------------------------------
-document.getElementById("askAISubmit").addEventListener("click", function () {
-  const query = document.getElementById("AIInput").value.trim();
-  const output = document.getElementById("AIOutput");
-  const resonseSection = document.querySelector(".ai-response");
-  if (query) {
-    // Show the response section
+  // ------------------------------
+  // THEME TOGGLE
+  // ------------------------------
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  });
+
+  // ------------------------------
+  // AI DROPDOWN TOGGLE
+  // ------------------------------
+  askAIToggleBtn.addEventListener("click", () => {
+    aiDropdown.classList.toggle("open");
+    askAIArrow.classList.toggle("rotated");
+
+    if (aiDropdown.classList.contains("open")) {
+      AIInput.focus();
+    }
+  });
+
+  // ------------------------------
+  // AI SUBMIT
+  // ------------------------------
+  askAISubmit.addEventListener("click", () => {
+    const query = AIInput.value.trim();
+
     responseSection.classList.add("show");
-    
-    // For now just echo the query — replace with real AI logic later
-    output.textContent = "You asked AI: " + query;
-    document.getElementById("AIInput").value = "";
-  } else {
-    responseSection.classList.add("show");
-    output.textContent = "Please enter a question for the AI.";
-  }
+    AIOutput.textContent = query
+      ? "You asked AI: " + query
+      : "Please enter a question for the AI.";
+
+    AIInput.value = "";
+  });
+
+  // ------------------------------
+  // INITIAL RENDER
+  // ------------------------------
+  renderTasks();
 });
-
-
-
