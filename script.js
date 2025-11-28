@@ -35,10 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
             saveTasks();
             updateProgress();
         } else if (e.target.textContent === "Ｘ") {
-            tasks.splice(index, 1);
-            saveTasks();
-            renderTasks();
-        }
+          tasks = tasks.filter(t => t.id != taskId); // remove from array
+          saveTasks();
+          li.remove(); // remove only this task from DOM
+          updateProgress(); // recalc progress bar
+}
     });
 
     function renderTasks() {
@@ -134,7 +135,6 @@ document.getElementById("askAISubmit").addEventListener("click", function () {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
     // ------------------------------
     // TASK SYSTEM
     // ------------------------------
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addTaskBtn.addEventListener("click", () => {
         const text = taskInput.value.trim();
         if (text) {
-            tasks.push({ text, completed: false });
+            tasks.push({ id: Date.now(), text, completed: false }); // unique ID
             taskInput.value = "";
             saveTasks();
             renderTasks();
@@ -161,42 +161,44 @@ document.addEventListener("DOMContentLoaded", () => {
     tasksList.addEventListener("click", (e) => {
         const li = e.target.closest("li");
         if (!li) return;
-        const index = Array.from(tasksList.children).indexOf(li);
-
+          const taskId = li.dataset.id; // read ID from li
         if (e.target.textContent === "✔") {
-            tasks[index].completed = !tasks[index].completed;
+            const task = tasks.find(t => t.id == taskId);
+            task.completed = !task.completed;
             li.classList.toggle("completed");
-            saveTasks();
-            updateProgress();
+          saveTasks();
+          updateProgress();
         } else if (e.target.textContent === "Ｘ") {
-            tasks.splice(index, 1);
-            saveTasks();
-            renderTasks();
-        }
-    });
+            tasks = tasks.filter(t => t.id != taskId); // delete only that task
+          saveTasks();
+          renderTasks();
+    }
+});
 
     function renderTasks() {
-        tasksList.innerHTML = "";
+    tasksList.innerHTML = "";
 
-        tasks.forEach((task) => {
-            const li = document.createElement("li");
+    tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.dataset.id = task.id; // attach ID to li
 
-            const completeBtn = document.createElement("button");
-            completeBtn.textContent = "✔";
+        const completeBtn = document.createElement("button");
+        completeBtn.textContent = "✔";
 
-            const span = document.createElement("span");
-            span.textContent = task.text;
-            span.className = task.completed ? "completed" : "";
-            
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Ｘ";
+        const span = document.createElement("span");
+        span.textContent = task.text;
+        span.className = task.completed ? "completed" : "";
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Ｘ";
 
-            li.appendChild(completeBtn);
-            li.appendChild(span);
-            li.appendChild(deleteBtn);
+        li.appendChild(completeBtn);
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
 
-            tasksList.appendChild(li);
-        });
+        tasksList.appendChild(li);
+    });
+
 
         updateProgress();
     }
@@ -232,7 +234,7 @@ const askAIToggleBtn = document.getElementById("askAIToggle");
     askAIArrow.classList.toggle("rotated");
     console.log("AI dropdown:", aiDropdown.classList.contains("open") ? "open" : "closed");
   });
-});
+
 // ------------------------------
 // Ask AI Submit
 // ------------------------------
