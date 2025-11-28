@@ -109,6 +109,7 @@
     const li = e.target.closest("li");
     if (!li) return;
 
+    const dropdown = document.querySelector('.dropdown');
     const taskId = li.dataset.id;
     const task = tasks.find(t => t.id == taskId);
 
