@@ -303,12 +303,71 @@ body.dark #askAIArrow {
   font-size: 1rem;
 }
 
-#dateAdd {
-  flex: 0 0 160px;
-  width: 160px;
-  padding: 10px;
-  font-size: 0.9rem;
+/* Wrapper to anchor the hidden date input relative to the button */
+.calendar-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
+
+/* Calendar button styled like the task input */
+.calendar-btn {
+  width: 44px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
+  padding: 0; /* remove extra padding */
+  margin-right: -4px; 
+}
+
+.calendar-btn img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.calendar-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Dark mode support */
+body.dark .calendar-btn {
+  background-color: #2c2c2c;
+  border-color: #555;
+}
+body.dark .calendar-btn:hover {
+  background-color: #3a3a3a;
+}
+
+/* Dark mode: make icon white */
+body.dark .calendar-btn img {
+  filter: brightness(0) invert(1); /* turns dark icon white */
+}
+
+/* Keep the date input in the DOM but invisible and positioned below the button */
+#dateAdd {
+  position: absolute;
+  top: 100%;      /* directly below the button */
+  left: 0;
+  opacity: 0;     /* invisible */
+  width: 0;       /* no layout impact */
+  height: 0;
+  pointer-events: none; /* user can't interact directly */
+  border: 0;
+  padding: 0;
+  margin: 0;
+  /* prevent accidental focus outline flash */
+  outline: none;
+}
+
+
 
 .general-btn {
   flex: 0 0 auto;
@@ -316,6 +375,12 @@ body.dark #askAIArrow {
   font-size: 16px;
 }
 
+.input-area .general-btn {
+  height: 39px;          /* fixed consistent height */
+  display: flex;
+  align-items: center;   /* vertically center text/icon */
+  justify-content: center;
+}
 
 body.dark .input-area {
     border-color: #444;

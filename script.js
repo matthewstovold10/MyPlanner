@@ -164,6 +164,20 @@ function formatDate(dateString) {
     AIInput.value = "";
   });
 
+const calendarBtn = document.getElementById('calendarBtn');
+const dateAdd = document.getElementById('dateAdd');
+
+if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
+  calendarBtn.addEventListener('click', () => {
+    // Ensure the input is focusable when we call showPicker
+    dateAdd.style.pointerEvents = 'auto';
+    dateAdd.focus();
+    dateAdd.showPicker();
+    // Restore pointer-events afterwards
+    setTimeout(() => { dateAdd.style.pointerEvents = 'none'; }, 0);
+  });
+}
+
   // ------------------------------
   // INITIAL RENDER
   // ------------------------------
