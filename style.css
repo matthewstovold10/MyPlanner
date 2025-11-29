@@ -39,6 +39,9 @@ html, body {
 
 /* Keep your existing styles below — example snippets */
 header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -208,8 +211,8 @@ body.dark .ai-input input:focus {
 }
 
 .ai-dropdown.open {
-  max-height: 200px;         /* enough space for input + button */
-  padding: 15px;             /* expand padding */
+  max-height: 200px;         
+  padding: 15px;             
 }
 
 body.dark .ai-dropdown {
@@ -234,7 +237,7 @@ body.dark .ai-dropdown input {
 }
 
 body.dark .ai-dropdown input:focus {
-    border-color: #3a7afe; /* same focus accent as task input */
+    border-color: #3a7afe; 
 }
 
 .ai-dropdown .general-btn {
@@ -257,7 +260,7 @@ body.dark .ai-dropdown input:focus {
 /* Dropdown animation is already set via max-height/padding */
 .ai-dropdown {
   display: flex;
-  gap: 10px;              /* keep spacing inside visible when open */
+  gap: 10px;              
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease, padding 0.4s ease;
@@ -266,11 +269,11 @@ body.dark .ai-dropdown input:focus {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  padding: 0 15px;        /* collapsed padding */
+  padding: 0 15px;        
 }
 
 .ai-dropdown.open {
-  max-height: 200px;      /* enough space for input + button */
+  max-height: 200px;     
   padding: 15px;
 }
 
@@ -285,7 +288,7 @@ body.dark #askAIArrow {
 ------------------------------ */
 .input-area {
   display: flex;
-  flex-wrap: wrap; /* allows wrapping on smaller screens */
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   margin-bottom: 10px;
@@ -303,6 +306,34 @@ body.dark #askAIArrow {
   max-width: 100%;
   padding: 10px;
   font-size: 1rem;
+}
+
+#categorySelect {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  min-width: 100px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 4px center; /* arrow sits 10px from edge */
+  background-size: 20px;
+}
+
+body.dark #categorySelect {
+  background-color: #1a1a1a;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+.task-category {
+  font-size: 0.85rem;
+  color: #00000000;
+  margin-left: 10px;
 }
 
 /* Wrapper to anchor the hidden date input relative to the button */
@@ -325,7 +356,7 @@ body.dark #askAIArrow {
   align-items: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: background-color 0.2s ease;
-  padding: 0; /* remove extra padding */
+  padding: 0; 
   margin-right: -4px; 
 }
 
@@ -350,22 +381,21 @@ body.dark .calendar-btn:hover {
 
 /* Dark mode: make icon white */
 body.dark .calendar-btn img {
-  filter: brightness(0) invert(1); /* turns dark icon white */
+  filter: brightness(0) invert(1);
 }
 
 /* Keep the date input in the DOM but invisible and positioned below the button */
 #dateAdd {
   position: absolute;
-  top: 100%;      /* directly below the button */
+  top: 100%;      
   left: 0;
   opacity: 0;     /* invisible */
-  width: 0;       /* no layout impact */
+  width: 0;       
   height: 0;
-  pointer-events: none; /* user can't interact directly */
+  pointer-events: none; 
   border: 0;
   padding: 0;
   margin: 0;
-  /* prevent accidental focus outline flash */
   outline: none;
 }
 
@@ -378,9 +408,9 @@ body.dark .calendar-btn img {
 }
 
 .input-area .general-btn {
-  height: 39px;          /* fixed consistent height */
+  height: 39px;         
   display: flex;
-  align-items: center;   /* vertically center text/icon */
+  align-items: center;  
   justify-content: center;
 }
 
@@ -413,13 +443,49 @@ body.dark .input-area input:focus {
     border-color: #3a7afe;
 }
 
+.task-filters {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.filter-btn {
+  cursor: pointer;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+  background-color: #237627;
+}
+
+body.dark .filter-btn {
+  background-color: #3a7afe;
+}
+
+body.dark .filter-btn:hover {
+  background-color: #103fa6;
+}
+
+.filter-btn.active {
+  background-color: #237627;
+}
+body.dark .filter-btn.active {
+  background-color: #103fa6;
+}
+
 .task-list ul {
     list-style-type: none;
     padding-left: 0;
 }
 
 .task-list li {
-    display: flex; /* switch from grid to flex */
+    display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
@@ -478,7 +544,7 @@ body.dark .task-list li {
 .task-list li button:first-child {
     background-color: transparent;
     color: transparent;           /* hide tick initially */
-    border: 2px solid #4CAF50;    /* green border */
+    border: 2px solid #4CAF50;  
     border-radius: 5px;
     width: 30px;
     height: 30px;
@@ -499,7 +565,7 @@ body.dark .task-list li {
 
 /* Tick button hover effect */
 .task-list li button:first-child:hover {
-    background-color: #d0f0d6;      /* slightly lighter green on hover */
+    background-color: #d0f0d6;     
 }
 
 /* Dark mode support */
@@ -519,26 +585,41 @@ body.dark .task-list li.completed button:first-child {
     align-items: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    background-color: #f45045; /* red */
+    background-color: #f45045; 
     color: white;
     border-radius: 5px;
 }
 
 /* Delete button hover effect */
 .task-list li button:last-child:hover {
-    background-color: #a2150b;    /* darker red on hover */
+    background-color: #a2150b;   
 }
 
 /* ------------------------------
    Progress Bar
 ------------------------------ */
-/* Progress bar spacing so page doesn't end abruptly */
-.progress {
-  margin: 24px 0 40px; /* extra bottom margin so there's visible space after bar */
+header .progress {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+  margin: 0 20px; 
+  opacity: 0;
 }
 
-.progress-bar {
+/* Flash effect */
+.flash {
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.5); }
+}
+
+header .progress-bar {
   width: 100%;
+  max-width: 1000px;
   height: 20px;
   background-color: #ddd;
   border-radius: 10px;

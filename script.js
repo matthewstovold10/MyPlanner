@@ -17,21 +17,31 @@
   const AIInput = document.getElementById("AIInput");
   const AIOutput = document.getElementById("AIOutput");
   const responseSection = document.querySelector(".ai-response");
+  const categorySelect = document.getElementById("categorySelect");
 
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
+  let tasks = [];
+  try {
+    const stored = JSON.parse(localStorage.getItem("tasks"));
+    if (Array.isArray(stored)) {
+      tasks = stored;
+    }
+  } catch (e) {
+    tasks = [];
+  }
+  let currentFilter = "all"; // declare before renderTasks()
   // ------------------------------
   // ADD TASK
   // ------------------------------
   addTaskBtn.addEventListener("click", () => {
     const text = taskInput.value.trim();
     const date = dateInput.value;
-
+    const category = (categorySelect?.value || "school").toLowerCase();
     if (text) {
       tasks.push({
         id: Date.now(),
         text,
         date: date || null,
+        category,
         completed: false
       });
 
@@ -49,16 +59,14 @@
     tasksList.innerHTML = "";
 
     tasks.forEach((task) => {
-      if (!task.id) {
-      task.id = Date.now() + Math.random(); // fallback for legacy tasks
-    }
+      if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) {
+      return;
+      }
 
       const li = document.createElement("li");
       li.dataset.id = task.id;
-      
-      if (task.completed) {
-        li.classList.add("completed");
-      }
+      if (task.completed) li.classList.add("completed");
+  
         
       const completeBtn = document.createElement("button");
       completeBtn.textContent = "✔";
@@ -73,6 +81,10 @@
       dateSpan.textContent = task.date ? formatDate(task.date) : "";
       dateSpan.className = "task-date";
 
+      const categorySpan = document.createElement("span");
+      categorySpan.textContent = task.category;
+      categorySpan.className = "task-category"; // ✅ show category
+
       contentSpan.appendChild(taskTextSpan);
       contentSpan.appendChild(dateSpan);
 
@@ -82,6 +94,7 @@
       li.appendChild(completeBtn);
       li.appendChild(taskTextSpan);
       li.appendChild(dateSpan);
+      li.appendChild(categorySpan);
       li.appendChild(deleteBtn);
 
       tasksList.appendChild(li);
@@ -90,11 +103,24 @@
     updateProgress();
   }
 
-// Helper to format date nicely
-function formatDate(dateString) {
+  
+
+  
+
+  const filterButtons = document.querySelectorAll(".filter-btn");
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentFilter = btn.dataset.filter; // "all", "work", "school", "planner", "personal"
+      filterButtons.forEach(b => b.classList.toggle("active", b === btn));
+      renderTasks();
+    });
+  });
+
+  // Helper to format date nicely
+  function formatDate(dateString) {
   const options = { day: "numeric", month: "short", year: "numeric" };
   return new Date(dateString).toLocaleDateString("en-GB", options);
-}
+  }
 
   // ------------------------------
   // SAVE TASKS
@@ -107,10 +133,31 @@ function formatDate(dateString) {
   // UPDATE PROGRESS
   // ------------------------------
   function updateProgress() {
-    const completed = tasks.filter(t => t.completed).length;
-    const percent = tasks.length ? (completed / tasks.length) * 100 : 0;
-    progressFill.style.width = percent + "%";
+  const totalEls = document.querySelectorAll("#tasks li");
+  const completedEls = document.querySelectorAll("#tasks li.completed");
+  const progressSection = document.querySelector("header .progress");
+  const progressFill = document.getElementById("progressFill");
+
+  if (!progressSection || !progressFill) return; // guard if header markup changes
+
+  const percent = totalEls.length > 0 ? (completedEls.length / totalEls.length) * 100 : 0;
+  progressFill.style.width = percent + "%";
+
+  // Show only when there is at least one completed task
+  if (completedEls.length > 0) {
+    progressSection.style.opacity = 1;
+    progressFill.classList.add("flash");
+
+    setTimeout(() => {
+      progressFill.classList.remove("flash");
+      progressSection.style.opacity = 0;
+    }, 3000);
+  } else {
+    progressSection.style.opacity = 0;
   }
+  }
+
+  
 
   // ------------------------------
   // TASK BUTTONS (COMPLETE / DELETE)
@@ -128,9 +175,13 @@ function formatDate(dateString) {
       saveTasks();
       renderTasks();
     } else if (e.target.textContent === "Ｘ") {
-      tasks = tasks.filter(t => t.id != taskId);
-      saveTasks();
-      renderTasks();
+      const confirmed = confirm("Are you sure you want to delete this task?");
+      if (confirmed) {
+        tasks = tasks.filter(t => t.id != taskId);
+        saveTasks();
+        renderTasks();
+      }
+    
     }
   });
 
@@ -168,10 +219,10 @@ function formatDate(dateString) {
     AIInput.value = "";
   });
 
-const calendarBtn = document.getElementById('calendarBtn');
-const dateAdd = document.getElementById('dateAdd');
+  const calendarBtn = document.getElementById('calendarBtn');
+  const dateAdd = document.getElementById('dateAdd');
 
-if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
+  if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
   calendarBtn.addEventListener('click', () => {
     // Ensure the input is focusable when we call showPicker
     dateAdd.style.pointerEvents = 'auto';
@@ -180,11 +231,11 @@ if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
     // Restore pointer-events afterwards
     setTimeout(() => { dateAdd.style.pointerEvents = 'none'; }, 0);
   });
-}
-if ("serviceWorker" in navigator) {
+  }
+  if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js")
     .then(() => console.log("Service Worker registered"));
-}
+  }
   // ------------------------------
   // INITIAL RENDER
   // ------------------------------

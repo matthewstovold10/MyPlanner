@@ -13,6 +13,11 @@
 <div class="main-wrapper">
 <header>
     <h1>MyTechPlanner </h1>
+    <section class="progress">
+    <div class="progress-bar">
+        <div id="progressFill"></div>
+    </div>
+    </section>
     <button id="themeToggle" class="general-btn">🌙</button>
 </header>
 <main class="main-content">
@@ -25,6 +30,12 @@
 
 <section class="input-area">
     <input type="text" id="taskInput" placeholder="Add a new task...">
+    <select id="categorySelect">
+        <option value="school">School</option>
+        <option value="work">Work</option>
+        <option value="planner">Planner</option>
+        <option value="personal">Personal</option>
+    </select>
     <div class="calendar-wrap">
         <button id="calendarBtn" class="calendar-btn">
             <img src="icons8-calendar-24.png" alt="Calendar">
@@ -48,17 +59,19 @@
 
 <section class="task-list">
     <h2>Your Tasks</h2>
+    <section class="task-filters">
+        <button class="filter-btn" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="work">Work</button>
+        <button class="filter-btn" data-filter="school">School</button>
+        <button class="filter-btn" data-filter="planner">Planner</button>
+        <button class="filter-btn" data-filter="personal">Personal</button>
+    </section>
     <ul id="tasks"></ul>
 </section>
 
 
 
-<section class="progress">
-    <h2>Progress</h2>
-    <div class="progress-bar">
-        <div id="progressFill"></div>
-    </div>
-    </section>
+
 </main>
     <footer class="site-footer">
       <p>© MyTechPlanner</p>
