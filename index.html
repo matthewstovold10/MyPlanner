@@ -57,14 +57,29 @@
     <p id="AIOutput">Your AI results will appear here...</p>
 </section>
 
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <filter id="gooey">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" /> <!-- smaller blur -->
+      <feColorMatrix in="blur" mode="matrix"
+        values="1 0 0 0 0  
+                0 1 0 0 0  
+                0 0 1 0 0  
+                0 0 0 20 -10" result="gooey" />
+      <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
+    </filter>
+  </defs>
+</svg>
+
 <section class="task-list">
     <h2>Your Tasks</h2>
-    <section class="task-filters">
-        <button class="filter-btn" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="work">Work</button>
-        <button class="filter-btn" data-filter="school">School</button>
-        <button class="filter-btn" data-filter="planner">Planner</button>
-        <button class="filter-btn" data-filter="personal">Personal</button>
+    <section class="task-filters tab-group">
+        <div class="tab active" data-filter="all">All</div>
+        <div class="tab" data-filter="work">Work</div>
+        <div class="tab" data-filter="school">School</div>
+        <div class="tab" data-filter="planner">Planner</div>
+        <div class="tab" data-filter="personal">Personal</div>
+        <span class="tab-indicator"></span>
     </section>
     <ul id="tasks"></ul>
 </section>

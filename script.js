@@ -1,4 +1,4 @@
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   console.log("Script loaded");
 
   // ------------------------------
@@ -22,13 +22,13 @@
   let tasks = [];
   try {
     const stored = JSON.parse(localStorage.getItem("tasks"));
-    if (Array.isArray(stored)) {
-      tasks = stored;
-    }
+    if (Array.isArray(stored)) tasks = stored;
   } catch (e) {
     tasks = [];
   }
-  let currentFilter = "all"; // declare before renderTasks()
+
+  let currentFilter = "all";
+
   // ------------------------------
   // ADD TASK
   // ------------------------------
@@ -36,6 +36,7 @@
     const text = taskInput.value.trim();
     const date = dateInput.value;
     const category = (categorySelect?.value || "school").toLowerCase();
+
     if (text) {
       tasks.push({
         id: Date.now(),
@@ -60,19 +61,16 @@
 
     tasks.forEach((task) => {
       if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) {
-      return;
+        return;
       }
 
       const li = document.createElement("li");
       li.dataset.id = task.id;
+      li.dataset.category = task.category;
       if (task.completed) li.classList.add("completed");
-  
-        
+
       const completeBtn = document.createElement("button");
       completeBtn.textContent = "✔";
-
-      const contentSpan = document.createElement("span");
-      contentSpan.className = task.completed ? "completed" : "";
 
       const taskTextSpan = document.createElement("span");
       taskTextSpan.textContent = task.text;
@@ -83,10 +81,7 @@
 
       const categorySpan = document.createElement("span");
       categorySpan.textContent = task.category;
-      categorySpan.className = "task-category"; // ✅ show category
-
-      contentSpan.appendChild(taskTextSpan);
-      contentSpan.appendChild(dateSpan);
+      categorySpan.className = "task-category";
 
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Ｘ";
@@ -99,27 +94,17 @@
 
       tasksList.appendChild(li);
     });
-    saveTasks(); // update localStorage with fixed IDs
+
+    saveTasks();
     updateProgress();
   }
 
-  
-
-  
-
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  filterButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentFilter = btn.dataset.filter; // "all", "work", "school", "planner", "personal"
-      filterButtons.forEach(b => b.classList.toggle("active", b === btn));
-      renderTasks();
-    });
-  });
-
-  // Helper to format date nicely
+  // ------------------------------
+  // FORMAT DATE
+  // ------------------------------
   function formatDate(dateString) {
-  const options = { day: "numeric", month: "short", year: "numeric" };
-  return new Date(dateString).toLocaleDateString("en-GB", options);
+    const options = { day: "numeric", month: "short", year: "numeric" };
+    return new Date(dateString).toLocaleDateString("en-GB", options);
   }
 
   // ------------------------------
@@ -133,31 +118,27 @@
   // UPDATE PROGRESS
   // ------------------------------
   function updateProgress() {
-  const totalEls = document.querySelectorAll("#tasks li");
-  const completedEls = document.querySelectorAll("#tasks li.completed");
-  const progressSection = document.querySelector("header .progress");
-  const progressFill = document.getElementById("progressFill");
+    const totalEls = document.querySelectorAll("#tasks li");
+    const completedEls = document.querySelectorAll("#tasks li.completed");
+    const progressSection = document.querySelector("header .progress");
 
-  if (!progressSection || !progressFill) return; // guard if header markup changes
+    if (!progressSection || !progressFill) return;
 
-  const percent = totalEls.length > 0 ? (completedEls.length / totalEls.length) * 100 : 0;
-  progressFill.style.width = percent + "%";
+    const percent = totalEls.length > 0 ? (completedEls.length / totalEls.length) * 100 : 0;
+    progressFill.style.width = percent + "%";
 
-  // Show only when there is at least one completed task
-  if (completedEls.length > 0) {
-    progressSection.style.opacity = 1;
-    progressFill.classList.add("flash");
+    if (completedEls.length > 0) {
+      progressSection.style.opacity = 1;
+      progressFill.classList.add("flash");
 
-    setTimeout(() => {
-      progressFill.classList.remove("flash");
+      setTimeout(() => {
+        progressFill.classList.remove("flash");
+        progressSection.style.opacity = 0;
+      }, 3000);
+    } else {
       progressSection.style.opacity = 0;
-    }, 3000);
-  } else {
-    progressSection.style.opacity = 0;
+    }
   }
-  }
-
-  
 
   // ------------------------------
   // TASK BUTTONS (COMPLETE / DELETE)
@@ -166,7 +147,6 @@
     const li = e.target.closest("li");
     if (!li) return;
 
-    const dropdown = document.querySelector('.dropdown');
     const taskId = li.dataset.id;
     const task = tasks.find(t => t.id == taskId);
 
@@ -181,9 +161,32 @@
         saveTasks();
         renderTasks();
       }
-    
     }
   });
+
+  // ------------------------------
+  // GOOEY TABS LOGIC
+  // ------------------------------
+  const tabs = document.querySelectorAll(".tab");
+  const indicator = document.querySelector(".tab-indicator");
+
+  function moveIndicator(tab) {
+    indicator.style.width = tab.offsetWidth + "px";
+    indicator.style.left = tab.offsetLeft + "px";
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      moveIndicator(tab);
+
+      currentFilter = tab.dataset.filter;
+      renderTasks();
+    });
+  });
+
+  moveIndicator(document.querySelector(".tab.active"));
 
   // ------------------------------
   // THEME TOGGLE
@@ -199,10 +202,7 @@
   askAIToggleBtn.addEventListener("click", () => {
     aiDropdown.classList.toggle("open");
     askAIArrow.classList.toggle("rotated");
-
-    if (aiDropdown.classList.contains("open")) {
-      AIInput.focus();
-    }
+    if (aiDropdown.classList.contains("open")) AIInput.focus();
   });
 
   // ------------------------------
@@ -210,32 +210,34 @@
   // ------------------------------
   askAISubmit.addEventListener("click", () => {
     const query = AIInput.value.trim();
-
     responseSection.classList.add("show");
     AIOutput.textContent = query
       ? "You asked AI: " + query
       : "Please enter a question for the AI.";
-
     AIInput.value = "";
   });
 
-  const calendarBtn = document.getElementById('calendarBtn');
-  const dateAdd = document.getElementById('dateAdd');
+  // ------------------------------
+  // CALENDAR PICKER
+  // ------------------------------
+  const calendarBtn = document.getElementById("calendarBtn");
+  if (calendarBtn && dateInput && typeof dateInput.showPicker === "function") {
+    calendarBtn.addEventListener("click", () => {
+      dateInput.style.pointerEvents = "auto";
+      dateInput.focus();
+      dateInput.showPicker();
+      setTimeout(() => { dateInput.style.pointerEvents = "none"; }, 0);
+    });
+  }
 
-  if (calendarBtn && dateAdd && typeof dateAdd.showPicker === 'function') {
-  calendarBtn.addEventListener('click', () => {
-    // Ensure the input is focusable when we call showPicker
-    dateAdd.style.pointerEvents = 'auto';
-    dateAdd.focus();
-    dateAdd.showPicker();
-    // Restore pointer-events afterwards
-    setTimeout(() => { dateAdd.style.pointerEvents = 'none'; }, 0);
-  });
-  }
+  // ------------------------------
+  // SERVICE WORKER
+  // ------------------------------
   if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(() => console.log("Service Worker registered"));
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker registered"));
   }
+
   // ------------------------------
   // INITIAL RENDER
   // ------------------------------

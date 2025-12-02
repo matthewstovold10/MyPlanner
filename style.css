@@ -449,43 +449,69 @@ body.dark .input-area input:focus {
   margin-top: 15px;
 }
 
-.filter-btn {
+
+
+.tab-group {
+  display: flex;
+  position: relative;
+  justify-content: flex-start;
+  background: #e0e0e0;
+  border-radius: 30px;       
+  padding: 6px;              
+  filter: url(#gooey);
+  max-width: 400px;          
+  margin: 10px 0;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;         
   cursor: pointer;
-  border: none;
-  background: transparent;
-  color: #4CAF50;
-  padding: 8px 12px;
-  border: 1px solid #4CAF50;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+  color: #333;
+  font-size: 13px;           
 }
 
-.filter-btn:hover {
-  background-color: #4CAF50;
+.tab.active {
   color: white;
 }
 
-body.dark .filter-btn {
-  background: transparent;
-  color: #3a7afe;
-  padding: 8px 12px;
-  border: 1px solid #3a7afe;
+.tab-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  background: #4CAF50;
+  border-radius: 30px;       
+  transition: all 0.3s ease;
+  z-index: 0;
 }
 
-body.dark .filter-btn:hover {
-  background-color: #3a7afe;
+
+body.dark .tab-group {
+  background: #2c2c2c;       
+}
+
+
+body.dark .tab {
+  color: #f0f0f0;             
+}
+
+
+body.dark .tab.active {
   color: white;
 }
 
-.filter-btn.active {
-  background-color: #4CAF50;
-  color: white;
+
+body.dark .tab-indicator {
+  background: #3a7afe;        
 }
-body.dark .filter-btn.active {
-  background-color: #3a7afe;
-  color: white;
-}
+
+
+
 .task-list ul {
     list-style-type: none;
     padding-left: 0;
