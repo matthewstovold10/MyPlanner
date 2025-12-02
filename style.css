@@ -248,16 +248,26 @@ body.dark .ai-dropdown input:focus {
 }
 
 .ai-dropdown .general-btn {
-  padding: 10px 15px;
+  padding: 10px 10px;
   font-size: 16px;
 }
 
+#askAIToggle {
+  display: inline-flex;          /* make text + arrow share a flex row */
+  align-items: center;           /* vertical centering */
+  justify-content: center;       /* optional: center contents inside button */
+  gap: 4px; /* spacing between text and arrow */
+  padding-right: 8px;
+
+}
+
+
 /* Ensure arrow can rotate smoothly */
-#askAIArrow {
-  margin-left: 5px;
-  font-size: 14px;
-  transition: transform 0.3s ease;
-  display: inline-block;
+#askAIArrow img {
+  width: 25px;   /* adjust to preferred size */
+  height: auto;  /* keeps aspect ratio */
+  filter: brightness(0) invert(1);
+  display: block;
 }
 
 #askAIArrow.rotated {
@@ -316,7 +326,7 @@ body.dark #askAIArrow {
   font-size: 1rem;
 }
 
-#categorySelect {
+/*#categorySelect {
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   padding: 10px;
   font-size: 1rem;
@@ -329,8 +339,12 @@ body.dark #askAIArrow {
   -moz-appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 4px center; /* arrow sits 10px from edge */
+  background-position: right 4px center; 
   background-size: 20px;
+}
+
+#categorySelect option[value^="__delete_"] {
+  color: red;
 }
 
 body.dark #taskInput {
@@ -350,7 +364,123 @@ body.dark #categorySelect {
   font-size: 0.85rem;
   color: #00000000;
   margin-left: 10px;
+}*/
+
+#dropdownToggle {
+  display: inline-flex;       /* inline flex keeps them in one row */
+  align-items: center;        /* vertical centering */
+  justify-content: center;;
+  gap: 8px;
+  background: transparent;       /* no fill */
+  border: 1px solid #ddd;        /* grey outline */
+  color: #333333; /* text color */
+  font-size: 16px;
+  font-family: inherit;
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  min-height: 40.5px;
+  width: auto;                  /* match dropdown width */
+  text-align: left;              /* keep text aligned */
 }
+
+#chooseCatArrow img{
+  width: 25px;   /* adjust to preferred size */
+  height: auto;  /* keeps aspect ratio */
+  display: block;
+}
+
+body.dark #chooseCatArrow img{
+  filter: brightness(0) invert(1);
+}
+
+#dropdownToggle:hover {
+  background: rgba(0,0,0,0.05);  /* subtle hover effect */
+}
+
+body.dark #dropdownToggle {
+  border-color: #555555;      /* lighter outline in dark mode */
+  color: #f0f0f0;
+}
+
+body.dark #dropdownToggle:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;              /* directly below the button */
+  left: 50%;              /* start at the middle of the button */
+  transform: translateX(-50%) translateX(3px);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  min-width: 178px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+body.dark .dropdown-item:hover{
+  background: #2c2c2c;
+}
+
+body.dark .dropdown-menu{
+  background: #1a1a1a;
+  border-color: #2c2c2c;
+}
+
+body.dark .dropdown-item{
+  border: solid 1px #2c2c2c;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-delete {
+  background: transparent;
+  border: none;
+  color: #f45045;
+  cursor: pointer;
+}
+.dropdown-delete:hover {
+  color: #a2150b;
+}
+
+.dropdown-add {
+  text-align: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #4CAF50;
+  font-weight: bold;
+}
+.dropdown-add:hover {
+  background: #f0f0f0;
+}
+
+body.dark .dropdown-add:hover{
+  background: #2c2c2c;
+}
+
 
 /* Wrapper to anchor the hidden date input relative to the button */
 .calendar-wrap {
@@ -468,27 +598,27 @@ body.dark .input-area input:focus {
 
 
 .tab-group {
-  display: flex;
-  position: relative;
-  justify-content: flex-start;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
   background: #e0e0e0;
   transition: background-color 0.4s ease;
   border-radius: 30px;       
   padding: 6px;              
   filter: url(#gooey);
-  max-width: 400px;          
-  margin: 10px 0;
+ 
 }
 
 .tab {
-  flex: 1;
+  flex: 0 0 auto;     
+  min-width: auto;  
   text-align: center;
   padding: 8px 12px;         
   cursor: pointer;
   position: relative;
   z-index: 1;
   color: #333;
-  font-size: 13px;           
+  font-size: 15px;           
 }
 
 .tab.active {
@@ -686,4 +816,14 @@ header .progress-bar {
 
 body.dark #progressFill {
     background-color: #3a7afe;
+}
+
+/* Inactive tabs: force readable text */
+.task-filters .tab:not(.active) {
+  color: #333 !important;
+}
+
+/* Dark mode: inactive tabs */
+body.dark .task-filters .tab:not(.active) {
+  color: #f0f0f0 !important;
 }

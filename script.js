@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Script loaded");
 
   // ------------------------------
-  // GLOBAL ELEMENTS
+  // DOM REFERENCES
   // ------------------------------
   const taskInput = document.getElementById("taskInput");
   const dateInput = document.getElementById("dateAdd");
@@ -18,16 +18,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const AIOutput = document.getElementById("AIOutput");
   const responseSection = document.querySelector(".ai-response");
   const categorySelect = document.getElementById("categorySelect");
+  const tabGroup = document.querySelector(".tab-group");
+  const indicator = document.querySelector(".tab-indicator");
 
-  let tasks = [];
-  try {
-    const stored = JSON.parse(localStorage.getItem("tasks"));
-    if (Array.isArray(stored)) tasks = stored;
-  } catch (e) {
-    tasks = [];
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  let currentFilter = "all";
+
+  // ------------------------------
+  // TAB ACTIVATION HELPER
+  // ------------------------------
+  function activateTab(tab) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    moveIndicator(tab);
+    currentFilter = tab.dataset.filter;
+    renderTasks();
   }
 
-  let currentFilter = "all";
+  function moveIndicator(tab) {
+    indicator.style.width = tab.offsetWidth + "px";
+    indicator.style.left = tab.offsetLeft + "px";
+  }
 
   // ------------------------------
   // ADD TASK
@@ -54,15 +65,162 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ------------------------------
+  // ADD NEW CATEGORY VIA DROPDOWN
+  // ------------------------------
+  /*categorySelect.addEventListener("change", () => {
+    const val = categorySelect.value;
+
+    // --- Step 2: Handle delete selection ---
+    if (val.startsWith("__delete_")) {
+      const catToDelete = val.replace("__delete_", "");
+
+      if (confirm(`Delete category "${catToDelete}"?`)) {
+        // Remove tab
+        const tab = document.querySelector(`.tab[data-filter="${catToDelete}"]`);
+        if (tab) tab.remove();
+
+        // Remove both options (category + delete)
+        const catOption = categorySelect.querySelector(`option[value="${catToDelete}"]`);
+        const delOption = categorySelect.querySelector(`option[value="__delete_${catToDelete}"]`);
+        if (catOption) catOption.remove();
+        if (delOption) delOption.remove();
+
+        // Reset filter to "all"
+        const allTab = document.querySelector('.tab[data-filter="all"]');
+        if (allTab) activateTab(allTab);
+        categorySelect.value = "school"; // or reset to default
+      } else {
+        categorySelect.value = "school"; // cancel deletion
+      }
+      return; // stop here so we don’t run addNew logic
+    }
+    
+    
+    if (categorySelect.value === "__addNew") {
+      const newCat = prompt("Enter a new category name:");
+      if (newCat && newCat.trim() !== "") {
+        const value = newCat.trim().toLowerCase();
+
+        // Insert new option before "Add Category"
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = newCat.trim();
+        categorySelect.insertBefore(option, categorySelect.querySelector("option[value='__addNew']"));
+
+        // --- Step 1: Add paired delete option ---
+        const deleteOption = document.createElement("option");
+        deleteOption.value = "__delete_" + value;
+        deleteOption.textContent = "❌ Delete " + newCat.trim();
+        categorySelect.insertBefore(deleteOption, categorySelect.querySelector("option[value='__addNew']"));
+        
+        // Select the new category
+        categorySelect.value = value;
+
+        // Create new tab
+        const tab = document.createElement("div");
+        tab.className = "tab";
+        tab.dataset.filter = value;
+        tab.textContent = newCat.trim();
+        tabGroup.insertBefore(tab, indicator);
+
+        // Ensure inactive by default
+        tab.classList.remove("active");
+        const currentActive = document.querySelector(".tab.active");
+        if (currentActive) moveIndicator(currentActive);
+
+        // Attach click handler
+        tab.addEventListener("click", () => activateTab(tab));
+      } else {
+        categorySelect.value = "school"; // reset if cancelled
+      }
+    }
+  });*/
+
+  let categories = ["school", "work", "planner", "personal"];
+  const dropdownToggle = document.getElementById("dropdownToggle");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  dropdownToggle.addEventListener("click", () => {
+    dropdownMenu.classList.toggle("show");
+  });
+
+  function renderDropdown() {
+    dropdownMenu.innerHTML = "";
+
+    categories.forEach(cat => {
+      const item = document.createElement("div");
+      item.className = "dropdown-item";
+
+      const label = document.createElement("span");
+      label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "×";
+      delBtn.className = "dropdown-delete";
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteCategory(cat);
+      });
+
+      item.appendChild(label);
+      item.appendChild(delBtn);
+
+      item.addEventListener("click", () => {
+        dropdownToggle.textContent = label.textContent + " ▼";
+        const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
+        if (tab) activateTab(tab);
+        dropdownMenu.classList.remove("show");
+      });
+
+      dropdownMenu.appendChild(item);
+    });
+
+    // Add Category option
+    const addItem = document.createElement("div");
+    addItem.className = "dropdown-add";
+    addItem.textContent = "Add Category...";
+    addItem.addEventListener("click", () => {
+      const newCat = prompt("Enter a new category name:");
+      if (newCat && newCat.trim() !== "") {
+        const value = newCat.trim().toLowerCase();
+        if (!categories.includes(value)) {
+          categories.push(value);
+
+          // Create tab
+          const tab = document.createElement("div");
+          tab.className = "tab";
+          tab.dataset.filter = value;
+          tab.textContent = newCat.trim();
+          tabGroup.insertBefore(tab, indicator);
+          tab.addEventListener("click", () => activateTab(tab));
+
+          renderDropdown();
+        }
+      }
+    });
+    dropdownMenu.appendChild(addItem);
+  }
+
+  function deleteCategory(cat) {
+    categories = categories.filter(c => c !== cat);
+    const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
+    if (tab) tab.remove();
+    renderDropdown();
+    const allTab = document.querySelector('.tab[data-filter="all"]');
+    if (allTab) activateTab(allTab);
+  }
+
+  renderDropdown();
+  
+  
+  // ------------------------------
   // RENDER TASKS
   // ------------------------------
   function renderTasks() {
     tasksList.innerHTML = "";
 
-    tasks.forEach((task) => {
-      if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) {
-        return;
-      }
+    tasks.forEach(task => {
+      if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) return;
 
       const li = document.createElement("li");
       li.dataset.id = task.id;
@@ -99,17 +257,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateProgress();
   }
 
-  // ------------------------------
-  // FORMAT DATE
-  // ------------------------------
   function formatDate(dateString) {
     const options = { day: "numeric", month: "short", year: "numeric" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   }
 
-  // ------------------------------
-  // SAVE TASKS
-  // ------------------------------
   function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
@@ -121,8 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalEls = document.querySelectorAll("#tasks li");
     const completedEls = document.querySelectorAll("#tasks li.completed");
     const progressSection = document.querySelector("header .progress");
-
-    if (!progressSection || !progressFill) return;
 
     const percent = totalEls.length > 0 ? (completedEls.length / totalEls.length) * 100 : 0;
     progressFill.style.width = percent + "%";
@@ -143,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // TASK BUTTONS (COMPLETE / DELETE)
   // ------------------------------
-  tasksList.addEventListener("click", (e) => {
+  tasksList.addEventListener("click", e => {
     const li = e.target.closest("li");
     if (!li) return;
 
@@ -155,8 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
       saveTasks();
       renderTasks();
     } else if (e.target.textContent === "Ｘ") {
-      const confirmed = confirm("Are you sure you want to delete this task?");
-      if (confirmed) {
+      if (confirm("Are you sure you want to delete this task?")) {
         tasks = tasks.filter(t => t.id != taskId);
         saveTasks();
         renderTasks();
@@ -165,27 +314,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ------------------------------
-  // GOOEY TABS LOGIC
+  // INITIAL TAB SETUP
   // ------------------------------
-  const tabs = document.querySelectorAll(".tab");
-  const indicator = document.querySelector(".tab-indicator");
-
-  function moveIndicator(tab) {
-    indicator.style.width = tab.offsetWidth + "px";
-    indicator.style.left = tab.offsetLeft + "px";
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      moveIndicator(tab);
-
-      currentFilter = tab.dataset.filter;
-      renderTasks();
-    });
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => activateTab(tab));
   });
-
   moveIndicator(document.querySelector(".tab.active"));
 
   // ------------------------------
@@ -205,9 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (aiDropdown.classList.contains("open")) AIInput.focus();
   });
 
-  // ------------------------------
-  // AI SUBMIT
-  // ------------------------------
   askAISubmit.addEventListener("click", () => {
     const query = AIInput.value.trim();
     responseSection.classList.add("show");
