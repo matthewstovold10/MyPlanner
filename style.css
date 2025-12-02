@@ -1,6 +1,11 @@
 /* ------------------------------
    General Styles
 ------------------------------ */
+body, header, .intro-area, .general-btn, .input-area, 
+.task-list li, .calendar-btn, .ai-dropdown, .tab-group, .tab-indicator {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
@@ -211,6 +216,7 @@ body.dark .ai-input input:focus {
 }
 
 .ai-dropdown.open {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   max-height: 200px;         
   padding: 15px;             
 }
@@ -222,27 +228,28 @@ body.dark .ai-dropdown {
 }
 
 .ai-dropdown input{
-    flex: 1;
-    padding: 10px;
-    font-size: 15px;
-    outline: none;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  flex: 1;
+  padding: 10px;
+  font-size: 15px;
+  outline: none;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 body.dark .ai-dropdown input {
-    background-color: #1a1a1a;
-    border-color: #555;
-    color: #f0f0f0;
+  background-color: #1a1a1a;
+  border-color: #555;
+  color: #f0f0f0;
 }
 
 body.dark .ai-dropdown input:focus {
-    border-color: #3a7afe; 
+  border-color: #3a7afe; 
 }
 
 .ai-dropdown .general-btn {
-    padding: 10px 15px;
-    font-size: 16px;
+  padding: 10px 15px;
+  font-size: 16px;
 }
 
 /* Ensure arrow can rotate smoothly */
@@ -301,6 +308,7 @@ body.dark #askAIArrow {
 }
 
 #taskInput {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   flex: 1 1 auto;
   min-width: 200px;
   max-width: 100%;
@@ -309,6 +317,7 @@ body.dark #askAIArrow {
 }
 
 #categorySelect {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ddd;
@@ -323,6 +332,13 @@ body.dark #askAIArrow {
   background-position: right 4px center; /* arrow sits 10px from edge */
   background-size: 20px;
 }
+
+body.dark #taskInput {
+  background-color: #1a1a1a;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
 
 body.dark #categorySelect {
   background-color: #1a1a1a;
@@ -355,7 +371,7 @@ body.dark #categorySelect {
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background-color 0.2s ease;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   padding: 0; 
   margin-right: -4px; 
 }
@@ -456,6 +472,7 @@ body.dark .input-area input:focus {
   position: relative;
   justify-content: flex-start;
   background: #e0e0e0;
+  transition: background-color 0.4s ease;
   border-radius: 30px;       
   padding: 6px;              
   filter: url(#gooey);
@@ -484,7 +501,8 @@ body.dark .input-area input:focus {
   bottom: 4px;
   left: 0;
   width: 0;
-  background: #4CAF50;
+  background: #4CAF50;                      
+  transition: background-color 0.4s ease;
   border-radius: 30px;       
   transition: all 0.3s ease;
   z-index: 0;
