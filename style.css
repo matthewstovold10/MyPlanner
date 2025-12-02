@@ -452,33 +452,40 @@ body.dark .input-area input:focus {
 .filter-btn {
   cursor: pointer;
   border: none;
-  background: #4CAF50;
-  color: white;
+  background: transparent;
+  color: #4CAF50;
   padding: 8px 12px;
+  border: 1px solid #4CAF50;
   border-radius: 5px;
   font-size: 14px;
   transition: background-color 0.3s ease;
 }
 
 .filter-btn:hover {
-  background-color: #237627;
+  background-color: #4CAF50;
+  color: white;
 }
 
 body.dark .filter-btn {
-  background-color: #3a7afe;
+  background: transparent;
+  color: #3a7afe;
+  padding: 8px 12px;
+  border: 1px solid #3a7afe;
 }
 
 body.dark .filter-btn:hover {
-  background-color: #103fa6;
+  background-color: #3a7afe;
+  color: white;
 }
 
 .filter-btn.active {
-  background-color: #237627;
+  background-color: #4CAF50;
+  color: white;
 }
 body.dark .filter-btn.active {
-  background-color: #103fa6;
+  background-color: #3a7afe;
+  color: white;
 }
-
 .task-list ul {
     list-style-type: none;
     padding-left: 0;
