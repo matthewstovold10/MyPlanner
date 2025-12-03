@@ -20,9 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const categorySelect = document.getElementById("categorySelect");
   const tabGroup = document.querySelector(".tab-group");
   const indicator = document.querySelector(".tab-indicator");
+  const dropdownToggle = document.getElementById("dropdownToggle");
+  const dropdownMenu = document.getElementById("dropdownMenu");
 
+  let categories = ["all", "work", "school", "planner", "personal"];
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let currentFilter = "all";
+
+  dropdownToggle.addEventListener("click", () => {
+    dropdownMenu.classList.toggle("show");
+  
+    const arrow = document.getElementById("chooseCatArrow");
+    if (arrow) {
+      arrow.classList.toggle("rotated", dropdownMenu.classList.contains("show"));
+  }
+  });
+  
 
   // ------------------------------
   // TAB ACTIVATION HELPER
@@ -136,14 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });*/
 
-  let categories = ["school", "work", "planner", "personal"];
-  const dropdownToggle = document.getElementById("dropdownToggle");
-  const dropdownMenu = document.getElementById("dropdownMenu");
-
-  dropdownToggle.addEventListener("click", () => {
-    dropdownMenu.classList.toggle("show");
-  });
-
   function renderDropdown() {
     dropdownMenu.innerHTML = "";
 
@@ -151,9 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = document.createElement("div");
       item.className = "dropdown-item";
 
+      // Label text
       const label = document.createElement("span");
+      label.className = "dropdown-label";
       label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
 
+      // Delete button
       const delBtn = document.createElement("button");
       delBtn.textContent = "×";
       delBtn.className = "dropdown-delete";
@@ -162,14 +170,22 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteCategory(cat);
       });
 
+      // Assemble item
       item.appendChild(label);
       item.appendChild(delBtn);
 
+      // Click handler for selecting category
       item.addEventListener("click", () => {
-        dropdownToggle.textContent = label.textContent + " ▼";
+        dropdownToggle.innerHTML = `
+          ${label.textContent}
+          <span id="chooseCatArrow"><img src="dropdown-arrow.svg" alt=""></span>
+        `;
         const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
         if (tab) activateTab(tab);
         dropdownMenu.classList.remove("show");
+      
+        const arrow = document.getElementById("chooseCatArrow");
+        if (arrow) arrow.classList.remove("rotated");
       });
 
       dropdownMenu.appendChild(item);
