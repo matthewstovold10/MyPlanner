@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let categories = JSON.parse(localStorage.getItem("categories")) || ["all", "work", "school", "planner", "personal"];
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  let selectedCategory = "all";
   let currentFilter = "all";
 
   dropdownToggle.addEventListener("click", () => {
@@ -59,8 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addTaskBtn.addEventListener("click", () => {
     const text = taskInput.value.trim();
     const date = dateInput.value;
-    const category = (categorySelect?.value || "school").toLowerCase();
-
+    const category = selectedCategory || "school";
     if (text) {
       tasks.push({
         id: Date.now(),
@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Click handler for selecting category
       item.addEventListener("click", () => {
+        selectedCategory = cat.toLowerCase();
         dropdownToggle.innerHTML = `
           ${label.textContent}
           <span id="chooseCatArrow"><img src="dropdown-arrow.svg" alt=""></span>
