@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addTaskBtn = document.getElementById("addTask");
   const tasksList = document.getElementById("tasks");
   const progressFill = document.getElementById("progressFill");
-  const themeToggle = document.getElementById("themeToggle");
+  const themeToggle = document.getElementById("theme-toggle");
   const askAIToggleBtn = document.getElementById("askAIToggle");
   const aiDropdown = document.getElementById("aiDropdown");
   const askAIArrow = document.getElementById("askAIArrow");
@@ -365,9 +365,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // THEME TOGGLE
   // ------------------------------
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+
+
+  document.getElementById('theme-toggle').addEventListener('change', function() {
+  if (this.checked) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
   });
 
   // ------------------------------
