@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const dropdownToggle = document.getElementById("dropdownToggle");
   const dropdownMenu = document.getElementById("dropdownMenu");
 
-  let categories = ["all", "work", "school", "planner", "personal"];
+  let categories = JSON.parse(localStorage.getItem("categories")) || ["all", "work", "school", "planner", "personal"];
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let currentFilter = "all";
 
@@ -201,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const value = newCat.trim().toLowerCase();
         if (!categories.includes(value)) {
           categories.push(value);
+          localStorage.setItem("categories", JSON.stringify(categories));
 
           // Create tab
           const tab = document.createElement("div");
@@ -211,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tab.addEventListener("click", () => activateTab(tab));
 
           renderDropdown();
+          renderTabs();
         }
       }
     });
@@ -219,6 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function deleteCategory(cat) {
     categories = categories.filter(c => c !== cat);
+    localStorage.setItem("categories", JSON.stringify(categories));
     const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
     if (tab) tab.remove();
     renderDropdown();
@@ -227,8 +230,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   renderDropdown();
+  renderTabs();
   
   
+  function renderTabs() {
+    // Clear existing tabs except indicator
+    document.querySelectorAll(".tab-group .tab").forEach(t => t.remove());
+
+    categories.forEach((cat, index) => {
+      const tab = document.createElement("div");
+      tab.className = "tab";
+      tab.dataset.filter = cat;
+      tab.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+
+      if (index === 0) tab.classList.add("active"); // make "all" active by default
+
+      tab.addEventListener("click", () => activateTab(tab));
+      tabGroup.insertBefore(tab, indicator);
+    });
+
+    // Position indicator under the active tab
+    const activeTab = document.querySelector(".tab.active");
+    if (activeTab) moveIndicator(activeTab);
+  }
+
   // ------------------------------
   // RENDER TASKS
   // ------------------------------
@@ -388,4 +413,5 @@ document.addEventListener("DOMContentLoaded", () => {
   // INITIAL RENDER
   // ------------------------------
   renderTasks();
+  renderTabs();
 });
