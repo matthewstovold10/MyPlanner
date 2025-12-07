@@ -22,12 +22,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const indicator = document.querySelector(".tab-indicator");
   const dropdownToggle = document.getElementById("dropdownToggle");
   const dropdownMenu = document.getElementById("dropdownMenu");
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = savedTheme || (prefersDark ? "dark" : "light");
+  const header = document.querySelector("header");
+  const inputArea = document.querySelector(".input-area");
+  const introWrapper = document.getElementById("introWrapper");
+  const sentinel = document.getElementById("introSentinel");
+
+  document.documentElement.setAttribute("data-theme", theme);
+  document.getElementById("theme-toggle").checked = theme === "dark";
 
   let categories = JSON.parse(localStorage.getItem("categories")) || ["all", "work", "school", "planner", "personal"];
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let selectedCategory = "all";
   let currentFilter = "all";
-
+  let splashDismissed = false;
+  let minScrollTop = 0;
+  let introRemoved = false;
+  
   dropdownToggle.addEventListener("click", () => {
     dropdownMenu.classList.toggle("show");
   
@@ -37,6 +50,73 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   });
   
+  // ------------------------------
+  // INTRO DISMISS ON SCROLL
+  // ------------------------------
+  // ------------------------------
+
+
+
+  const onScrollCheck = () => {
+    if (splashDismissed || introRemoved) return;
+
+    const inputTop = inputArea.getBoundingClientRect().top;
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const scrollY = window.scrollY;
+
+    // Animate intro text as user scrolls
+    if (introWrapper && scrollY > 0) {
+      const maxScroll = 150; // Distance to complete fade
+      const progress = Math.min(scrollY / maxScroll, 1);
+      
+      // Move up and fade out
+      introWrapper.style.transform = `translateY(-${progress * 30}px)`;
+      introWrapper.style.opacity = 1 - progress;
+    }
+
+    // When input area reaches the header, dismiss intro
+    if (inputTop <= headerBottom + 5) { // small buffer
+      splashDismissed = true;
+      introRemoved = true;
+
+      // Remove intro wrapper with fade effect
+      if (introWrapper) {
+        introWrapper.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        introWrapper.style.opacity = '0';
+        introWrapper.style.transform = 'translateY(-30px)';
+        setTimeout(() => {
+          if (introWrapper.parentNode) {
+            introWrapper.remove();
+            document.body.classList.add('intro-dismissed');
+
+            // Wait for layout to settle, then calculate minimum scroll position
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                // Calculate where the input should stick (accounting for sentinel)
+                const sentinelHeight = parseInt(getComputedStyle(sentinel).height) || 30;
+                minScrollTop = sentinelHeight;
+                
+                // Add scroll lock listeners after everything is settled
+                window.addEventListener("scroll", lockScroll, { passive: false });
+              });
+            });
+          }
+        }, 300);
+      }
+    }
+  };
+
+  const lockScroll = () => {
+    if (!introRemoved || minScrollTop === 0) return;
+    if (window.scrollY < minScrollTop) {
+      window.scrollTo({ top: minScrollTop, behavior: 'instant' });
+    }
+  };
+
+
+
+  window.addEventListener("scroll", onScrollCheck, { passive: true });
+
 
   // ------------------------------
   // TAB ACTIVATION HELPER
@@ -78,77 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ------------------------------
-  // ADD NEW CATEGORY VIA DROPDOWN
+  // DROPDOWN FUNCTIONS
   // ------------------------------
-  /*categorySelect.addEventListener("change", () => {
-    const val = categorySelect.value;
-
-    // --- Step 2: Handle delete selection ---
-    if (val.startsWith("__delete_")) {
-      const catToDelete = val.replace("__delete_", "");
-
-      if (confirm(`Delete category "${catToDelete}"?`)) {
-        // Remove tab
-        const tab = document.querySelector(`.tab[data-filter="${catToDelete}"]`);
-        if (tab) tab.remove();
-
-        // Remove both options (category + delete)
-        const catOption = categorySelect.querySelector(`option[value="${catToDelete}"]`);
-        const delOption = categorySelect.querySelector(`option[value="__delete_${catToDelete}"]`);
-        if (catOption) catOption.remove();
-        if (delOption) delOption.remove();
-
-        // Reset filter to "all"
-        const allTab = document.querySelector('.tab[data-filter="all"]');
-        if (allTab) activateTab(allTab);
-        categorySelect.value = "school"; // or reset to default
-      } else {
-        categorySelect.value = "school"; // cancel deletion
-      }
-      return; // stop here so we don’t run addNew logic
-    }
-    
-    
-    if (categorySelect.value === "__addNew") {
-      const newCat = prompt("Enter a new category name:");
-      if (newCat && newCat.trim() !== "") {
-        const value = newCat.trim().toLowerCase();
-
-        // Insert new option before "Add Category"
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = newCat.trim();
-        categorySelect.insertBefore(option, categorySelect.querySelector("option[value='__addNew']"));
-
-        // --- Step 1: Add paired delete option ---
-        const deleteOption = document.createElement("option");
-        deleteOption.value = "__delete_" + value;
-        deleteOption.textContent = "❌ Delete " + newCat.trim();
-        categorySelect.insertBefore(deleteOption, categorySelect.querySelector("option[value='__addNew']"));
-        
-        // Select the new category
-        categorySelect.value = value;
-
-        // Create new tab
-        const tab = document.createElement("div");
-        tab.className = "tab";
-        tab.dataset.filter = value;
-        tab.textContent = newCat.trim();
-        tabGroup.insertBefore(tab, indicator);
-
-        // Ensure inactive by default
-        tab.classList.remove("active");
-        const currentActive = document.querySelector(".tab.active");
-        if (currentActive) moveIndicator(currentActive);
-
-        // Attach click handler
-        tab.addEventListener("click", () => activateTab(tab));
-      } else {
-        categorySelect.value = "school"; // reset if cancelled
-      }
-    }
-  });*/
-
+  
   function renderDropdown() {
     dropdownMenu.innerHTML = "";
 
@@ -258,46 +270,67 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // RENDER TASKS
   // ------------------------------
-  function renderTasks() {
-    tasksList.innerHTML = "";
+function renderTasks() {
+  tasksList.innerHTML = "";
 
-    tasks.forEach(task => {
-      if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) return;
+  tasks.forEach(task => {
+    if (currentFilter !== "all" && (task.category || "").toLowerCase() !== currentFilter) return;
 
-      const li = document.createElement("li");
-      li.dataset.id = task.id;
-      li.dataset.category = task.category;
-      if (task.completed) li.classList.add("completed");
+    const li = document.createElement("li");
+    li.dataset.id = task.id;
+    li.dataset.category = task.category;
+    if (task.completed) li.classList.add("completed");
 
-      const completeBtn = document.createElement("button");
-      completeBtn.textContent = "✔";
+    const completeBtn = document.createElement("button");
+    completeBtn.textContent = "✔";
 
-      const taskTextSpan = document.createElement("span");
-      taskTextSpan.textContent = task.text;
+    const taskTextSpan = document.createElement("span");
+    taskTextSpan.textContent = task.text;
 
-      const dateSpan = document.createElement("span");
-      dateSpan.textContent = task.date ? formatDate(task.date) : "";
+    const categorySpan = document.createElement("span");
+    categorySpan.textContent =
+      task.category.charAt(0).toUpperCase() + task.category.slice(1);
+    categorySpan.className = "task-category";
+
+    // Only create date span if a date exists
+    let dateSpan = null;
+    if (task.date) {
+      dateSpan = document.createElement("span");
+      dateSpan.textContent = formatDate(task.date);
       dateSpan.className = "task-date";
+    }
 
-      const categorySpan = document.createElement("span");
-      categorySpan.textContent = task.category;
-      categorySpan.className = "task-category";
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.innerHTML = `<img src="icons8-trash.svg" alt="Delete task" class="delete-icon" />`;
 
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Ｘ";
+    const flagBtn = document.createElement("button");
+    flagBtn.className = "flag-btn";
+    flagBtn.innerHTML = `<img src="icons8-flag-96.png" alt="Flag task" class="flag-icon" />`;
 
-      li.appendChild(completeBtn);
-      li.appendChild(taskTextSpan);
-      li.appendChild(dateSpan);
-      li.appendChild(categorySpan);
-      li.appendChild(deleteBtn);
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.innerHTML = `<img src="icons8-edit-96.png" alt="Edit task" class="edit-icon" />`;
 
-      tasksList.appendChild(li);
-    });
+    const actions = document.createElement("div");
+    actions.className = "task-actions";
+    actions.appendChild(editBtn);
+    actions.appendChild(flagBtn);
+    actions.appendChild(deleteBtn);
 
-    saveTasks();
-    updateProgress();
-  }
+    // Append in correct order
+    li.appendChild(completeBtn);
+    li.appendChild(taskTextSpan);
+    li.appendChild(categorySpan);
+    if (dateSpan) li.appendChild(dateSpan);
+    li.appendChild(actions);
+
+    tasksList.appendChild(li);
+  });
+
+  saveTasks();
+  updateProgress();
+}
 
   function formatDate(dateString) {
     const options = { day: "numeric", month: "short", year: "numeric" };
@@ -342,11 +375,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskId = li.dataset.id;
     const task = tasks.find(t => t.id == taskId);
 
+    const isCompleteBtn = e.target.closest("button") && e.target.closest("button").textContent.includes("✔");
+    const isDeleteBtn = e.target.closest("button")?.classList.contains("delete-btn");
+
     if (e.target.textContent === "✔") {
       task.completed = !task.completed;
       saveTasks();
       renderTasks();
-    } else if (e.target.textContent === "Ｘ") {
+    } else if (isDeleteBtn) {
       if (confirm("Are you sure you want to delete this task?")) {
         tasks = tasks.filter(t => t.id != taskId);
         saveTasks();
@@ -368,12 +404,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
 
 
-  document.getElementById('theme-toggle').addEventListener('change', function() {
-  if (this.checked) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  } else {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
+  document.getElementById("theme-toggle").addEventListener("change", function () {
+    const theme = this.checked ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   });
 
   // ------------------------------

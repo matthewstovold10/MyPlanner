@@ -8,6 +8,24 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d6efd">
     <link rel="icon" href="New Project.ico" type="image/ico">
+    <script>
+        // Execute IMMEDIATELY before anything else loads
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        // Force scroll to top
+        window.addEventListener('beforeunload', function() {
+            window.scrollTo(0, 0);
+        });
+        // Also force on load
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                window.scrollTo(0, 0);
+            }, 0);
+        });
+        // And immediately
+        window.scrollTo(0, 0);
+    </script>
 </head>
 <body>
 <div class="main-wrapper">
@@ -24,61 +42,64 @@
     </label>
 </header>
 <main class="main-content">
-<section class="intro-area">
-    <h1>Stay organised, Stay productive</h1>
-    <p >Track your tasks and goals all in one place.</p>
-</section>
-
-
-
-<section class="input-area">
-    <input type="text" id="taskInput" placeholder="Add a new task...">
-    <div class="dropdown">
-        <button id="dropdownToggle" class="general-btn">Choose Category <span id="chooseCatArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
-        <div id="dropdownMenu" class="dropdown-menu"></div>
-    </div>
-    <div class="calendar-wrap">
-        <button id="calendarBtn" class="calendar-btn">
-            <img src="icons8-calendar-24.png" alt="Calendar">
-        </button>
-        <input type="date" id="dateAdd" placeholder="Add a relevant date">
-    </div>
-    <button id="addTask" class="general-btn">Add</button>
-    <button id="askAIToggle" class="general-btn">Ask AI<span id="askAIArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
-</section>
-
-<div class="ai-dropdown" id="aiDropdown">
-    <input type="text" id="AIInput" placeholder="What do you want help with?">
-    <button id="askAISubmit" class="general-btn">Submit</button>
+<div id="introWrapper">
+    <section class="intro-area">
+        <h1>Stay organised, Stay productive</h1>
+        <p >Track your tasks and goals all in one place.</p>
+    </section>
 </div>
 
 
-<section class="ai-response">
-    <h3>AI Response:</h3>
-    <p id="AIOutput">Your AI results will appear here...</p>
-</section>
 
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-  <defs>
-    <filter id="gooey">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" /> <!-- smaller blur -->
-      <feColorMatrix in="blur" mode="matrix"
-        values="1 0 0 0 0  
-                0 1 0 0 0  
-                0 0 1 0 0  
-                0 0 0 20 -10" result="gooey" />
-      <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
-    </filter>
-  </defs>
-</svg>
-
-<section class="task-list">
-    <h2>Your Tasks</h2>
-    <section class="task-filters tab-group">
-        <span class="tab-indicator"></span>
+    <div id="introSentinel"></div>
+    <section class="input-area">
+        <input type="text" id="taskInput" placeholder="Add a new task...">
+        <div class="dropdown">
+            <button id="dropdownToggle" class="general-btn">Choose Category <span id="chooseCatArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
+            <div id="dropdownMenu" class="dropdown-menu"></div>
+        </div>
+        <div class="calendar-wrap">
+            <button id="calendarBtn" class="calendar-btn">
+                <img src="icons8-calendar-24.png" alt="Calendar">
+            </button>
+            <input type="date" id="dateAdd" placeholder="Add a relevant date">
+        </div>
+        <button id="addTask" class="general-btn">Add</button>
+        <button id="askAIToggle" class="general-btn">Search<span id="askAIArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
     </section>
-    <ul id="tasks"></ul>
-</section>
+
+    <div class="ai-dropdown" id="aiDropdown">
+        <input type="text" id="AIInput" placeholder="What do you want to search for?">
+        <button id="askAISubmit" class="general-btn">Submit</button>
+    </div>
+
+
+    <section class="ai-response">
+        <h3>AI Response:</h3>
+        <p id="AIOutput">Your AI results will appear here...</p>
+    </section>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <defs>
+        <filter id="gooey">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" /> <!-- smaller blur -->
+        <feColorMatrix in="blur" mode="matrix"
+            values="1 0 0 0 0  
+                    0 1 0 0 0  
+                    0 0 1 0 0  
+                    0 0 0 20 -10" result="gooey" />
+        <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
+        </filter>
+    </defs>
+    </svg>
+
+    <section class="task-list">
+        <h2>Your Tasks</h2>
+        <section class="task-filters tab-group">
+            <span class="tab-indicator"></span>
+        </section>
+        <ul id="tasks"></ul>
+    </section>
 
 
 
