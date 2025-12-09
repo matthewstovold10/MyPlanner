@@ -212,10 +212,10 @@ body {
 .intro-area::before, .intro-area::after {
   content: "";
   position: absolute;
-  width: 450px;
-  height: 450px;
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
-  filter: blur(1000px);
+  filter: blur(300px);
   z-index: -1;
 }
 
@@ -233,9 +233,9 @@ body {
 
 [data-theme="dark"] .intro-area::before,
 [data-theme="dark"] .intro-area::after {
-  width: 350px;
-  height: 350px;
-  filter: blur(500px);
+  width: 400px;
+  height: 400px;
+  filter: blur(400px);
 }
 
 [data-theme="dark"] .intro-area p {
