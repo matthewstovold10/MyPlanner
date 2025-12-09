@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let splashDismissed = false;
   let minScrollTop = 0;
   let introRemoved = false;
+  let draggedElement = null;
+  let draggedTaskId = null;
   
   dropdownToggle.addEventListener("click", () => {
     dropdownMenu.classList.toggle("show");
@@ -270,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // RENDER TASKS
   // ------------------------------
-function renderTasks() {
+  function renderTasks() {
   tasksList.innerHTML = "";
 
   tasks.forEach(task => {
@@ -280,6 +282,11 @@ function renderTasks() {
     li.dataset.id = task.id;
     li.dataset.category = task.category;
     if (task.completed) li.classList.add("completed");
+
+    const dragBtn = document.createElement("button");
+    dragBtn.className = "drag-btn";
+    dragBtn.innerHTML = `<img src="icons8-drag-handle-90.png" alt="Reorder task" class="drag-icon" />`;
+    dragBtn.setAttribute("draggable", "false");
 
     const completeBtn = document.createElement("button");
     completeBtn.textContent = "✔";
@@ -319,18 +326,27 @@ function renderTasks() {
     actions.appendChild(deleteBtn);
 
     // Append in correct order
+    li.appendChild(dragBtn);
     li.appendChild(completeBtn);
     li.appendChild(taskTextSpan);
     li.appendChild(categorySpan);
     if (dateSpan) li.appendChild(dateSpan);
     li.appendChild(actions);
 
+    li.setAttribute("draggable", "true");
+
+    li.addEventListener("dragstart", handleDragStart);
+    li.addEventListener("dragover", handleDragOver);
+    li.addEventListener("drop", handleDrop);
+    li.addEventListener("dragend", handleDragEnd);
+
+
     tasksList.appendChild(li);
   });
 
   saveTasks();
   updateProgress();
-}
+  }
 
   function formatDate(dateString) {
     const options = { day: "numeric", month: "short", year: "numeric" };
@@ -340,7 +356,98 @@ function renderTasks() {
   function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
+  
+  // ------------------------------
+  // DRAG AND DROP HANDLERS
+  // ------------------------------
+  function handleDragStart(e) {
+    draggedElement = e.currentTarget;
+    draggedTaskId = draggedElement.dataset.id;
+    e.currentTarget.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  }
 
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+
+    // Only allow vertical movement - ignore horizontal position
+    const afterElement = getDragAfterElement(tasksList, e.clientY);
+    const draggable = draggedElement;
+    
+    // Remove any existing drop indicator classes
+    document.querySelectorAll(".drop-above, .drop-below").forEach(el => {
+      el.classList.remove("drop-above", "drop-below");
+    });
+    
+    if (afterElement == null) {
+      // Dragging to the bottom - add gap below last item
+      const lastItem = tasksList.querySelector("li:not(.dragging):last-child");
+      if (lastItem) {
+        lastItem.classList.add("drop-below");
+      }
+      tasksList.appendChild(draggable);
+    } else {
+      // Add gap above the element we're hovering over
+      afterElement.classList.add("drop-above");
+      tasksList.insertBefore(draggable, afterElement);
+    }
+    
+    return false;
+  }
+
+  function handleDrop(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    // Reorder the tasks array based on current DOM order
+    const reorderedTasks = [];
+    const listItems = tasksList.querySelectorAll("li");
+    
+    listItems.forEach(li => {
+      const taskId = li.dataset.id;
+      const task = tasks.find(t => t.id == taskId);
+      if (task) {
+        reorderedTasks.push(task);
+      }
+    });
+
+    tasks = reorderedTasks;
+    saveTasks();
+    
+    return false;
+  }
+
+  function handleDragEnd(e) {
+    e.currentTarget.classList.remove("dragging");
+    
+    // Clean up all drop indicator classes
+    document.querySelectorAll(".drop-above, .drop-below").forEach(el => {
+      el.classList.remove("drop-above", "drop-below");
+    });
+    
+    draggedElement = null;
+    draggedTaskId = null;
+  }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll("li:not(.dragging)")];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  
+  
   // ------------------------------
   // UPDATE PROGRESS
   // ------------------------------

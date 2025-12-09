@@ -804,7 +804,8 @@ body.intro-dismissed #introSentinel {
     opacity: 0.5;
 }
 
-.task-list li button:first-child {
+/* Complete button - now the second button */
+.task-list li button:nth-child(2) {
     background-color: transparent;
     color: transparent;
     border: 2px solid #4CAF50;
@@ -819,23 +820,72 @@ body.intro-dismissed #introSentinel {
     transition: all 0.3s ease;
 }
 
-.task-list li.completed button:first-child {
+.task-list li.completed button:nth-child(2) {
     color: #4CAF50;
     background-color: #fafafa;
     border-color: #4CAF50;
 }
 
-.task-list li button:first-child:hover {
+.task-list li button:nth-child(2):hover {
     background-color: #d0f0d6;
 }
 
-[data-theme="dark"] .task-list li button:first-child:hover {
+[data-theme="dark"] .task-list li button:nth-child(2):hover {
     background-color: #243427;
 }
 
-[data-theme="dark"] .task-list li.completed button:first-child {
+[data-theme="dark"] .task-list li.completed button:nth-child(2) {
     background-color: transparent;
     color: #4CAF50;
+}
+
+.task-list li button.drag-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+  outline: none;
+  border: none;
+  cursor: grab;
+}
+
+.task-list li button.drag-btn:active {
+  cursor: grabbing;
+}
+
+.task-list li[draggable="true"] {
+  cursor: grab;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  position: relative;
+}
+
+.task-list li[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.task-list li.dragging {
+  opacity: 0.5;
+  transform: scale(1.02);
+}
+
+.drag-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  outline: none;
+}
+
+.task-list li button.drag-btn:hover {
+  background-color: #2c2c2c28;
+}
+
+[data-theme="dark"] .task-list li button.drag-btn:hover {
+  background-color: rgba(37, 35, 35, 0.83);
 }
 
 /* Button container (keeps your current sizing/hover behavior) */
