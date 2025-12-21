@@ -928,11 +928,16 @@ body.intro-dismissed #introSentinel {
   width: 20px;
   height: 20px;
   display: block;
+  opacity: 0.8;
 }
 
 /* If using inline SVG (currentColor), set color here */
 .task-list li button.delete-btn {
   color: #f45045; /* red icon color via currentColor */
+}
+
+[data-theme="dark"] .delete-icon {
+  opacity: 0.8;
 }
 
 /* Hover feedback */
@@ -970,6 +975,11 @@ body.intro-dismissed #introSentinel {
   height: 20px;
   display: block;
   outline: none;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .flag-icon {
+  opacity: 0.8;
 }
 
 /* Optional hover effect */
@@ -1001,10 +1011,12 @@ body.intro-dismissed #introSentinel {
   height: 20px;
   display: block;
   outline: none;
+  opacity: 0.8;
 }
 
 [data-theme="dark"] .edit-icon {
   filter: brightness(0) invert(1);
+  opacity: 0.8;
 }
 
 .task-list li button.edit-btn:hover {
@@ -1032,6 +1044,15 @@ body.intro-dismissed #introSentinel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.task-list li.completed button:nth-child(2) {
+  background-color: transparent !important;
+}
+
+.task-list li button:nth-child(2):focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* ------------------------------
