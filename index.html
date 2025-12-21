@@ -1,115 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyTechPlanner</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d6efd">
-    <link rel="icon" href="icons/icon-512.png" type="image/ico">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0d6efd" />
+    <link rel="icon" href="icons/icon-512.png" type="image/ico" />
     <script>
-        // Execute IMMEDIATELY before anything else loads
-        if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
-        }
-        // Force scroll to top
-        window.addEventListener('beforeunload', function() {
-            window.scrollTo(0, 0);
-        });
-        // Also force on load
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                window.scrollTo(0, 0);
-            }, 0);
-        });
-        // And immediately
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.addEventListener("beforeunload", function () {
         window.scrollTo(0, 0);
+      });
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          window.scrollTo(0, 0);
+        }, 0);
+      });
+      window.scrollTo(0, 0);
     </script>
-</head>
-<body>
-<div class="main-wrapper">
-<header>
-    <h1>MyTechPlanner </h1>
-    <section class="progress">
-    <div class="progress-bar">
-        <div id="progressFill"></div>
-    </div>
-    </section>
-    <label class="theme-switch">
-        <input type="checkbox" id="theme-toggle" />
-        <span class="slider"></span>
-    </label>
-</header>
-<main class="main-content">
-<div id="introWrapper">
-    <section class="intro-area">
-        <h1>Stay organised, Stay productive</h1>
-        <p >Track your tasks and goals all in one place.</p>
-    </section>
-</div>
-
-
-
-    <div id="introSentinel"></div>
-    <section class="input-area">
-        <input type="text" id="taskInput" placeholder="Add a new task...">
-        <div class="dropdown">
-            <button id="dropdownToggle" class="general-btn">Choose Category <span id="chooseCatArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
-            <div id="dropdownMenu" class="dropdown-menu"></div>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <header>
+        <h1>MyTechPlanner</h1>
+        <section class="progress">
+          <div class="progress-bar">
+            <div id="progressFill"></div>
+          </div>
+        </section>
+        <label class="theme-switch">
+          <input type="checkbox" id="theme-toggle" />
+          <span class="slider"></span>
+        </label>
+      </header>
+      <main class="main-content">
+        <div id="introWrapper">
+          <section class="intro-area">
+            <h1>Stay organised, Stay productive</h1>
+            <p>Track your tasks and goals all in one place.</p>
+          </section>
         </div>
-        <div class="calendar-wrap">
-            <button id="calendarBtn" class="calendar-btn">
-                <img src="icons8-calendar-24.png" alt="Calendar">
+
+        <div id="introSentinel"></div>
+        <section class="input-area">
+          <input type="text" id="taskInput" placeholder="Add a new task..." />
+          <div class="dropdown">
+            <button id="dropdownToggle" class="general-btn">
+              Choose Category
+              <span id="chooseCatArrow"
+                ><img src="img/dropdown-arrow.svg" alt=""
+              /></span>
             </button>
-            <input type="date" id="dateAdd" placeholder="Add a relevant date">
+            <div id="dropdownMenu" class="dropdown-menu"></div>
+          </div>
+          <div class="calendar-wrap">
+            <button id="calendarBtn" class="calendar-btn">
+              <img src="img/icons8-calendar-24.png" alt="Calendar" />
+            </button>
+            <input type="date" id="dateAdd" placeholder="Add a relevant date" />
+          </div>
+          <button id="addTask" class="general-btn">Add</button>
+          <button id="askAIToggle" class="general-btn">
+            Search<span id="askAIArrow"
+              ><img src="img/dropdown-arrow.svg" alt=""
+            /></span>
+          </button>
+        </section>
+
+        <div class="ai-dropdown" id="aiDropdown">
+          <input
+            type="text"
+            id="AIInput"
+            placeholder="What do you want to search for?"
+          />
+          <button id="askAISubmit" class="general-btn">Search</button>
         </div>
-        <button id="addTask" class="general-btn">Add</button>
-        <button id="askAIToggle" class="general-btn">Search<span id="askAIArrow"><img src="dropdown-arrow.svg" alt=""></span></button>
-    </section>
 
-    <div class="ai-dropdown" id="aiDropdown">
-        <input type="text" id="AIInput" placeholder="What do you want to search for?">
-        <button id="askAISubmit" class="general-btn">Submit</button>
-    </div>
+        <section class="ai-response">
+          <h3>AI Response:</h3>
+          <p id="AIOutput">Your AI results will appear here...</p>
+        </section>
 
-
-    <section class="ai-response">
-        <h3>AI Response:</h3>
-        <p id="AIOutput">Your AI results will appear here...</p>
-    </section>
-
-    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <defs>
-        <filter id="gooey">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" /> <!-- smaller blur -->
-        <feColorMatrix in="blur" mode="matrix"
-            values="1 0 0 0 0  
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+          <defs>
+            <filter id="gooey">
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="6"
+                result="blur"
+              />
+              <!-- smaller blur -->
+              <feColorMatrix
+                in="blur"
+                mode="matrix"
+                values="1 0 0 0 0  
                     0 1 0 0 0  
                     0 0 1 0 0  
-                    0 0 0 20 -10" result="gooey" />
-        <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
-        </filter>
-    </defs>
-    </svg>
+                    0 0 0 20 -10"
+                result="gooey"
+              />
+              <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+            </filter>
+          </defs>
+        </svg>
 
-    <section class="task-list">
-        <h2>Your Tasks</h2>
-        <section class="task-filters tab-group">
+        <section class="task-list">
+          <h2>Your Tasks</h2>
+          <section class="task-filters tab-group">
             <span class="tab-indicator"></span>
+          </section>
+          <ul id="tasks"></ul>
         </section>
-        <ul id="tasks"></ul>
-    </section>
+      </main>
+      <footer class="site-footer"></footer>
+    </div>
 
-
-
-
-</main>
-    <footer class="site-footer">
-      <p>© MyTechPlanner</p>
-    </footer>
-  </div>
-
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

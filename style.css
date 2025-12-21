@@ -1,14 +1,27 @@
 /* ------------------------------
    General Styles
 ------------------------------ */
-body, header, .intro-area, .general-btn, .input-area, 
-.task-list li, .calendar-btn, .ai-dropdown, .tab-group, .tab-indicator {
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+header,
+.intro-area,
+.general-btn,
+.input-area,
+.task-list li,
+.calendar-btn,
+.ai-dropdown,
+.tab-group,
+.tab-indicator {
+  transition: background-color 0.4s ease, color 0.4s ease,
+    border-color 0.4s ease;
 }
 
 [data-theme="dark"] body {
-    background-color: #1e1e1e;
-    color: #f0f0f0;
+  background-color: #1e1e1e;
+  color: #f0f0f0;
 }
 
 body {
@@ -21,7 +34,7 @@ body {
   overflow-x: hidden;
 }
 
-[data-theme="dark"] body::before, 
+[data-theme="dark"] body::before,
 [data-theme="dark"] body::after {
   content: "";
   position: fixed;
@@ -51,7 +64,7 @@ h1 {
 }
 
 :root {
-    color-scheme: light dark;
+  color-scheme: light dark;
 }
 
 .theme-switch {
@@ -70,7 +83,10 @@ h1 {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #ccc;
   transition: 0.4s;
   border-radius: 20px;
@@ -79,8 +95,10 @@ h1 {
 .slider:before {
   position: absolute;
   content: "";
-  height: 22px; width: 22px;
-  left: 4px; bottom: 4px;
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
   background-color: white;
   transition: 0.4s;
   border-radius: 50%;
@@ -95,7 +113,8 @@ h1 {
 }
 
 /* Base sizing */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0 20px;
@@ -116,8 +135,7 @@ html, body {
   padding-bottom: 20px;
 }
 
-
-.main-content::before, 
+.main-content::before,
 .main-content::after {
   content: "";
   position: fixed;
@@ -165,12 +183,12 @@ header {
   padding: 20px;
   margin: 0 -40px;
   background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] header {
-    background: linear-gradient(90deg, #1e1e1e, #3a3a3a);
-    color: #f0f0f0;
+  background: linear-gradient(90deg, #1e1e1e, #3a3a3a);
+  color: #f0f0f0;
 }
 
 body {
@@ -200,16 +218,17 @@ body {
 }
 
 .intro-area h1 {
-    margin-bottom: 10px;
-    font-size: 40px;
+  margin-bottom: 10px;
+  font-size: 40px;
 }
 
 .intro-area p {
-    font-size: 18px;
-    color: #555;
+  font-size: 18px;
+  color: #555;
 }
 
-.intro-area::before, .intro-area::after {
+.intro-area::before,
+.intro-area::after {
   content: "";
   position: absolute;
   width: 500px;
@@ -246,35 +265,35 @@ body {
    General Buttons
 ------------------------------ */
 .general-btn {
-    flex: 0 0 auto;
-    cursor: pointer;
-    border: none;
-    background: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-left: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+  flex: 0 0 auto;
+  cursor: pointer;
+  border: none;
+  background: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-left: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .general-btn:hover {
-    background-color: #237627;
+  background-color: #237627;
 }
 
 [data-theme="dark"] .general-btn {
-    background-color: #3a7afe;
+  background-color: #3a7afe;
 }
 
 [data-theme="dark"] .general-btn:hover {
-    background-color: #103fa6;
+  background-color: #103fa6;
 }
 
 /* ------------------------------
    AI Section
 ------------------------------ */
 .ai-input button {
-    padding: 10px;
+  padding: 10px;
 }
 
 .ai-dropdown {
@@ -293,21 +312,15 @@ body {
   margin: 0;
   border: none;
   box-shadow: none;
-  transition: 
-    max-height 0.4s ease,
-    opacity 0.3s ease,
-    padding 0.3s ease,
-    border 0.3s ease,
-    box-shadow 0.3s ease;
-  
-    
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease,
+    border 0.3s ease, box-shadow 0.3s ease;
 
   margin-top: 20px;
   margin-bottom: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 0 15px;
 }
 
@@ -322,14 +335,9 @@ body {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: 
-    max-height 0.4s ease,
-    opacity 0.3s ease,
-    padding 0.3s ease,
-    border 0.3s ease,
-    box-shadow 0.3s ease;
-  
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease,
+    border 0.3s ease, box-shadow 0.3s ease;
 }
 
 [data-theme="dark"] .ai-dropdown {
@@ -338,36 +346,40 @@ body {
   color: #f0f0f0;
 }
 
-
 .ai-response {
-    display: none;
-    margin-bottom: 20px;
-    margin-top: 10px;
-    padding: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: none;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.ai-response.show{
-    display: block;
+.ai-response.show {
+  display: block;
 }
 
 [data-theme="dark"] .ai-response {
   border-color: #444;
   background-color: #2c2c2c;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.ai-dropdown input{
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+.ai-dropdown input {
+  transition: background-color 0.4s ease, color 0.4s ease,
+    border-color 0.4s ease;
   flex: 1;
   padding: 10px;
   font-size: 15px;
   outline: none;
   border: 1px solid #ddd;
   border-radius: 5px;
+}
+
+.ai-dropdown input:focus {
+  border-color: #4caf50;
 }
 
 [data-theme="dark"] .ai-dropdown input {
@@ -402,7 +414,7 @@ body {
   transition: transform 0.3s ease;
 }
 
-#askAIArrow.rotated img{
+#askAIArrow.rotated img {
   transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
@@ -427,7 +439,7 @@ body {
   padding: 15px;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #introSentinel {
@@ -439,10 +451,9 @@ body.intro-dismissed #introSentinel {
   height: 30px; /* stable gap after dismissal */
 }
 
-
-
 #taskInput {
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  transition: background-color 0.4s ease, color 0.4s ease,
+    border-color 0.4s ease;
   flex: 1 1 auto;
   min-width: 200px;
   max-width: 100%;
@@ -468,7 +479,7 @@ body.intro-dismissed #introSentinel {
   text-align: left;
 }
 
-#chooseCatArrow img{
+#chooseCatArrow img {
   width: 25px;
   height: auto;
   display: block;
@@ -480,12 +491,12 @@ body.intro-dismissed #introSentinel {
   transition: transform 0.3s ease;
 }
 
-[data-theme="dark"] #chooseCatArrow img{
+[data-theme="dark"] #chooseCatArrow img {
   filter: brightness(0) invert(1);
 }
 
 #dropdownToggle:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] #dropdownToggle {
@@ -494,7 +505,7 @@ body.intro-dismissed #introSentinel {
 }
 
 [data-theme="dark"] #dropdownToggle:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dropdown {
@@ -531,11 +542,11 @@ body.intro-dismissed #introSentinel {
   display: block;
 }
 
-[data-theme="dark"] .dropdown-item:hover{
+[data-theme="dark"] .dropdown-item:hover {
   background: #2c2c2c;
 }
 
-[data-theme="dark"] .dropdown-menu{
+[data-theme="dark"] .dropdown-menu {
   background: #1a1a1a;
   border-color: #2c2c2c;
 }
@@ -567,7 +578,7 @@ body.intro-dismissed #introSentinel {
   text-align: center;
   padding: 6px 10px;
   cursor: pointer;
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: bold;
 }
 
@@ -575,7 +586,7 @@ body.intro-dismissed #introSentinel {
   background: #f0f0f0;
 }
 
-[data-theme="dark"] .dropdown-add:hover{
+[data-theme="dark"] .dropdown-add:hover {
   background: #2c2c2c;
 }
 
@@ -596,8 +607,9 @@ body.intro-dismissed #introSentinel {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.4s ease, color 0.4s ease,
+    border-color 0.4s ease;
   padding: 0;
   margin-right: -4px;
 }
@@ -655,7 +667,7 @@ body.intro-dismissed #introSentinel {
 [data-theme="dark"] .input-area {
   border-color: #444;
   background-color: #2c2c2c;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .input-area input {
@@ -668,7 +680,7 @@ body.intro-dismissed #introSentinel {
 }
 
 .input-area input:focus {
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 [data-theme="dark"] .input-area input {
@@ -721,7 +733,7 @@ body.intro-dismissed #introSentinel {
   bottom: 4px;
   left: 0;
   width: 0;
-  background: #4CAF50;
+  background: #4caf50;
   transition: background-color 0.4s ease;
   border-radius: 30px;
   transition: all 0.3s ease;
@@ -745,28 +757,27 @@ body.intro-dismissed #introSentinel {
 }
 
 .task-list ul {
-    list-style-type: none;
-    padding-left: 0;
+  list-style-type: none;
+  padding-left: 0;
 }
 
 .task-list li {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 8px 10px;
-    margin-bottom: 5px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .task-list li span {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    flex-grow: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-grow: 1 1 auto;
 }
 
 .task-category {
@@ -779,64 +790,62 @@ body.intro-dismissed #introSentinel {
   border-left: none; /* no extra line */
 }
 
-
-
 [data-theme="dark"] .task-list li {
-    background-color: #2c2c2c;
+  background-color: #2c2c2c;
 }
 
 .task-list li button {
-    margin-left: 0;
-    background-color: transparent;
-    outline: none;
-    box-shadow: none;
-    border: none;
+  margin-left: 0;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
 
 .task-list li button:focus {
-    outline: 2px solid #4CAF50;
-    outline-offset: 2px;
+  outline: 2px solid #4caf50;
+  outline-offset: 2px;
 }
 
 .task-list li.completed span {
-    position: relative;
-    display: inline-block;
-    opacity: 0.5;
+  position: relative;
+  display: inline-block;
+  opacity: 0.5;
 }
 
 /* Complete button - now the second button */
 .task-list li button:nth-child(2) {
-    background-color: transparent;
-    color: transparent;
-    border: 2px solid #4CAF50;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: transparent;
+  color: transparent;
+  border: 2px solid #4caf50;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .task-list li.completed button:nth-child(2) {
-    color: #4CAF50;
-    background-color: #fafafa;
-    border-color: #4CAF50;
+  color: #4caf50;
+  background-color: #fafafa;
+  border-color: #4caf50;
 }
 
 .task-list li button:nth-child(2):hover {
-    background-color: #d0f0d6;
+  background-color: #d0f0d6;
 }
 
 [data-theme="dark"] .task-list li button:nth-child(2):hover {
-    background-color: #243427;
+  background-color: #243427;
 }
 
 [data-theme="dark"] .task-list li.completed button:nth-child(2) {
-    background-color: transparent;
-    color: #4CAF50;
+  background-color: transparent;
+  color: #4caf50;
 }
 
 .task-list li button.drag-btn {
@@ -888,13 +897,24 @@ body.intro-dismissed #introSentinel {
   background-color: rgba(37, 35, 35, 0.83);
 }
 
+.drag-btn img {
+  pointer-events: none;
+}
+
+.task-list li[draggable="true"] {
+  cursor: grab;
+}
+.task-list li[draggable="true"]:active {
+  cursor: grabbing;
+}
+
 /* Button container (keeps your current sizing/hover behavior) */
 .task-list li button:last-child.delete-btn {
   width: 30px;
   height: 30px;
   padding: 0;
   margin-left: auto;
-  background: transparent;     /* remove red background block */
+  background: transparent; /* remove red background block */
   outline: none;
   border-radius: 5px;
   display: inline-flex;
@@ -910,7 +930,6 @@ body.intro-dismissed #introSentinel {
   display: block;
 }
 
-
 /* If using inline SVG (currentColor), set color here */
 .task-list li button.delete-btn {
   color: #f45045; /* red icon color via currentColor */
@@ -924,8 +943,7 @@ body.intro-dismissed #introSentinel {
 
 [data-theme="dark"] .task-list li button.delete-btn:hover {
   transform: scale(1.1);
-  background-color: rgba(37, 35, 35, 0.83)
-;
+  background-color: rgba(37, 35, 35, 0.83);
 }
 
 /* Dark theme tweaks */
@@ -945,9 +963,7 @@ body.intro-dismissed #introSentinel {
   transition: transform 0.15s ease;
   outline: none;
   border: none;
-
 }
-
 
 .flag-icon {
   width: 20px;
@@ -978,10 +994,9 @@ body.intro-dismissed #introSentinel {
   transition: transform 0.15s ease;
   outline: none;
   border: none;
-
 }
 
-.edit-icon{
+.edit-icon {
   width: 20px;
   height: 20px;
   display: block;
@@ -999,9 +1014,8 @@ body.intro-dismissed #introSentinel {
 
 [data-theme="dark"] .task-list li button.edit-btn:hover {
   transform: scale(1.1);
-  background-color: rgba(37, 35, 35, 0.83)
+  background-color: rgba(37, 35, 35, 0.83);
 }
-
 
 .task-actions {
   margin-left: auto; /* pushes the whole group to the right */
@@ -1037,8 +1051,12 @@ header .progress {
 }
 
 @keyframes pulse {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.5); }
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.5);
+  }
 }
 
 header .progress-bar {
@@ -1053,12 +1071,12 @@ header .progress-bar {
 #progressFill {
   height: 100%;
   width: 0%;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   transition: width 0.3s ease;
 }
 
 [data-theme="dark"] #progressFill {
-    background-color: #3a7afe;
+  background-color: #3a7afe;
 }
 
 .task-filters .tab:not(.active) {
