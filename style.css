@@ -23,10 +23,6 @@ header,
   display: flex;
 }
 
-.signup-overlay {
-  display: none !important;
-}
-
 /* Overlay background blur */
 body.overlay-active .main-wrapper {
   filter: blur(3px) brightness(1);
