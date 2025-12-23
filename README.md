@@ -1,4 +1,4 @@
-# MyTechPlanner
+# MyPlanner
 
 A clean, simple task + goals dashboard built using **HTML, CSS and JavaScript**, designed to demonstrate:
 
@@ -7,8 +7,6 @@ A clean, simple task + goals dashboard built using **HTML, CSS and JavaScript**,
 - LocalStorage data handling
 - Light/dark mode theming
 - Basic JavaScript logic
-
-This project was created as part of my preparation for applying to the **Accenture Software Engineering Apprenticeship** in Newcastle.
 
 ## Features
 - Add and complete tasks
@@ -21,5 +19,6 @@ This project was created as part of my preparation for applying to the **Accentu
 - Categories (school, work, personal)
 - Login system (using Firebase)
 - Goals section
+
 
 git commit -m "Updated task input layout"
