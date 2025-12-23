@@ -907,11 +907,177 @@ document.addEventListener("DOMContentLoaded", () => {
   // SERVICE WORKER
   // ------------------------------
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .register("service-worker.js")
-      .then(() => console.log("Service Worker registered"));
-  }
+    let refreshing = false;
 
+    // Reload page when new service worker takes control
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      console.log("[Page] New service worker activated, reloading...");
+      refreshing = true;
+      window.location.reload();
+    });
+
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((registration) => {
+          console.log("[Page] Service Worker registered successfully");
+
+          // Check for updates every 30 seconds
+          setInterval(() => {
+            registration.update();
+          }, 30000);
+
+          // Handle updates
+          registration.addEventListener("updatefound", () => {
+            const newWorker = registration.installing;
+            console.log("[Page] New service worker found");
+
+            newWorker.addEventListener("statechange", () => {
+              if (
+                newWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
+                // New version available
+                console.log("[Page] New version ready");
+                showUpdateBanner();
+              }
+            });
+          });
+
+          // Check if there's already an update waiting
+          if (registration.waiting) {
+            console.log("[Page] Update already waiting");
+            showUpdateBanner();
+          }
+        })
+        .catch((error) => {
+          console.error("[Page] Service Worker registration failed:", error);
+        });
+    });
+
+    // Show update notification banner
+    function showUpdateBanner() {
+      // Don't show multiple banners
+      if (document.getElementById("update-banner")) return;
+
+      const banner = document.createElement("div");
+      banner.id = "update-banner";
+      banner.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #4caf50, #45a049);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      z-index: 10000;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      max-width: 90%;
+    `;
+
+      // Check theme for dark mode styling
+      const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        banner.style.background = "linear-gradient(135deg, #3a7afe, #1e5fcf)";
+      }
+
+      banner.innerHTML = `
+      <span style="flex: 1;">
+        <strong>✨ New version available!</strong>
+      </span>
+      <button id="updateNowBtn" style="
+        background: white;
+        color: ${isDark ? "#3a7afe" : "#4caf50"};
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      ">
+        Update Now
+      </button>
+      <button id="dismissUpdateBtn" style="
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background 0.2s ease;
+      ">
+        Later
+      </button>
+    `;
+
+      document.body.appendChild(banner);
+
+      // Add animation styles
+      if (!document.getElementById("update-banner-styles")) {
+        const style = document.createElement("style");
+        style.id = "update-banner-styles";
+        style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(-50%) translateY(-100px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOut {
+          from {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-50%) translateY(-100px);
+            opacity: 0;
+          }
+        }
+        #updateNowBtn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        #dismissUpdateBtn:hover {
+          background: rgba(255,255,255,0.2);
+        }
+      `;
+        document.head.appendChild(style);
+      }
+
+      // Update button click
+      document.getElementById("updateNowBtn").addEventListener("click", () => {
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (reg && reg.waiting) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+
+      // Dismiss button click
+      document
+        .getElementById("dismissUpdateBtn")
+        .addEventListener("click", () => {
+          banner.style.animation = "slideOut 0.3s ease forwards";
+          setTimeout(() => banner.remove(), 300);
+        });
+    }
+  }
   // ------------------------------
   // INITIAL SETUP
   // ------------------------------
