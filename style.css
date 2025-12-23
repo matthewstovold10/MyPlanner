@@ -19,9 +19,295 @@ header,
     border-color 0.4s ease;
 }
 
+/* Overlay background blur */
+body.overlay-active .main-wrapper {
+  filter: blur(3px) brightness(1);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Login overlay container */
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Login box styling */
+.login-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+[data-theme="dark"] .login-box {
+  background: #2c2c2c;
+  color: #fff;
+}
+
 [data-theme="dark"] body {
   background-color: #1e1e1e;
   color: #f0f0f0;
+}
+
+[data-theme="dark"] .login-box input[type="text"],
+[data-theme="dark"] .login-box input[type="password"] {
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: white;
+}
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  width: 100%;
+  padding: 12px 1px;
+  margin: 10px 0 18px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background: #fafafa;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.login-row {
+  display: flex;
+  flex-direction: column; /* stack username row above password row */
+  gap: 15px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-row label {
+  width: 80px; /* keeps labels aligned */
+  font-weight: bold;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  width: 50%; /* or 45%, or a fixed px width */
+}
+
+.field label {
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.field input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.login-box .wrap button {
+  width: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-box .wrap button:hover {
+  background: #237627;
+}
+
+[data-theme="dark"] .login-box .wrap button {
+  background: #3a7afe;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .login-box .wrap button:hover {
+  background: #103fa6;
+}
+
+.login-box .guest-btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.option {
+  background: #237627;
+  color: #fff;
+  text-align: center;
+  margin: 20px -30px -30px;
+  padding: 20px 30px 30px;
+  border-radius: 0 0 12px 12px;
+}
+
+[data-theme="dark"] .option {
+  background: #103fa6;
+  color: #fff;
+}
+
+.option p {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  padding-bottom: 10px;
+}
+
+.option a {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.option a:hover {
+  color: #f0f0f0;
+}
+
+.guest-btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #4caf50;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.guest-btn:hover {
+  background: #f0f0f0;
+}
+
+.signup-overlay {
+  display: none;
+}
+
+.signup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: transparent;
+  display: none; /* hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.signup-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.signup-box .wrap button {
+  width: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .signup-box {
+  background: #2c2c2c;
+  color: #fff;
+}
+
+.signup-box input[type="text"],
+.signup-box input[type="password"],
+.signup-box input[type="repeatpassword"] {
+  width: 100%;
+  padding: 12px 1px;
+  margin: 10px 0 18px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background: #fafafa;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+[data-theme="dark"] .signup-box input[type="text"],
+[data-theme="dark"] .signup-box input[type="password"],
+[data-theme="dark"] .signup-box input[type="repeatpassword"] {
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: white;
+}
+
+.signup-row {
+  display: flex;
+  flex-direction: column; /* stack username row above password row */
+  gap: 15px;
+}
+
+.signup-box .wrap button:hover {
+  background: #237627;
+}
+
+.signup-box .guest-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .signup-box .wrap button {
+  background: #3a7afe;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .signup-box .wrap button:hover {
+  background: #103fa6;
 }
 
 :root {
@@ -134,7 +420,6 @@ body {
 
 .main-wrapper {
   min-height: 100vh;
-  display: flex;
   flex-direction: column;
 }
 

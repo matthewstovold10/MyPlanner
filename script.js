@@ -32,15 +32,37 @@ document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", theme);
   document.getElementById("theme-toggle").checked = theme === "dark";
 
-  let categories = JSON.parse(localStorage.getItem("categories")) || [
-    "all",
-    "work",
-    "school",
-    "planner",
-    "personal",
-  ];
+  // Get current user
+  let currentUser = localStorage.getItem("currentUser") || "guest";
 
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  // Load user-specific data
+  function loadUserData() {
+    currentUser = localStorage.getItem("currentUser") || "guest";
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (currentUser === "guest") {
+      // Guest gets a fresh session each time
+      categories = ["all", "work", "school", "planner", "personal"];
+      tasks = [];
+    } else if (users[currentUser]) {
+      // Load user's saved data
+      categories = users[currentUser].categories || [
+        "all",
+        "work",
+        "school",
+        "planner",
+        "personal",
+      ];
+      tasks = users[currentUser].tasks || [];
+    } else {
+      // Fallback
+      categories = ["all", "work", "school", "planner", "personal"];
+      tasks = [];
+    }
+  }
+
+  let categories = [];
+  loadUserData();
   let selectedCategory = "all";
   let currentFilter = "all";
   let splashDismissed = false;
@@ -355,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const value = newCat.trim().toLowerCase();
         if (!categories.includes(value)) {
           categories.push(value);
-          localStorage.setItem("categories", JSON.stringify(categories));
+          saveCategoriesOnly();
 
           applyCategoryStyles(value);
 
@@ -376,12 +398,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function deleteCategory(cat) {
     categories = categories.filter((c) => c !== cat);
-    localStorage.setItem("categories", JSON.stringify(categories));
+    saveCategoriesOnly();
     const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
     if (tab) tab.remove();
     renderDropdown();
     const allTab = document.querySelector('.tab[data-filter="all"]');
     if (allTab) activateTab(allTab);
+  }
+
+  // Save categories separately
+  function saveCategoriesOnly() {
+    currentUser = localStorage.getItem("currentUser") || "guest";
+
+    if (currentUser === "guest") {
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (users[currentUser]) {
+      users[currentUser].categories = categories;
+      localStorage.setItem("users", JSON.stringify(users));
+    }
   }
 
   // ------------------------------
@@ -510,7 +548,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    currentUser = localStorage.getItem("currentUser") || "guest";
+
+    if (currentUser === "guest") {
+      // Don't save guest tasks permanently
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if (users[currentUser]) {
+      users[currentUser].tasks = tasks;
+      users[currentUser].categories = categories;
+      localStorage.setItem("users", JSON.stringify(users));
+    }
   }
 
   function autoSizeSelect(selectEl) {
@@ -885,5 +936,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeTab) {
       moveIndicator(activeTab);
     }
+  });
+
+  // Listen for user login event
+  window.addEventListener("userLoggedIn", () => {
+    loadUserData();
+    renderDropdown();
+    renderTabs();
+
+    categories.forEach((cat) => {
+      if (cat !== "") applyCategoryStyles(cat);
+    });
+
+    const activeTab = document.querySelector(".tab.active");
+    if (activeTab) {
+      indicator.className = "tab-indicator";
+      indicator.classList.add(`cat-${activeTab.dataset.filter}`);
+      moveIndicator(activeTab);
+    }
+
+    renderTasks();
   });
 });
