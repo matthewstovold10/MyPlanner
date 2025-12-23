@@ -19,6 +19,14 @@ header,
     border-color 0.4s ease;
 }
 
+.login-overlay {
+  display: flex;
+}
+
+.signup-overlay {
+  display: none !important;
+}
+
 /* Overlay background blur */
 body.overlay-active .main-wrapper {
   filter: blur(3px) brightness(1);
