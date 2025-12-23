@@ -30,13 +30,23 @@
         <form id="loginForm">
           <div class="login-row">
             <div class="form-row">
-              <label for="first">Username:</label>
-              <input type="text" id="first" name="first" required />
+              <label for="loginUsername">Username:</label>
+              <input
+                type="text"
+                id="loginUsername"
+                name="loginUsername"
+                required
+              />
             </div>
 
             <div class="form-row">
-              <label for="password">Password:</label>
-              <input type="password" id="password" name="password" required />
+              <label for="loginPassword">Password:</label>
+              <input
+                type="password"
+                id="loginPassword"
+                name="loginPassword"
+                required
+              />
             </div>
           </div>
 
@@ -64,21 +74,31 @@
         <form id="signupForm">
           <div class="signup-row">
             <div class="form-row">
-              <label for="first">Username:</label>
-              <input type="text" id="first" name="first" required />
+              <label for="signupUsername">Username:</label>
+              <input
+                type="text"
+                id="signupUsername"
+                name="signupUsername"
+                required
+              />
             </div>
 
             <div class="form-row">
-              <label for="password">Password:</label>
-              <input type="password" id="password" name="password" required />
-            </div>
-
-            <div class="form-row">
-              <label for="repeatpassword">Repeat Password:</label>
+              <label for="signupPassword">Password:</label>
               <input
                 type="password"
-                id="repeatpassword"
-                name="repeatpassword"
+                id="signupPassword"
+                name="signupPassword"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <label for="signupRepeatPassword">Repeat Password:</label>
+              <input
+                type="password"
+                id="signupRepeatPassword"
+                name="signupRepeatPassword"
                 required
               />
             </div>
@@ -247,12 +267,8 @@
       // Handle login
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const username = document
-          .querySelector('#loginForm input[name="first"]')
-          .value.trim();
-        const password = document.querySelector(
-          '#loginForm input[name="password"]'
-        ).value;
+        const username = document.getElementById("loginUsername").value.trim();
+        const password = document.getElementById("loginPassword").value;
 
         const users = getUsers();
 
@@ -263,17 +279,12 @@
         }
       });
 
-      // Handle signup
       signupForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const username = document
-          .querySelector('#signupForm input[name="first"]')
-          .value.trim();
-        const password = document.querySelector(
-          '#signupForm input[name="password"]'
-        ).value;
-        const repeatPassword = document.querySelector(
-          '#signupForm input[name="repeatpassword"]'
+        const username = document.getElementById("signupUsername").value.trim();
+        const password = document.getElementById("signupPassword").value;
+        const repeatPassword = document.getElementById(
+          "signupRepeatPassword"
         ).value;
 
         if (password !== repeatPassword) {
