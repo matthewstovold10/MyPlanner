@@ -919,7 +919,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("load", () => {
       navigator.serviceWorker
-        .register("/myplanner/service-worker.js")
+        .register("/MyPlanner/service-worker.js")
         .then((registration) => {
           console.log("[Page] Service Worker registered successfully");
 
