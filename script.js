@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const AIInput = document.getElementById("AIInput");
   const AIOutput = document.getElementById("AIOutput");
   const responseSection = document.querySelector(".ai-response");
-  const categorySelect = document.getElementById("categorySelect");
   const tabGroup = document.querySelector(".tab-group");
   const indicator = document.querySelector(".tab-indicator");
   const dropdownToggle = document.getElementById("dropdownToggle");
@@ -40,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "planner",
     "personal",
   ];
+
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let selectedCategory = "all";
   let currentFilter = "all";
@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let draggedElement = null;
   let draggedTaskId = null;
 
+  // ------------------------------
+  // MAIN CATEGORY DROPDOWN (TOP INPUT)
+  // ------------------------------
   dropdownToggle.addEventListener("click", () => {
     dropdownMenu.classList.toggle("show");
 
@@ -64,8 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // INTRO DISMISS ON SCROLL
   // ------------------------------
-  // ------------------------------
-
   const onScrollCheck = () => {
     if (splashDismissed || introRemoved) return;
 
@@ -73,23 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerBottom = header.getBoundingClientRect().bottom;
     const scrollY = window.scrollY;
 
-    // Animate intro text as user scrolls
     if (introWrapper && scrollY > 0) {
-      const maxScroll = 150; // Distance to complete fade
+      const maxScroll = 150;
       const progress = Math.min(scrollY / maxScroll, 1);
-
-      // Move up and fade out
       introWrapper.style.transform = `translateY(-${progress * 30}px)`;
       introWrapper.style.opacity = 1 - progress;
     }
 
-    // When input area reaches the header, dismiss intro
     if (inputTop <= headerBottom + 5) {
-      // small buffer
       splashDismissed = true;
       introRemoved = true;
 
-      // Remove intro wrapper with fade effect
       if (introWrapper) {
         introWrapper.style.transition =
           "opacity 0.3s ease, transform 0.3s ease";
@@ -100,15 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
             introWrapper.remove();
             document.body.classList.add("intro-dismissed");
 
-            // Wait for layout to settle, then calculate minimum scroll position
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                // Calculate where the input should stick (accounting for sentinel)
                 const sentinelHeight =
                   parseInt(getComputedStyle(sentinel).height) || 30;
                 minScrollTop = sentinelHeight;
 
-                // Add scroll lock listeners after everything is settled
                 window.addEventListener("scroll", lockScroll, {
                   passive: false,
                 });
@@ -130,13 +122,147 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("scroll", onScrollCheck, { passive: true });
 
   // ------------------------------
-  // TAB ACTIVATION HELPER
+  // COLOR GENERATION
+  // ------------------------------
+  const predefinedColors = [
+    {
+      light: "hsl(210, 70%, 85%)",
+      lightBorder: "hsl(210, 70%, 55%)",
+      dark: "hsla(210, 70%, 40%, 0.25)",
+      darkBorder: "hsl(210, 70%, 60%)",
+    },
+    {
+      light: "hsl(350, 70%, 85%)",
+      lightBorder: "hsl(350, 70%, 55%)",
+      dark: "hsla(350, 70%, 40%, 0.25)",
+      darkBorder: "hsl(350, 70%, 60%)",
+    },
+    {
+      light: "hsl(120, 70%, 85%)",
+      lightBorder: "hsl(120, 70%, 55%)",
+      dark: "hsla(120, 70%, 40%, 0.25)",
+      darkBorder: "hsl(120, 70%, 60%)",
+    },
+    {
+      light: "hsl(280, 70%, 85%)",
+      lightBorder: "hsl(280, 70%, 55%)",
+      dark: "hsla(280, 70%, 40%, 0.25)",
+      darkBorder: "hsl(280, 70%, 60%)",
+    },
+    {
+      light: "hsl(40, 70%, 85%)",
+      lightBorder: "hsl(40, 70%, 55%)",
+      dark: "hsla(40, 70%, 40%, 0.25)",
+      darkBorder: "hsl(40, 70%, 60%)",
+    },
+    {
+      light: "hsl(180, 70%, 85%)",
+      lightBorder: "hsl(180, 70%, 55%)",
+      dark: "hsla(180, 70%, 40%, 0.25)",
+      darkBorder: "hsl(180, 70%, 60%)",
+    },
+    {
+      light: "hsl(320, 70%, 85%)",
+      lightBorder: "hsl(320, 70%, 55%)",
+      dark: "hsla(320, 70%, 40%, 0.25)",
+      darkBorder: "hsl(320, 70%, 60%)",
+    },
+    {
+      light: "hsl(160, 70%, 85%)",
+      lightBorder: "hsl(160, 70%, 55%)",
+      dark: "hsla(160, 70%, 40%, 0.25)",
+      darkBorder: "hsl(160, 70%, 60%)",
+    },
+    {
+      light: "hsl(60, 70%, 85%)",
+      lightBorder: "hsl(60, 70%, 55%)",
+      dark: "hsla(60, 70%, 40%, 0.25)",
+      darkBorder: "hsl(60, 70%, 60%)",
+    },
+    {
+      light: "hsl(250, 70%, 85%)",
+      lightBorder: "hsl(250, 70%, 55%)",
+      dark: "hsla(250, 70%, 40%, 0.25)",
+      darkBorder: "hsl(250, 70%, 60%)",
+    },
+  ];
+
+  function generateColorForCategory(cat) {
+    const categoryIndex = categories.indexOf(cat.toLowerCase());
+
+    if (categoryIndex >= 0 && categoryIndex < predefinedColors.length) {
+      return predefinedColors[categoryIndex];
+    }
+
+    const extraIndex = categoryIndex - predefinedColors.length;
+    const hue = (extraIndex * 137.5) % 360;
+
+    return {
+      light: `hsl(${hue}, 70%, 85%)`,
+      lightBorder: `hsl(${hue}, 70%, 55%)`,
+      dark: `hsla(${hue}, 70%, 40%, 0.25)`,
+      darkBorder: `hsl(${hue}, 70%, 60%)`,
+    };
+  }
+
+  function applyCategoryStyles(cat) {
+    const colors = generateColorForCategory(cat);
+    const styleId = `cat-style-${cat}`;
+
+    if (document.getElementById(styleId)) return;
+
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.innerHTML = `
+      .cat-${cat} {
+        background-color: ${colors.light};
+        border: 1px solid ${colors.lightBorder};
+        color: #000;
+      }
+
+      .tab[data-filter="${cat}"] {
+        border-radius: 20px;
+        border: 1px solid transparent;
+      }
+      
+      .tab[data-filter="${cat}"].active {
+        color: #000;
+      }
+
+      [data-theme="dark"] .cat-${cat} {
+        background-color: ${colors.dark};
+        border-color: ${colors.darkBorder};
+        color: #f0f0f0;
+      }
+
+      [data-theme="dark"] .tab[data-filter="${cat}"].active {
+        color: #fff;
+      }
+
+      .tab-indicator.cat-${cat} {
+        background-color: ${colors.light} !important;
+        border: 2px solid ${colors.lightBorder} !important;
+        height: 30px;
+      }
+
+      [data-theme="dark"] .tab-indicator.cat-${cat} {
+        background-color: ${colors.dark} !important;
+        border: 2px solid ${colors.darkBorder} !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // ------------------------------
+  // TAB ACTIVATION
   // ------------------------------
   function activateTab(tab) {
     document
       .querySelectorAll(".tab")
       .forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
+    indicator.className = "tab-indicator";
+    indicator.classList.add(`cat-${tab.dataset.filter}`);
     moveIndicator(tab);
     currentFilter = tab.dataset.filter;
     renderTasks();
@@ -144,7 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function moveIndicator(tab) {
     indicator.style.width = tab.offsetWidth + "px";
+    indicator.style.height = tab.offsetHeight + "px";
     indicator.style.left = tab.offsetLeft + "px";
+    indicator.style.top = tab.offsetTop + "px";
   }
 
   // ------------------------------
@@ -172,9 +300,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ------------------------------
-  // DROPDOWN FUNCTIONS
+  // MAIN CATEGORY DROPDOWN OPTIONS
   // ------------------------------
-
   function renderDropdown() {
     dropdownMenu.innerHTML = "";
 
@@ -182,12 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = document.createElement("div");
       item.className = "dropdown-item";
 
-      // Label text
       const label = document.createElement("span");
       label.className = "dropdown-label";
       label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
 
-      // Delete button
       const delBtn = document.createElement("button");
       delBtn.textContent = "×";
       delBtn.className = "dropdown-delete";
@@ -196,19 +321,22 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteCategory(cat);
       });
 
-      // Assemble item
       item.appendChild(label);
       item.appendChild(delBtn);
 
-      // Click handler for selecting category
       item.addEventListener("click", () => {
         selectedCategory = cat.toLowerCase();
+        currentFilter = cat.toLowerCase();
         dropdownToggle.innerHTML = `
           ${label.textContent}
           <span id="chooseCatArrow"><img src="img/dropdown-arrow.svg" alt=""></span>
         `;
         const tab = document.querySelector(`.tab[data-filter="${cat}"]`);
-        if (tab) activateTab(tab);
+        if (tab) {
+          activateTab(tab);
+        } else {
+          renderTasks();
+        }
         dropdownMenu.classList.remove("show");
 
         const arrow = document.getElementById("chooseCatArrow");
@@ -218,7 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
       dropdownMenu.appendChild(item);
     });
 
-    // Add Category option
     const addItem = document.createElement("div");
     addItem.className = "dropdown-add";
     addItem.textContent = "Add Category...";
@@ -230,7 +357,8 @@ document.addEventListener("DOMContentLoaded", () => {
           categories.push(value);
           localStorage.setItem("categories", JSON.stringify(categories));
 
-          // Create tab
+          applyCategoryStyles(value);
+
           const tab = document.createElement("div");
           tab.className = "tab";
           tab.dataset.filter = value;
@@ -256,11 +384,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (allTab) activateTab(allTab);
   }
 
-  renderDropdown();
-  renderTabs();
-
+  // ------------------------------
+  // RENDER TABS
+  // ------------------------------
   function renderTabs() {
-    // Clear existing tabs except indicator
     document.querySelectorAll(".tab-group .tab").forEach((t) => t.remove());
 
     categories.forEach((cat, index) => {
@@ -269,20 +396,25 @@ document.addEventListener("DOMContentLoaded", () => {
       tab.dataset.filter = cat;
       tab.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
 
-      if (index === 0) tab.classList.add("active"); // make "all" active by default
+      if (index === 0) tab.classList.add("active");
 
       tab.addEventListener("click", () => activateTab(tab));
       tabGroup.insertBefore(tab, indicator);
     });
 
-    // Position indicator under the active tab
-    const activeTab = document.querySelector(".tab.active");
-    if (activeTab) moveIndicator(activeTab);
+    requestAnimationFrame(() => {
+      const activeTab = document.querySelector(".tab.active");
+      if (activeTab) {
+        moveIndicator(activeTab);
+        indicator.classList.add(`cat-${activeTab.dataset.filter}`);
+      }
+    });
   }
-  //render tasks//
 
+  // ------------------------------
+  // RENDER TASKS
+  // ------------------------------
   function renderTasks(taskArray = tasks) {
-    // Sort so flagged tasks appear first
     taskArray = [...taskArray].sort((a, b) => {
       if (a.flagged === b.flagged) return 0;
       return a.flagged ? -1 : 1;
@@ -303,27 +435,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (task.completed) li.classList.add("completed");
 
-      // Drag button
       const dragBtn = document.createElement("button");
       dragBtn.className = "drag-btn";
       dragBtn.innerHTML = `<img src="img/icons8-drag-handle-90.png" class="drag-icon" />`;
       dragBtn.addEventListener("mousedown", () => (li._allowDrag = true));
 
-      // Complete button
       const completeBtn = document.createElement("button");
-      completeBtn.textContent = "✔";
+      completeBtn.textContent = "✓";
 
-      // Task text
       const taskTextSpan = document.createElement("span");
       taskTextSpan.textContent = task.text;
 
-      // Category
       const categorySpan = document.createElement("span");
-      categorySpan.className = "task-category";
+      categorySpan.className = `task-category cat-${task.category.toLowerCase()}`;
       categorySpan.textContent =
         task.category.charAt(0).toUpperCase() + task.category.slice(1);
 
-      // Date
+      applyCategoryStyles(task.category.toLowerCase());
+
       let dateSpan = null;
       if (task.date) {
         dateSpan = document.createElement("span");
@@ -331,31 +460,30 @@ document.addEventListener("DOMContentLoaded", () => {
         dateSpan.textContent = formatDate(task.date);
       }
 
-      // Delete button
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "delete-btn";
       deleteBtn.innerHTML = `<img src="img/icons8-trash.svg" class="delete-icon" />`;
 
-      // Flag button
       const flagBtn = document.createElement("button");
       flagBtn.className = "flag-btn";
       flagBtn.innerHTML = task.flagged
         ? `<img src="img/icons8-flag-96-2.png" class="flag-icon" />`
         : `<img src="img/icons8-flag-96.png" class="flag-icon" />`;
 
-      // Edit button
       const editBtn = document.createElement("button");
       editBtn.className = "edit-btn";
       editBtn.innerHTML = `<img src="img/icons8-edit-96.png" class="edit-icon" />`;
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        enterEditMode(li, task);
+      });
 
-      // Actions container
       const actions = document.createElement("div");
       actions.className = "task-actions";
       actions.appendChild(editBtn);
       actions.appendChild(flagBtn);
       actions.appendChild(deleteBtn);
 
-      // Build list item
       li.appendChild(dragBtn);
       li.appendChild(completeBtn);
       li.appendChild(taskTextSpan);
@@ -363,7 +491,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dateSpan) li.appendChild(dateSpan);
       li.appendChild(actions);
 
-      // Drag events
       li.setAttribute("draggable", "true");
       li.addEventListener("dragstart", handleDragStart);
       li.addEventListener("dragover", handleDragOver);
@@ -386,6 +513,136 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 
+  function autoSizeSelect(selectEl) {
+    const temp = document.createElement("span");
+    temp.style.visibility = "hidden";
+    temp.style.position = "fixed";
+    temp.style.whiteSpace = "nowrap";
+    temp.style.fontSize = window.getComputedStyle(selectEl).fontSize;
+    temp.style.fontFamily = window.getComputedStyle(selectEl).fontFamily;
+    temp.textContent = selectEl.options[selectEl.selectedIndex].text;
+
+    document.body.appendChild(temp);
+    const width = temp.getBoundingClientRect().width + 40; // padding + arrow
+    document.body.removeChild(temp);
+
+    selectEl.style.width = width + "px";
+  }
+
+  // ------------------------------
+  // EDIT MODE FUNCTIONS
+  // ------------------------------
+  function enterEditMode(li, task) {
+    li.dataset.editMode = "true";
+    li.innerHTML = "";
+    li.classList.add("editing");
+
+    const editForm = document.createElement("div");
+    editForm.className = "edit-form";
+
+    // TEXT INPUT
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.className = "edit-text-input";
+    textInput.value = task.text;
+
+    // CATEGORY SELECT (native + custom arrow)
+    const categoryWrapper = document.createElement("div");
+    categoryWrapper.className = "edit-select-wrapper";
+
+    const categoryDropdown = document.createElement("select");
+    categoryDropdown.className = "edit-category-select";
+
+    categories.forEach((cat) => {
+      if (cat === "all") return;
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+      if (cat === task.category) option.selected = true;
+      categoryDropdown.appendChild(option);
+    });
+
+    const arrow = document.createElement("span");
+    arrow.className = "edit-select-arrow";
+    arrow.innerHTML = `<img src="img/dropdown-arrow.svg">`;
+
+    categoryWrapper.appendChild(categoryDropdown);
+    categoryWrapper.appendChild(arrow);
+
+    // DATE PICKER
+    const dateWrapper = document.createElement("div");
+    dateWrapper.className = "edit-date-wrapper";
+
+    const calButton = document.createElement("button");
+    calButton.className = "edit-calendar-btn";
+    calButton.type = "button";
+    calButton.innerHTML = `<img src="img/icons8-calendar-24.png" alt="Calendar" />`;
+
+    const editDateInput = document.createElement("input");
+    editDateInput.type = "date";
+    editDateInput.className = "edit-date-input";
+    editDateInput.value = task.date || "";
+
+    calButton.addEventListener("click", () => {
+      editDateInput.showPicker?.();
+    });
+
+    dateWrapper.appendChild(calButton);
+    dateWrapper.appendChild(editDateInput);
+
+    // BUTTONS
+    const buttonGroup = document.createElement("div");
+    buttonGroup.className = "edit-buttons";
+
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "edit-save-btn";
+    saveBtn.textContent = "Save";
+    saveBtn.addEventListener("click", () => {
+      saveEdit(
+        task,
+        textInput.value,
+        categoryDropdown.value,
+        editDateInput.value
+      );
+    });
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.className = "edit-cancel-btn";
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.addEventListener("click", () => {
+      renderTasks();
+    });
+
+    buttonGroup.appendChild(saveBtn);
+    buttonGroup.appendChild(cancelBtn);
+
+    // BUILD FORM
+    editForm.appendChild(textInput);
+    editForm.appendChild(categoryWrapper);
+    editForm.appendChild(dateWrapper);
+    editForm.appendChild(buttonGroup);
+
+    li.appendChild(editForm);
+
+    textInput.focus();
+    textInput.select();
+  }
+
+  function saveEdit(task, newText, newCategory, newDate) {
+    const trimmedText = newText.trim();
+    if (!trimmedText) {
+      alert("Task text cannot be empty");
+      return;
+    }
+
+    task.text = trimmedText;
+    task.category = newCategory;
+    task.date = newDate || null;
+
+    saveTasks();
+    renderTasks();
+  }
+
   // ------------------------------
   // DRAG AND DROP HANDLERS
   // ------------------------------
@@ -405,24 +662,20 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
 
-    // Only allow vertical movement - ignore horizontal position
     const afterElement = getDragAfterElement(tasksList, e.clientY);
     const draggable = draggedElement;
 
-    // Remove any existing drop indicator classes
     document.querySelectorAll(".drop-above, .drop-below").forEach((el) => {
       el.classList.remove("drop-above", "drop-below");
     });
 
     if (afterElement == null) {
-      // Dragging to the bottom - add gap below last item
       const lastItem = tasksList.querySelector("li:not(.dragging):last-child");
       if (lastItem) {
         lastItem.classList.add("drop-below");
       }
       tasksList.appendChild(draggable);
     } else {
-      // Add gap above the element we're hovering over
       afterElement.classList.add("drop-above");
       tasksList.insertBefore(draggable, afterElement);
     }
@@ -435,7 +688,6 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
     }
 
-    // Reorder the tasks array based on current DOM order
     const reorderedTasks = [];
     const listItems = tasksList.querySelectorAll("li");
 
@@ -456,7 +708,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleDragEnd(e) {
     e.currentTarget.classList.remove("dragging");
     e.currentTarget._allowDrag = false;
-    // Clean up all drop indicator classes
     document.querySelectorAll(".drop-above, .drop-below").forEach((el) => {
       el.classList.remove("drop-above", "drop-below");
     });
@@ -511,7 +762,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------
-  // TASK BUTTONS (COMPLETE / DELETE)
+  // TASK BUTTON HANDLERS
   // ------------------------------
   tasksList.addEventListener("click", (e) => {
     const li = e.target.closest("li");
@@ -522,12 +773,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isCompleteBtn =
       e.target.closest("button") &&
-      e.target.closest("button").textContent.includes("✔");
+      e.target.closest("button").textContent.includes("✓");
     const isDeleteBtn = e.target
       .closest("button")
       ?.classList.contains("delete-btn");
+    const isFlagBtn = e.target
+      .closest("button")
+      ?.classList.contains("flag-btn");
 
-    if (e.target.textContent === "✔") {
+    if (isCompleteBtn) {
       task.completed = !task.completed;
       saveTasks();
       renderTasks();
@@ -537,13 +791,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveTasks();
         renderTasks();
       }
-    }
-
-    const isFlagBtn = e.target
-      .closest("button")
-      ?.classList.contains("flag-btn");
-
-    if (isFlagBtn) {
+    } else if (isFlagBtn) {
       task.flagged = !task.flagged;
       saveTasks();
       renderTasks();
@@ -551,17 +799,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ------------------------------
-  // INITIAL TAB SETUP
-  // ------------------------------
-  document.querySelectorAll(".tab").forEach((tab) => {
-    tab.addEventListener("click", () => activateTab(tab));
-  });
-  moveIndicator(document.querySelector(".tab.active"));
-
-  // ------------------------------
   // THEME TOGGLE
   // ------------------------------
-
   document
     .getElementById("theme-toggle")
     .addEventListener("change", function () {
@@ -579,25 +818,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (aiDropdown.classList.contains("open")) AIInput.focus();
   });
 
-  /*askAISubmit.addEventListener("click", () => {
-      const query = AIInput.value.trim();
-      responseSection.classList.add("show");
-      AIOutput.textContent = query
-        ? "You asked AI: " + query
-        : "Please enter a question for the AI.";
-      AIInput.value = "";
-  });*/
-
   askAISubmit.addEventListener("click", () => {
     const query = AIInput.value.trim().toLowerCase();
 
     if (!query) {
-      // If empty, just show all tasks again
       renderTasks();
       return;
     }
 
-    // Filter tasks by text, category, or date
     const results = tasks.filter((task) => {
       return (
         task.text.toLowerCase().includes(query) ||
@@ -606,12 +834,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
-    // Render results using the same formatting
     renderTasks(results);
   });
 
   // ------------------------------
-  // CALENDAR PICKER
+  // CALENDAR PICKER (MAIN INPUT)
   // ------------------------------
   const calendarBtn = document.getElementById("calendarBtn");
   if (calendarBtn && dateInput && typeof dateInput.showPicker === "function") {
@@ -635,8 +862,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------
-  // INITIAL RENDER
+  // INITIAL SETUP
   // ------------------------------
-  renderTasks();
+  renderDropdown();
   renderTabs();
+  renderTasks();
+
+  window.addEventListener("resize", () => {
+    const activeTab = document.querySelector(".tab.active");
+    if (activeTab) {
+      moveIndicator(activeTab);
+    }
+  });
 });
