@@ -871,6 +871,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cat !== "all") applyCategoryStyles(cat);
   });
 
+  const activeTab = document.querySelector(".tab.active");
+  if (activeTab) {
+    indicator.className = "tab-indicator";
+    indicator.classList.add(`cat-${activeTab.dataset.filter}`);
+    moveIndicator(activeTab);
+  }
+
   renderTasks();
 
   window.addEventListener("resize", () => {
