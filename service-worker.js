@@ -1,4 +1,4 @@
-const CACHE_NAME = "mytechplanner-v1";
+const CACHE_NAME = "myplanner-v1";
 const urlsToCache = [
   "/",
   "/index.html",

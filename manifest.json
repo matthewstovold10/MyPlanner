@@ -1,5 +1,5 @@
 {
-  "name": "MyTechPlanner",
+  "name": "MyPlanner",
   "short_name": "Planner",
   "start_url": "./index.html",
   "display": "standalone",
