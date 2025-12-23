@@ -22,6 +22,7 @@
   </head>
 
   <body>
+    <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
       <div class="login-box">
         <h1>MyPlanner</h1>
@@ -31,25 +32,13 @@
           <div class="login-row">
             <div class="form-row">
               <label for="loginUsername">Username:</label>
-              <input
-                type="text"
-                id="loginUsername"
-                name="loginUsername"
-                required
-              />
+              <input type="text" id="loginUsername" required />
             </div>
-
             <div class="form-row">
               <label for="loginPassword">Password:</label>
-              <input
-                type="password"
-                id="loginPassword"
-                name="loginPassword"
-                required
-              />
+              <input type="password" id="loginPassword" required />
             </div>
           </div>
-
           <div class="wrap">
             <button type="submit">Log In</button>
           </div>
@@ -57,15 +46,14 @@
 
         <div class="option">
           <p>
-            Not registered?
-            <a href="#" id="openSignup">Create a new account</a>
+            Not registered? <a href="#" id="openSignup">Create a new account</a>
           </p>
-
-          <button id="guestBtn" class="guest-btn">Continue as Guest</button>
+          <button id="guestLogin" class="guest-btn">Continue as Guest</button>
         </div>
       </div>
     </div>
 
+    <!-- Signup Overlay -->
     <div class="signup-overlay" id="signupOverlay">
       <div class="signup-box">
         <h1>MyPlanner</h1>
@@ -75,51 +63,30 @@
           <div class="signup-row">
             <div class="form-row">
               <label for="signupUsername">Username:</label>
-              <input
-                type="text"
-                id="signupUsername"
-                name="signupUsername"
-                required
-              />
+              <input type="text" id="signupUsername" required />
             </div>
-
             <div class="form-row">
               <label for="signupPassword">Password:</label>
-              <input
-                type="password"
-                id="signupPassword"
-                name="signupPassword"
-                required
-              />
+              <input type="password" id="signupPassword" required />
             </div>
-
             <div class="form-row">
               <label for="signupRepeatPassword">Repeat Password:</label>
-              <input
-                type="password"
-                id="signupRepeatPassword"
-                name="signupRepeatPassword"
-                required
-              />
+              <input type="password" id="signupRepeatPassword" required />
             </div>
           </div>
-
           <div class="wrap">
             <button type="submit">Create Account</button>
           </div>
         </form>
 
         <div class="option">
-          <p>
-            Already got an account
-            <a href="#" id="openLogin">Log In</a>
-          </p>
-
-          <button id="guestBtn" class="guest-btn">Continue as Guest</button>
+          <p>Already have an account? <a href="#" id="openLogin">Log In</a></p>
+          <button id="guestSignup" class="guest-btn">Continue as Guest</button>
         </div>
       </div>
     </div>
 
+    <!-- Main Content -->
     <div class="main-wrapper">
       <header>
         <h1>MyPlanner</h1>
@@ -129,12 +96,15 @@
           </div>
         </section>
         <div style="display: flex; align-items: center; gap: 10px">
-          <button id="loginBtn" class="general-btn" style="display: none">
-            Login
-          </button>
-          <button id="logoutBtn" class="general-btn" style="display: none">
-            Logout
-          </button>
+          <div style="display: flex; align-items: center">
+            <span id="currentUserDisplay"></span>
+            <button id="loginBtn" class="general-btn" style="display: none">
+              Login
+            </button>
+            <button id="logoutBtn" class="general-btn" style="display: none">
+              Logout
+            </button>
+          </div>
           <label class="theme-switch">
             <input type="checkbox" id="theme-toggle" />
             <span class="slider"></span>
@@ -209,149 +179,196 @@
     <script src="script.js"></script>
 
     <script>
-      const loginOverlay = document.getElementById("loginOverlay");
-      const signupOverlay = document.getElementById("signupOverlay");
+      // Simple local authentication with usernames - no external dependencies!
+      function initializeAuth() {
+        console.log("Initializing local authentication...");
 
-      const openSignup = document.getElementById("openSignup");
-      const openLogin = document.getElementById("openLogin");
-
-      const loginForm = document.getElementById("loginForm");
-      const signupForm = document.getElementById("signupForm");
-      const guestBtns = document.querySelectorAll(".guest-btn");
-
-      // Show signup overlay
-      openSignup.addEventListener("click", (e) => {
-        e.preventDefault();
-        loginOverlay.style.display = "none";
-        signupOverlay.style.display = "flex";
-      });
-
-      // Return to login overlay
-      openLogin.addEventListener("click", (e) => {
-        e.preventDefault();
-        signupOverlay.style.display = "none";
-        loginOverlay.style.display = "flex";
-      });
-
-      // Close overlays and set current user
-      function closeOverlay(username) {
-        localStorage.setItem("currentUser", username);
-        document.body.classList.remove("overlay-active");
-        loginOverlay.style.display = "none";
-        signupOverlay.style.display = "none";
-
+        // --- Elements ---
+        const loginOverlay = document.getElementById("loginOverlay");
+        const signupOverlay = document.getElementById("signupOverlay");
+        const openSignup = document.getElementById("openSignup");
+        const openLogin = document.getElementById("openLogin");
+        const loginForm = document.getElementById("loginForm");
+        const signupForm = document.getElementById("signupForm");
         const logoutBtn = document.getElementById("logoutBtn");
         const loginBtn = document.getElementById("loginBtn");
-        if (username !== "guest") {
-          logoutBtn.style.display = "block";
-          loginBtn.style.display = "none";
-        } else {
-          logoutBtn.style.display = "none";
-          loginBtn.style.display = "block";
+        const currentUserDisplay =
+          document.getElementById("currentUserDisplay");
+        const guestLoginBtn = document.getElementById("guestLogin");
+        const guestSignupBtn = document.getElementById("guestSignup");
+
+        console.log("Auth elements loaded successfully");
+
+        // --- Overlay toggle ---
+        openSignup.addEventListener("click", (e) => {
+          e.preventDefault();
+          loginOverlay.style.display = "none";
+          signupOverlay.style.display = "flex";
+        });
+
+        openLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          signupOverlay.style.display = "none";
+          loginOverlay.style.display = "flex";
+        });
+
+        // --- Close overlay and set user ---
+        function closeOverlay(user) {
+          console.log("closeOverlay called with user:", user);
+          localStorage.setItem("currentUser", user);
+          document.body.classList.remove("overlay-active");
+          loginOverlay.style.display = "none";
+          signupOverlay.style.display = "none";
+
+          // Create user data structure if it doesn't exist
+          if (user !== "guest") {
+            const users = JSON.parse(localStorage.getItem("users")) || {};
+            if (!users[user]) {
+              users[user] = {
+                categories: ["all", "work", "school", "planner", "personal"],
+                tasks: [],
+              };
+              localStorage.setItem("users", JSON.stringify(users));
+            }
+
+            logoutBtn.style.display = "block";
+            loginBtn.style.display = "none";
+            currentUserDisplay.textContent = `Hello, ${user}`;
+          } else {
+            logoutBtn.style.display = "none";
+            loginBtn.style.display = "block";
+            currentUserDisplay.textContent = "Guest";
+          }
+
+          window.dispatchEvent(new Event("userLoggedIn"));
+          console.log("User logged in successfully");
         }
 
-        // Trigger a custom event to reload tasks for the logged-in user
-        window.dispatchEvent(new Event("userLoggedIn"));
-      }
+        // Simple hash function for passwords (basic security)
+        async function hashPassword(password) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(password);
+          const hash = await crypto.subtle.digest("SHA-256", data);
+          return Array.from(new Uint8Array(hash))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+        }
 
-      // Get all registered users
-      function getUsers() {
-        return JSON.parse(localStorage.getItem("users")) || {};
-      }
+        // --- Signup ---
+        signupForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const button = signupForm.querySelector("button[type='submit']");
+          button.disabled = true;
 
-      // Save users data
-      function saveUsers(users) {
-        localStorage.setItem("users", JSON.stringify(users));
-      }
+          const username = document
+            .getElementById("signupUsername")
+            .value.trim();
+          const password = document.getElementById("signupPassword").value;
+          const repeat = document.getElementById("signupRepeatPassword").value;
 
-      // Handle login
-      loginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const username = document.getElementById("loginUsername").value.trim();
-        const password = document.getElementById("loginPassword").value;
+          if (password !== repeat) {
+            alert("Passwords do not match");
+            button.disabled = false;
+            return;
+          }
 
-        const users = getUsers();
+          if (password.length < 6) {
+            alert("Password must be at least 6 characters");
+            button.disabled = false;
+            return;
+          }
 
-        if (users[username] && users[username].password === password) {
+          if (username.length < 3) {
+            alert("Username must be at least 3 characters");
+            button.disabled = false;
+            return;
+          }
+
+          // Check if user already exists
+          const accounts = JSON.parse(localStorage.getItem("accounts")) || {};
+          if (accounts[username.toLowerCase()]) {
+            alert("This username is already taken");
+            button.disabled = false;
+            return;
+          }
+
+          // Create account
+          const hashedPassword = await hashPassword(password);
+          accounts[username.toLowerCase()] = {
+            password: hashedPassword,
+            displayName: username,
+            createdAt: new Date().toISOString(),
+          };
+          localStorage.setItem("accounts", JSON.stringify(accounts));
+
+          alert("Account created successfully! You can now log in.");
+          signupOverlay.style.display = "none";
+          loginOverlay.style.display = "flex";
+
+          button.disabled = false;
+        });
+
+        // --- Login ---
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document
+            .getElementById("loginUsername")
+            .value.trim();
+          const password = document.getElementById("loginPassword").value;
+
+          const accounts = JSON.parse(localStorage.getItem("accounts")) || {};
+
+          if (!accounts[username.toLowerCase()]) {
+            alert("Invalid username or password");
+            return;
+          }
+
+          const hashedPassword = await hashPassword(password);
+
+          if (accounts[username.toLowerCase()].password !== hashedPassword) {
+            alert("Invalid username or password");
+            return;
+          }
+
           closeOverlay(username);
-        } else {
-          alert("Invalid username or password");
-        }
-      });
+        });
 
-      signupForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const username = document.getElementById("signupUsername").value.trim();
-        const password = document.getElementById("signupPassword").value;
-        const repeatPassword = document.getElementById(
-          "signupRepeatPassword"
-        ).value;
-
-        if (password !== repeatPassword) {
-          alert("Passwords do not match");
-          return;
-        }
-
-        const users = getUsers();
-
-        if (users[username]) {
-          alert("Username already exists");
-          return;
-        }
-
-        // Create new user with empty task list
-        users[username] = {
-          password: password,
-          tasks: [],
-          categories: ["all", "work", "school", "planner", "personal"],
-        };
-
-        saveUsers(users);
-        alert("Account created successfully!");
-
-        // Switch to login
-        signupOverlay.style.display = "none";
-        loginOverlay.style.display = "flex";
-      });
-
-      // Handle guest login
-      guestBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
+        // --- Guest login ---
+        console.log("Setting up guest button listeners");
+        guestLoginBtn.addEventListener("click", () => {
+          console.log("Guest login button clicked");
           closeOverlay("guest");
         });
-      });
+        guestSignupBtn.addEventListener("click", () => {
+          console.log("Guest signup button clicked");
+          closeOverlay("guest");
+        });
 
-      // Activate blur on load
-      document.body.classList.add("overlay-active");
+        // --- Logout / Login button ---
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("currentUser");
+          location.reload();
+        });
 
-      // Check if user is already logged in
-      const currentUser = localStorage.getItem("currentUser");
-      if (currentUser) {
-        document.body.classList.remove("overlay-active");
-        loginOverlay.style.display = "none";
-        signupOverlay.style.display = "none";
+        loginBtn.addEventListener("click", () => {
+          localStorage.removeItem("currentUser");
+          location.reload();
+        });
 
-        const logoutBtn = document.getElementById("logoutBtn");
-        const loginBtn = document.getElementById("loginBtn");
-        if (currentUser !== "guest") {
-          logoutBtn.style.display = "block";
-          loginBtn.style.display = "none";
-        } else {
-          logoutBtn.style.display = "none";
-          loginBtn.style.display = "block";
-        }
+        // --- Activate overlay on load ---
+        document.body.classList.add("overlay-active");
+
+        // --- Check if user already logged in ---
+        const currentUser = localStorage.getItem("currentUser");
+        if (currentUser) closeOverlay(currentUser);
       }
 
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      });
-
-      // Handle login button (for guests)
-      document.getElementById("loginBtn").addEventListener("click", () => {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      });
+      // Start initialization
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializeAuth);
+      } else {
+        initializeAuth();
+      }
     </script>
   </body>
 </html>

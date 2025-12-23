@@ -19,18 +19,61 @@ header,
     border-color 0.4s ease;
 }
 
+#currentUserDisplay {
+  padding: 10.7px 16px;
+  background-color: #237627;
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+  font-weight: 600;
+  font-size: 15px;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] #currentUserDisplay {
+  background-color: #103fa6;
+  color: #f0f0f0;
+}
+
+#logoutBtn:hover,
+#loginBtn:hover {
+  background-color: #1e7e34 !important;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+div:has(#logoutBtn:hover) #currentUserDisplay,
+div:has(#loginBtn:hover) #currentUserDisplay {
+  background-color: #4caf50 !important;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+[data-theme="dark"] #logoutBtn:hover,
+[data-theme="dark"] #loginBtn:hover {
+  background-color: #103fa6 !important;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+[data-theme="dark"] div:has(#logoutBtn:hover) #currentUserDisplay,
+[data-theme="dark"] div:has(#loginBtn:hover) #currentUserDisplay {
+  background-color: #3a7afe !important;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+#logoutBtn,
+#loginBtn {
+  border-radius: 0 8px 8px 0;
+  margin-left: 0 !important;
+}
+
 .login-overlay {
   display: flex;
 }
 
-/* Overlay background blur */
 body.overlay-active .main-wrapper {
   filter: blur(3px) brightness(1);
   pointer-events: none;
   user-select: none;
 }
 
-/* Login overlay container */
 .login-overlay {
   position: fixed;
   top: 0;
@@ -45,7 +88,6 @@ body.overlay-active .main-wrapper {
   z-index: 2000;
 }
 
-/* Login box styling */
 .login-box {
   background: white;
   padding: 30px;
@@ -87,7 +129,7 @@ body.overlay-active .main-wrapper {
 
 .login-row {
   display: flex;
-  flex-direction: column; /* stack username row above password row */
+  flex-direction: column;
   gap: 15px;
 }
 
@@ -98,7 +140,7 @@ body.overlay-active .main-wrapper {
 }
 
 .form-row label {
-  width: 80px; /* keeps labels aligned */
+  width: 80px;
   font-weight: bold;
   padding-right: 10px;
   padding-bottom: 10px;
