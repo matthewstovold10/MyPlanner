@@ -868,7 +868,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTabs();
 
   categories.forEach((cat) => {
-    if (cat !== "all") applyCategoryStyles(cat);
+    if (cat !== "") applyCategoryStyles(cat);
   });
 
   const activeTab = document.querySelector(".tab.active");
