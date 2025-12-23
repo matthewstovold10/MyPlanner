@@ -866,6 +866,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   renderDropdown();
   renderTabs();
+
+  categories.forEach((cat) => {
+    if (cat !== "all") applyCategoryStyles(cat);
+  });
+
   renderTasks();
 
   window.addEventListener("resize", () => {
