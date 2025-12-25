@@ -10,7 +10,6 @@
     <link rel="icon" href="icons/icon-512.png" type="image/ico" />
 
     <script>
-      /* Prevent auto-scroll on reload */
       if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
       }
@@ -22,7 +21,6 @@
   </head>
 
   <body>
-    <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
       <div class="login-box">
         <h1>MyPlanner</h1>
@@ -53,7 +51,6 @@
       </div>
     </div>
 
-    <!-- Signup Overlay -->
     <div class="signup-overlay" id="signupOverlay">
       <div class="signup-box">
         <h1>MyPlanner</h1>
@@ -86,7 +83,6 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-wrapper">
       <header>
         <h1>MyPlanner</h1>
@@ -179,11 +175,9 @@
     <script src="script.js"></script>
 
     <script>
-      // Simple local authentication with usernames - no external dependencies!
       function initializeAuth() {
         console.log("Initializing local authentication...");
 
-        // --- Elements ---
         const loginOverlay = document.getElementById("loginOverlay");
         const signupOverlay = document.getElementById("signupOverlay");
         const openSignup = document.getElementById("openSignup");
@@ -199,7 +193,6 @@
 
         console.log("Auth elements loaded successfully");
 
-        // --- Overlay toggle ---
         openSignup.addEventListener("click", (e) => {
           e.preventDefault();
           loginOverlay.style.display = "none";
@@ -212,7 +205,6 @@
           loginOverlay.style.display = "flex";
         });
 
-        // --- Close overlay and set user ---
         function closeOverlay(user) {
           console.log("closeOverlay called with user:", user);
           localStorage.setItem("currentUser", user);
@@ -220,7 +212,6 @@
           loginOverlay.style.display = "none";
           signupOverlay.style.display = "none";
 
-          // Create user data structure if it doesn't exist
           if (user !== "guest") {
             const users = JSON.parse(localStorage.getItem("users")) || {};
             if (!users[user]) {
@@ -244,7 +235,6 @@
           console.log("User logged in successfully");
         }
 
-        // Simple hash function for passwords (basic security)
         async function hashPassword(password) {
           const encoder = new TextEncoder();
           const data = encoder.encode(password);
@@ -254,7 +244,6 @@
             .join("");
         }
 
-        // --- Signup ---
         signupForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const button = signupForm.querySelector("button[type='submit']");
@@ -284,7 +273,6 @@
             return;
           }
 
-          // Check if user already exists
           const accounts = JSON.parse(localStorage.getItem("accounts")) || {};
           if (accounts[username.toLowerCase()]) {
             alert("This username is already taken");
@@ -292,7 +280,6 @@
             return;
           }
 
-          // Create account
           const hashedPassword = await hashPassword(password);
           accounts[username.toLowerCase()] = {
             password: hashedPassword,
@@ -308,7 +295,6 @@
           button.disabled = false;
         });
 
-        // --- Login ---
         loginForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const username = document
@@ -333,7 +319,6 @@
           closeOverlay(username);
         });
 
-        // --- Guest login ---
         console.log("Setting up guest button listeners");
         guestLoginBtn.addEventListener("click", () => {
           console.log("Guest login button clicked");
@@ -344,7 +329,6 @@
           closeOverlay("guest");
         });
 
-        // --- Logout / Login button ---
         logoutBtn.addEventListener("click", () => {
           localStorage.removeItem("currentUser");
           location.reload();
@@ -355,15 +339,12 @@
           location.reload();
         });
 
-        // --- Activate overlay on load ---
         document.body.classList.add("overlay-active");
 
-        // --- Check if user already logged in ---
         const currentUser = localStorage.getItem("currentUser");
         if (currentUser) closeOverlay(currentUser);
       }
 
-      // Start initialization
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initializeAuth);
       } else {
