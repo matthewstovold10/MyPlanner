@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `myplanner-${CACHE_VERSION}`;
 
 const urlsToCache = [
@@ -8,6 +8,9 @@ const urlsToCache = [
   "/script.js",
   "/manifest.json",
   "/icons/icon-512.png",
+  "/icons/icon-512-background.png",
+  "/icons/icon-192-background.png",
+  "/icons/icon-192.ico",
   "/img/dropdown-arrow.svg",
   "/img/icons8-calendar-24.png",
   "/img/icons8-drag-handle-90.png",
