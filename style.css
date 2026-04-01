@@ -1,6 +1,3 @@
-/* ------------------------------
-   General Styles
------------------------------- */
 html {
   scroll-behavior: smooth;
 }
@@ -15,7 +12,9 @@ header,
 .ai-dropdown,
 .tab-group,
 .tab-indicator {
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
 }
 
@@ -37,25 +36,33 @@ header,
 #logoutBtn:hover,
 #loginBtn:hover {
   background-color: #1e7e34 !important;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 div:has(#logoutBtn:hover) #currentUserDisplay,
 div:has(#loginBtn:hover) #currentUserDisplay {
   background-color: #4caf50 !important;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 [data-theme="dark"] #logoutBtn:hover,
 [data-theme="dark"] #loginBtn:hover {
   background-color: #103fa6 !important;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 [data-theme="dark"] div:has(#logoutBtn:hover) #currentUserDisplay,
 [data-theme="dark"] div:has(#loginBtn:hover) #currentUserDisplay {
   background-color: #3a7afe !important;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 #logoutBtn,
@@ -124,7 +131,9 @@ body.overlay-active .main-wrapper {
   border-radius: 8px;
   outline: none;
   background: #fafafa;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .login-row {
@@ -156,7 +165,7 @@ body.overlay-active .main-wrapper {
 .field {
   display: flex;
   flex-direction: column;
-  width: 50%; /* or 45%, or a fixed px width */
+  width: 50%;
 }
 
 .field label {
@@ -180,7 +189,9 @@ body.overlay-active .main-wrapper {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .login-box .wrap button:hover {
@@ -190,7 +201,9 @@ body.overlay-active .main-wrapper {
 [data-theme="dark"] .login-box .wrap button {
   background: #3a7afe;
   color: white;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 [data-theme="dark"] .login-box .wrap button:hover {
@@ -207,7 +220,9 @@ body.overlay-active .main-wrapper {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .option {
@@ -293,7 +308,9 @@ body.overlay-active .main-wrapper {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 [data-theme="dark"] .signup-box {
@@ -312,7 +329,9 @@ body.overlay-active .main-wrapper {
   border-radius: 8px;
   outline: none;
   background: #fafafa;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 [data-theme="dark"] .signup-box input[type="text"],
@@ -325,7 +344,7 @@ body.overlay-active .main-wrapper {
 
 .signup-row {
   display: flex;
-  flex-direction: column; /* stack username row above password row */
+  flex-direction: column;
   gap: 15px;
 }
 
@@ -343,17 +362,48 @@ body.overlay-active .main-wrapper {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 [data-theme="dark"] .signup-box .wrap button {
   background: #3a7afe;
   color: white;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 [data-theme="dark"] .signup-box .wrap button:hover {
   background: #103fa6;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.google-btn:hover {
+  background: #f8f9fa;
+}
+
+.google-btn img {
+  width: 18px;
+  height: 18px;
 }
 
 :root {
@@ -454,7 +504,6 @@ h1 {
   transform: translateX(20px);
 }
 
-/* Base sizing */
 html,
 body {
   height: 100%;
@@ -533,7 +582,9 @@ header {
 }
 
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .theme-toggle {
@@ -543,7 +594,6 @@ body {
   color: inherit;
 }
 
-/* Intro Area */
 .intro-area {
   position: relative;
   display: flex;
@@ -602,9 +652,6 @@ body {
   color: #aaa;
 }
 
-/* ------------------------------
-   General Buttons
------------------------------- */
 .general-btn {
   flex: 0 0 auto;
   cursor: pointer;
@@ -630,9 +677,6 @@ body {
   background-color: #103fa6;
 }
 
-/* ------------------------------
-   AI Section
------------------------------- */
 .ai-input button {
   padding: 10px;
 }
@@ -648,13 +692,17 @@ body {
   opacity: 0;
   visibility: hidden;
   overflow: hidden;
-  transform: translateY(-8px); /* subtle slide */
+  transform: translateY(-8px);
   padding: 0;
   margin: 0;
   border: none;
   box-shadow: none;
-  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease,
-    border 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    padding 0.3s ease,
+    border 0.3s ease,
+    box-shadow 0.3s ease;
 
   margin-top: 20px;
   margin-bottom: 10px;
@@ -677,8 +725,12 @@ body {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease,
-    border 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    padding 0.3s ease,
+    border 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 [data-theme="dark"] .ai-dropdown {
@@ -709,7 +761,9 @@ body {
 }
 
 .ai-dropdown input {
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
   flex: 1;
   padding: 10px;
@@ -764,9 +818,6 @@ body {
   color: #f0f0f0;
 }
 
-/* ------------------------------
-   Task Section
------------------------------- */
 .input-area {
   position: sticky;
   top: 80px;
@@ -784,7 +835,7 @@ body {
 }
 
 #introSentinel {
-  height: 30px; /* image 1 gap before dismissal */
+  height: 30px;
   transition: height 0.3s ease;
 }
 
@@ -793,7 +844,9 @@ body.intro-dismissed #introSentinel {
 }
 
 #taskInput {
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
   flex: 1 1 auto;
   min-width: 200px;
@@ -931,7 +984,6 @@ body.intro-dismissed #introSentinel {
   background: #2c2c2c;
 }
 
-/* Calendar */
 .calendar-wrap {
   position: relative;
   display: flex;
@@ -949,7 +1001,9 @@ body.intro-dismissed #introSentinel {
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
   padding: 0;
   margin-right: -4px;
@@ -1139,8 +1193,8 @@ body.intro-dismissed #introSentinel {
 }
 
 .task-date {
-  margin-left: 10px; /* spacing after category */
-  border-left: none; /* no extra line */
+  margin-left: 10px;
+  border-left: none;
 }
 
 [data-theme="dark"] .task-list li {
@@ -1166,7 +1220,6 @@ body.intro-dismissed #introSentinel {
   opacity: 0.5;
 }
 
-/* Complete button - now the second button */
 .task-list li button:nth-child(2) {
   background-color: transparent;
   color: transparent;
@@ -1222,7 +1275,9 @@ body.intro-dismissed #introSentinel {
 
 .task-list li[draggable="true"] {
   cursor: grab;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   position: relative;
 }
 
@@ -1261,13 +1316,12 @@ body.intro-dismissed #introSentinel {
   cursor: grabbing;
 }
 
-/* Button container (keeps your current sizing/hover behavior) */
 .task-list li button:last-child.delete-btn {
   width: 30px;
   height: 30px;
   padding: 0;
   margin-left: auto;
-  background: transparent; /* remove red background block */
+  background: transparent;
   outline: none;
   border-radius: 5px;
   display: inline-flex;
@@ -1284,16 +1338,14 @@ body.intro-dismissed #introSentinel {
   opacity: 0.9;
 }
 
-/* If using inline SVG (currentColor), set color here */
 .task-list li button.delete-btn {
-  color: #f45045; /* red icon color via currentColor */
+  color: #f45045;
 }
 
 [data-theme="dark"] .delete-icon {
   opacity: 0.8;
 }
 
-/* Hover feedback */
 .task-list li button.delete-btn:hover {
   transform: scale(1.1);
   background-color: #2c2c2c28;
@@ -1335,7 +1387,6 @@ body.intro-dismissed #introSentinel {
   opacity: 0.8;
 }
 
-/* Optional hover effect */
 .task-list li button.flag-btn:hover {
   transform: scale(1.1);
   background-color: #2c2c2c28;
@@ -1383,9 +1434,9 @@ body.intro-dismissed #introSentinel {
 }
 
 .task-actions {
-  margin-left: auto; /* pushes the whole group to the right */
+  margin-left: auto;
   display: flex;
-  gap: 6px; /* spacing between flag and bin */
+  gap: 6px;
 }
 
 .task-actions button {
@@ -1433,7 +1484,9 @@ body.intro-dismissed #introSentinel {
   border: 1px solid #ddd;
   border-radius: 5px;
   outline: none;
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
 }
 
@@ -1477,7 +1530,9 @@ body.intro-dismissed #introSentinel {
   height: 40px;
   cursor: pointer;
   transition: border-color 0.3s ease;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 .edit-category-select:hover {
@@ -1544,7 +1599,7 @@ body.intro-dismissed #introSentinel {
   border: 0;
   padding: 0;
   margin: 0;
-  outline: none;
+  outline: none !important;
 }
 
 .edit-calendar-btn {
@@ -1558,16 +1613,20 @@ body.intro-dismissed #introSentinel {
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.4s ease, color 0.4s ease,
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
     border-color 0.4s ease;
   padding: 0;
   margin-right: -4px;
+  outline: none !important;
 }
 
 .edit-calendar-btn img {
   width: 22px;
   height: 22px;
   display: block;
+  outline: none !important;
 }
 
 .edit-calendar-btn:hover {
@@ -1577,10 +1636,17 @@ body.intro-dismissed #introSentinel {
 [data-theme="dark"] .edit-calendar-btn {
   background-color: #2c2c2c;
   border-color: #555 !important;
+  outline: none !important;
 }
 
 [data-theme="dark"] .edit-calendar-btn:hover {
   background-color: #3a3a3a;
+  outline: none !important;
+}
+
+[data-theme="dark"] .edit-calendar-btn:active {
+  outline: none !important;
+  border: none !important;
 }
 
 [data-theme="dark"] .edit-calendar-btn img {
@@ -1601,7 +1667,9 @@ body.intro-dismissed #introSentinel {
   border: none !important;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.15s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.15s ease;
   font-weight: 500;
   white-space: nowrap;
   flex: 0 0 auto;

@@ -1,22 +1,24 @@
 {
   "name": "MyPlanner",
   "short_name": "Planner",
-  "start_url": "/MyPlanner/index.html",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#0d6efd",
+  "description": "Track your tasks and goals all in one place",
   "icons": [
     {
-      "src": "/MyPlanner/icons/icon-192-background.png",
+      "src": "./icons/icon-192-background.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
-      "src": "/MyPlanner/icons/512-icon-correct.png",
+      "src": "./icons/icon-512-white-1.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
