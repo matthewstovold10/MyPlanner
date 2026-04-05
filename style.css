@@ -9,7 +9,7 @@ header,
 .input-area,
 .task-list li,
 .calendar-btn,
-.ai-dropdown,
+.search-dropdown,
 .tab-group,
 .tab-indicator {
   transition:
@@ -116,50 +116,57 @@ body.overlay-active .main-wrapper {
 }
 
 [data-theme="dark"] .login-box input[type="text"],
-[data-theme="dark"] .login-box input[type="password"] {
+[data-theme="dark"] .login-box input[type="password"],
+[data-theme="dark"] .login-box input[type="email"] {
   border: 1px solid #555;
   background: #1a1a1a;
   color: white;
 }
 .login-box input[type="text"],
-.login-box input[type="password"] {
+.login-box input[type="password"],
+.login-box input[type="email"] {
   width: 100%;
-  padding: 12px 1px;
-  margin: 10px 0 18px;
-  font-size: 16px;
+  padding: 10px 12px;
+  margin: 0;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
   background: #fafafa;
+  box-sizing: border-box;
+  height: 42px;
   transition:
     border-color 0.3s ease,
     background-color 0.3s ease;
 }
 
-.login-row {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.login-row,
+.signup-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  row-gap: 15px;
+  column-gap: 10px;
+  align-items: center;
 }
 
 .form-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: contents;
 }
 
 .form-row label {
-  width: 80px;
   font-weight: bold;
-  padding-right: 10px;
-  padding-bottom: 10px;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .form-row input {
-  flex: 1;
-  padding: 8px;
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  box-sizing: border-box;
+  height: 42px;
+  font-size: 15px;
 }
 
 .field {
@@ -177,6 +184,11 @@ body.overlay-active .main-wrapper {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+}
+
+.login-box .wrap,
+.signup-box .wrap {
+  margin-top: 20px;
 }
 
 .login-box .wrap button {
@@ -320,15 +332,18 @@ body.overlay-active .main-wrapper {
 
 .signup-box input[type="text"],
 .signup-box input[type="password"],
+.signup-box input[type="email"],
 .signup-box input[type="repeatpassword"] {
   width: 100%;
-  padding: 12px 1px;
-  margin: 10px 0 18px;
-  font-size: 16px;
+  padding: 10px 12px;
+  margin: 0;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
   background: #fafafa;
+  box-sizing: border-box;
+  height: 42px;
   transition:
     border-color 0.3s ease,
     background-color 0.3s ease;
@@ -336,16 +351,11 @@ body.overlay-active .main-wrapper {
 
 [data-theme="dark"] .signup-box input[type="text"],
 [data-theme="dark"] .signup-box input[type="password"],
+[data-theme="dark"] .signup-box input[type="email"],
 [data-theme="dark"] .signup-box input[type="repeatpassword"] {
   border: 1px solid #555;
   background: #1a1a1a;
   color: white;
-}
-
-.signup-row {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 .signup-box .wrap button:hover {
@@ -384,9 +394,9 @@ body.overlay-active .main-wrapper {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #fff;
-  color: #3c4043;
-  border: 1px solid #dadce0;
+  background: #fff !important;
+  color: #3c4043 !important;
+  border: 1px solid #dadce0 !important;
   border-radius: 4px;
   padding: 10px 16px;
   font-size: 14px;
@@ -398,12 +408,22 @@ body.overlay-active .main-wrapper {
 }
 
 .google-btn:hover {
-  background: #f8f9fa;
+  background: #f8f9fa !important;
+}
+
+[data-theme="dark"] .google-btn {
+  background: #fff !important;
+  color: #3c4043 !important;
+  border: 1px solid #dadce0 !important;
+}
+
+[data-theme="dark"] .google-btn:hover {
+  background: #f8f9fa !important;
 }
 
 .google-btn img {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 :root {
@@ -457,51 +477,6 @@ h1 {
 
 :root {
   color-scheme: light dark;
-}
-
-.theme-switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 30px;
-}
-
-.theme-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 20px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 22px;
-  width: 22px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-.theme-switch input:checked + .slider {
-  background-color: #0d6efd;
-}
-
-.theme-switch input:checked + .slider:before {
-  transform: translateX(20px);
 }
 
 html,
@@ -592,6 +567,27 @@ body {
   border: none;
   cursor: pointer;
   color: inherit;
+  font-size: 2rem;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.theme-toggle__classic circle {
+  transform-origin: 16px 16px;
+  transform: scale(0.72);
+  transition: transform 0.5s;
+}
+
+.theme-toggle--toggled .theme-toggle__classic circle {
+  transform: scale(1);
+}
+
+.theme-toggle:hover {
+  background: rgba(128, 128, 128, 0.15);
 }
 
 .intro-area {
@@ -681,7 +677,7 @@ body {
   padding: 10px;
 }
 
-.ai-dropdown {
+.search-dropdown {
   position: absolute;
   top: 170px;
   z-index: 998;
@@ -713,7 +709,7 @@ body {
   padding: 0 15px;
 }
 
-.ai-dropdown.open {
+.search-dropdown.open {
   position: sticky;
   top: 170px;
   visibility: visible;
@@ -733,13 +729,13 @@ body {
     box-shadow 0.3s ease;
 }
 
-[data-theme="dark"] .ai-dropdown {
+[data-theme="dark"] .search-dropdown {
   background-color: #2c2c2c;
   border-color: #555;
   color: #f0f0f0;
 }
 
-.ai-response {
+.search-response {
   display: none;
   margin-bottom: 20px;
   margin-top: 10px;
@@ -750,17 +746,17 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.ai-response.show {
+.search-response.show {
   display: block;
 }
 
-[data-theme="dark"] .ai-response {
+[data-theme="dark"] .search-response {
   border-color: #444;
   background-color: #2c2c2c;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.ai-dropdown input {
+.search-dropdown input {
   transition:
     background-color 0.4s ease,
     color 0.4s ease,
@@ -773,26 +769,55 @@ body {
   border-radius: 5px;
 }
 
-.ai-dropdown input:focus {
+.search-dropdown input:focus {
   border-color: #4caf50;
 }
 
-[data-theme="dark"] .ai-dropdown input {
+[data-theme="dark"] .search-dropdown input {
   background-color: #1a1a1a;
   border-color: #555;
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .ai-dropdown input:focus {
+[data-theme="dark"] .search-dropdown input:focus {
   border-color: #3a7afe;
 }
 
-.ai-dropdown .general-btn {
+.search-dropdown .general-btn {
   padding: 10px 10px;
   font-size: 16px;
 }
 
-#askAIToggle {
+.reset-btn {
+  flex: 0 0 auto;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.reset-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+}
+
+[data-theme="dark"] .reset-btn {
+  background: #2c2c2c;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .reset-btn:hover {
+  background-color: #3a3a3a;
+}
+
+#searchToggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -801,7 +826,7 @@ body {
   z-index: 500;
 }
 
-#askAIArrow img {
+#searchArrow img {
   width: 25px;
   height: auto;
   filter: brightness(0) invert(1);
@@ -809,12 +834,12 @@ body {
   transition: transform 0.3s ease;
 }
 
-#askAIArrow.rotated img {
+#searchArrow.rotated img {
   transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
 
-[data-theme="dark"] #askAIArrow {
+[data-theme="dark"] #searchArrow {
   color: #f0f0f0;
 }
 
@@ -1086,6 +1111,8 @@ body.intro-dismissed #introSentinel {
 
 [data-theme="dark"] .input-area input:focus {
   border-color: #3a7afe;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
 }
 
 .task-filters {
@@ -1195,6 +1222,26 @@ body.intro-dismissed #introSentinel {
 .task-date {
   margin-left: 10px;
   border-left: none;
+}
+
+/* Due today or overdue */
+.task-date.date-overdue {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* Due within the next 5 days */
+.task-date.date-soon {
+  color: #d48f07;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .task-date.date-overdue {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .task-date.date-soon {
+  color: #fbbf24;
 }
 
 [data-theme="dark"] .task-list li {

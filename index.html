@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyPlanner</title>
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/theme-toggles@4/css/classic.min.css"
+    />
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0d6efd" />
     <link rel="icon" href="icons/icon-512.png" type="image/png" />
@@ -40,7 +44,7 @@
           <div class="wrap">
             <button type="submit">Log In</button>
             <button type="button" id="googleLogin" class="google-btn">
-              <img src="img/google-logo.svg" /> Sign in with Google
+              <img src="img/google-logo2.svg" /> Sign in with Google
             </button>
           </div>
         </form>
@@ -49,7 +53,7 @@
           <p>
             Not registered? <a href="#" id="openSignup">Create a new account</a>
           </p>
-          <button id="guestLogin" class="guest-btn">Continue as Guest</button>
+          <button id="guestLogin" class="guest-btn">Try The Demo</button>
         </div>
       </div>
     </div>
@@ -81,21 +85,30 @@
           <div class="wrap">
             <button type="submit">Create Account</button>
             <button type="button" id="googleSignup" class="google-btn">
-              <img src="img/google-logo.svg" /> Continue with Google
+              <img src="img/google-logo2.svg" /> Continue with Google
             </button>
           </div>
         </form>
 
         <div class="option">
           <p>Already have an account? <a href="#" id="openLogin">Log In</a></p>
-          <button id="guestSignup" class="guest-btn">Continue as Guest</button>
+          <button id="guestSignup" class="guest-btn">Try The Demo</button>
         </div>
       </div>
     </div>
 
     <div class="main-wrapper">
       <header>
-        <h1>MyPlanner</h1>
+        <h1
+          title="Click to refresh"
+          style="cursor: pointer"
+          onclick="
+            window.scrollTo(0, 0);
+            location.reload();
+          "
+        >
+          MyPlanner
+        </h1>
         <section class="progress">
           <div class="progress-bar">
             <div id="progressFill"></div>
@@ -111,10 +124,41 @@
               Logout
             </button>
           </div>
-          <label class="theme-switch">
-            <input type="checkbox" id="theme-toggle" />
-            <span class="slider"></span>
-          </label>
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            type="button"
+            title="Toggle theme"
+            aria-label="Toggle theme"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              width="1em"
+              height="1em"
+              fill="currentColor"
+              stroke-linecap="round"
+              class="theme-toggle__classic"
+              viewBox="0 0 32 32"
+            >
+              <clipPath id="theme-toggle__classic__cutout">
+                <path d="M0-5h30a1 1 0 0 0 9 13v24H0Z" />
+              </clipPath>
+              <g clip-path="url(#theme-toggle__classic__cutout)">
+                <circle cx="16" cy="16" r="9.34" />
+                <g stroke="currentColor" stroke-width="1.5">
+                  <path d="M16 5.5v-4" />
+                  <path d="M16 30.5v-4" />
+                  <path d="M1.5 16h4" />
+                  <path d="M26.5 16h4" />
+                  <path d="m23.4 8.6 2.8-2.8" />
+                  <path d="m5.7 26.3 2.9-2.9" />
+                  <path d="m5.8 5.8 2.8 2.8" />
+                  <path d="m23.4 23.4 2.9 2.9" />
+                </g>
+              </g>
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -150,24 +194,25 @@
 
           <button id="addTask" class="general-btn">Add</button>
 
-          <button id="askAIToggle" class="general-btn">
+          <button id="searchToggle" class="general-btn">
             Search
-            <span id="askAIArrow"><img src="img/dropdown-arrow.svg" /></span>
+            <span id="searchArrow"><img src="img/dropdown-arrow.svg" /></span>
           </button>
         </section>
 
-        <div class="ai-dropdown" id="aiDropdown">
+        <div class="search-dropdown" id="searchDropdown">
           <input
             type="text"
-            id="AIInput"
+            id="searchInput"
             placeholder="What do you want to search for?"
           />
-          <button id="askAISubmit" class="general-btn">Search</button>
+          <button id="searchSubmit" class="general-btn">Search</button>
+          <button id="searchReset" class="reset-btn">Reset</button>
         </div>
 
-        <section class="ai-response">
-          <h3>AI Response:</h3>
-          <p id="AIOutput">Your AI results will appear here...</p>
+        <section class="search-response">
+          <h3>Search Results:</h3>
+          <p id="searchOutput">Your search results will appear here...</p>
         </section>
 
         <section class="task-list">
@@ -256,7 +301,7 @@
             document.body.classList.remove("overlay-active");
             logoutBtn.style.display = "none";
             loginBtn.style.display = "block";
-            currentUserDisplay.textContent = "Guest";
+            currentUserDisplay.textContent = "Hello, Demo";
             window.dispatchEvent(new Event("userLoggedIn"));
           } else {
             document.body.classList.add("overlay-active");

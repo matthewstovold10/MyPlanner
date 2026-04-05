@@ -23,3 +23,5 @@ A clean, simple task + goals dashboard built using **HTML, CSS and JavaScript**,
 - Goals section
 
 git commit -m "Updated task input layout"
+
+firebase deploy

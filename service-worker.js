@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v7";
 const CACHE_NAME = `myplanner-${CACHE_VERSION}`;
 
 const urlsToCache = [
@@ -6,6 +6,7 @@ const urlsToCache = [
   "./index.html",
   "./style.css",
   "./script.js",
+  "https://cdn.jsdelivr.net/npm/theme-toggles@4/css/classic.min.css",
   "./manifest.json",
   "./icons/icon-512.png",
   "./icons/icon-512-background.png",
@@ -37,7 +38,7 @@ self.addEventListener("install", (event) => {
       })
       .catch((error) => {
         console.error("[SW] Cache failed:", error);
-      })
+      }),
   );
 });
 
@@ -59,14 +60,14 @@ self.addEventListener("activate", (event) => {
               console.log("[SW] Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
-          })
+          }),
         );
       })
       .then(() => {
         // Take control of all pages immediately
         console.log("[SW] Claiming clients");
         return self.clients.claim();
-      })
+      }),
   );
 });
 
@@ -98,7 +99,7 @@ self.addEventListener("fetch", (event) => {
             statusText: "Service Unavailable",
           });
         });
-      })
+      }),
   );
 });
 

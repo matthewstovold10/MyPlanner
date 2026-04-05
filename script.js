@@ -30,12 +30,12 @@ let addTaskBtn;
 let tasksList;
 let progressFill;
 let themeToggle;
-let askAIToggleBtn;
-let aiDropdown;
-let askAIArrow;
-let askAISubmit;
-let AIInput;
-let AIOutput;
+let searchToggleBtn;
+let searchDropdown;
+let searchArrow;
+let searchSubmit;
+let searchInput;
+let searchOutput;
 let responseSection;
 let tabGroup;
 let indicator;
@@ -56,13 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
   tasksList = document.getElementById("tasks");
   progressFill = document.getElementById("progressFill");
   themeToggle = document.getElementById("theme-toggle");
-  askAIToggleBtn = document.getElementById("askAIToggle");
-  aiDropdown = document.getElementById("aiDropdown");
-  askAIArrow = document.getElementById("askAIArrow");
-  askAISubmit = document.getElementById("askAISubmit");
-  AIInput = document.getElementById("AIInput");
-  AIOutput = document.getElementById("AIOutput");
-  responseSection = document.querySelector(".ai-response");
+  searchToggleBtn = document.getElementById("searchToggle");
+  searchDropdown = document.getElementById("searchDropdown");
+  searchArrow = document.getElementById("searchArrow");
+  searchSubmit = document.getElementById("searchSubmit");
+  searchInput = document.getElementById("searchInput");
+  searchOutput = document.getElementById("searchOutput");
+  responseSection = document.querySelector(".search-response");
   tabGroup = document.querySelector(".tab-group");
   indicator = document.querySelector(".tab-indicator");
   dropdownToggle = document.getElementById("dropdownToggle");
@@ -78,19 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const theme = savedTheme || (prefersDark ? "dark" : "light");
 
   document.documentElement.setAttribute("data-theme", theme);
-  themeToggle.checked = theme === "dark";
+  if (theme === "dark") themeToggle.classList.add("theme-toggle--toggled");
 
   loadUserData();
 
   // ------------------------------
   // EVENT LISTENERS
   // ------------------------------
-
-  window.addEventListener("userLoggedIn", () => {
-    const firebaseUser = window.currentFirebaseUser;
-    currentUser = firebaseUser ? firebaseUser.uid : "guest";
-    loadUserData();
-  });
 
   dropdownToggle.addEventListener("click", () => {
     dropdownMenu.classList.toggle("show");
@@ -164,20 +158,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  themeToggle.addEventListener("change", function () {
-    const theme = this.checked ? "dark" : "light";
+  themeToggle.addEventListener("click", function () {
+    const isDark =
+      document.documentElement.getAttribute("data-theme") === "dark";
+    const theme = isDark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
+    themeToggle.classList.toggle("theme-toggle--toggled", theme === "dark");
   });
 
-  askAIToggleBtn.addEventListener("click", () => {
-    aiDropdown.classList.toggle("open");
-    askAIArrow.classList.toggle("rotated");
-    if (aiDropdown.classList.contains("open")) AIInput.focus();
+  searchToggleBtn.addEventListener("click", () => {
+    searchDropdown.classList.toggle("open");
+    searchArrow.classList.toggle("rotated");
+    if (searchDropdown.classList.contains("open")) searchInput.focus();
   });
 
-  askAISubmit.addEventListener("click", () => {
-    const query = AIInput.value.trim().toLowerCase();
+  searchSubmit.addEventListener("click", () => {
+    const query = searchInput.value.trim().toLowerCase();
 
     if (!query) {
       renderTasks();
@@ -195,6 +192,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTasks(results);
   });
 
+  document.getElementById("searchReset").addEventListener("click", () => {
+    searchInput.value = "";
+    searchInput.focus();
+    renderTasks();
+  });
+
   // Calendar picker
   if (calendarBtn && dateInput && typeof dateInput.showPicker === "function") {
     calendarBtn.addEventListener("click", () => {
@@ -206,6 +209,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 0);
     });
   }
+
+  // Enter key — add task
+  taskInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addTaskBtn.click();
+  });
+
+  // Enter key — trigger search
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") searchSubmit.click();
+  });
 
   // Scroll handlers
   window.addEventListener("scroll", onScrollCheck, { passive: true });
@@ -219,22 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   window.addEventListener("userLoggedIn", () => {
+    const firebaseUser = window.currentFirebaseUser;
+    currentUser = firebaseUser ? firebaseUser.uid : "guest";
     loadUserData();
-    renderDropdown();
-    renderTabs();
-
-    categories.forEach((cat) => {
-      if (cat !== "") applyCategoryStyles(cat);
-    });
-
-    const activeTab = document.querySelector(".tab.active");
-    if (activeTab) {
-      indicator.className = "tab-indicator";
-      indicator.classList.add(`cat-${activeTab.dataset.filter}`);
-      moveIndicator(activeTab);
-    }
-
-    renderTasks();
   });
 });
 
@@ -597,7 +597,7 @@ function renderTabs() {
     tab.dataset.filter = cat;
     tab.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
 
-    if (index === 0) tab.classList.add("active");
+    if (cat === currentFilter) tab.classList.add("active");
 
     tab.addEventListener("click", () => activateTab(tab));
     tabGroup.insertBefore(tab, indicator);
@@ -659,6 +659,10 @@ function renderTasks(taskArray = tasks) {
       dateSpan = document.createElement("span");
       dateSpan.className = "task-date";
       dateSpan.textContent = formatDate(task.date);
+      if (!task.completed) {
+        const urgency = getDateUrgency(task.date);
+        if (urgency) dateSpan.classList.add(`date-${urgency}`);
+      }
     }
 
     const deleteBtn = document.createElement("button");
@@ -707,6 +711,17 @@ function renderTasks(taskArray = tasks) {
 function formatDate(dateString) {
   const options = { day: "numeric", month: "short", year: "numeric" };
   return new Date(dateString).toLocaleDateString("en-GB", options);
+}
+
+function getDateUrgency(dateString) {
+  if (!dateString) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(dateString + "T00:00:00");
+  const diffDays = Math.floor((due - today) / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) return "overdue";
+  if (diffDays <= 5) return "soon";
+  return null;
 }
 
 async function saveTasks() {
@@ -907,8 +922,14 @@ function handleDrop(e) {
     }
   });
 
-  tasks = reorderedTasks;
+  // Stable sort: flagged tasks always stay above unflagged ones,
+  // but preserve the drag order within each group.
+  const flagged = reorderedTasks.filter((t) => t.flagged);
+  const unflagged = reorderedTasks.filter((t) => !t.flagged);
+  tasks = [...flagged, ...unflagged];
+
   saveTasks();
+  renderTasks();
 
   return false;
 }
