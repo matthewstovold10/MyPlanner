@@ -23,6 +23,7 @@ let minScrollTop = 0;
 let introRemoved = false;
 let draggedElement = null;
 let draggedTaskId = null;
+let scrollingToTop = false;
 
 let taskInput;
 let dateInput;
@@ -46,6 +47,8 @@ let inputArea;
 let introWrapper;
 let sentinel;
 let calendarBtn;
+let scrollTopBtn;
+let scrollTopBtnRight;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Script loaded");
@@ -72,6 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
   introWrapper = document.getElementById("introWrapper");
   sentinel = document.getElementById("introSentinel");
   calendarBtn = document.getElementById("calendarBtn");
+  scrollTopBtn = document.getElementById("scrollTopBtn");
+  scrollTopBtnRight = document.getElementById("scrollTopBtnRight");
 
   const savedTheme = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -80,11 +85,44 @@ document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", theme);
   if (theme === "dark") themeToggle.classList.add("theme-toggle--toggled");
 
+  injectToastStyles();
   loadUserData();
 
   // ------------------------------
   // EVENT LISTENERS
   // ------------------------------
+
+  // Scroll-to-top button — lifts lock, restores intro, scrolls back up
+  function scrollToTopAction() {
+    window.removeEventListener("scroll", lockScroll);
+    splashDismissed = false;
+    introRemoved = false;
+    minScrollTop = 0;
+    scrollingToTop = true;
+
+    if (introWrapper) {
+      introWrapper.style.display = "";
+      introWrapper.style.opacity = "1";
+      introWrapper.style.transform = "translateY(0)";
+      introWrapper.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    }
+
+    document.body.classList.remove("intro-dismissed");
+    scrollTopBtn.classList.remove("visible");
+    if (scrollTopBtnRight) scrollTopBtnRight.classList.remove("visible");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    setTimeout(() => {
+      scrollingToTop = false;
+    }, 800);
+  }
+
+  if (scrollTopBtn) {
+    scrollTopBtn.addEventListener("click", scrollToTopAction);
+  }
+  if (scrollTopBtnRight) {
+    scrollTopBtnRight.addEventListener("click", scrollToTopAction);
+  }
 
   dropdownToggle.addEventListener("click", () => {
     dropdownMenu.classList.toggle("show");
@@ -170,6 +208,12 @@ document.addEventListener("DOMContentLoaded", () => {
   searchToggleBtn.addEventListener("click", () => {
     searchDropdown.classList.toggle("open");
     searchArrow.classList.toggle("rotated");
+    document
+      .querySelector(".main-content")
+      .classList.toggle(
+        "search-open",
+        searchDropdown.classList.contains("open"),
+      );
     if (searchDropdown.classList.contains("open")) searchInput.focus();
   });
 
@@ -222,6 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Scroll handlers
   window.addEventListener("scroll", onScrollCheck, { passive: true });
+  window.addEventListener("scroll", positionScrollBtn, { passive: true });
 
   // Window resize
   window.addEventListener("resize", () => {
@@ -229,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeTab) {
       moveIndicator(activeTab);
     }
+    positionScrollBtn();
   });
 
   window.addEventListener("userLoggedIn", () => {
@@ -237,6 +283,188 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserData();
   });
 });
+
+// ------------------------------
+// IN-APP TOAST NOTIFICATIONS
+// ------------------------------
+let toastChecked = false;
+
+function injectToastStyles() {
+  if (document.getElementById("toast-styles")) return;
+  const style = document.createElement("style");
+  style.id = "toast-styles";
+  style.textContent = `
+    .toast-container {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10000;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      font-size: 14px;
+      font-weight: 500;
+      pointer-events: all;
+      min-width: 260px;
+      max-width: 90vw;
+      animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      cursor: pointer;
+    }
+    .toast.toast-today {
+      background: #c0392b;
+      color: #fff;
+    }
+    .toast.toast-tomorrow {
+      background: #d48f07;
+      color: #fff;
+    }
+    [data-theme="dark"] .toast.toast-today {
+      background: #ff3838ff;
+    }
+    [data-theme="dark"] .toast.toast-tomorrow {
+      background: #fbbf24;
+    }
+    .toast-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .toast-text {
+      flex: 1;
+    }
+    .toast-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .toast-body {
+      opacity: 0.9;
+      font-size: 13px;
+    }
+    .toast-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .toast-close:hover {
+      color: #fff;
+    }
+    .toast.toast-hiding {
+      animation: toastOut 0.3s ease forwards;
+    }
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function showToast(title, message, type = "today", duration = 6000) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${type === "today" ? "⚠️" : "📅"}</span>
+    <div class="toast-text">
+      <div class="toast-title">${title}</div>
+      <div class="toast-body">${message}</div>
+    </div>
+    <button class="toast-close" aria-label="Dismiss">✕</button>
+  `;
+
+  const dismiss = () => {
+    toast.classList.add("toast-hiding");
+    setTimeout(() => toast.remove(), 300);
+  };
+
+  toast.querySelector(".toast-close").addEventListener("click", dismiss);
+  toast.addEventListener("click", dismiss);
+
+  container.appendChild(toast);
+  setTimeout(dismiss, duration);
+}
+
+function getLocalDateStr(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function checkDueTasks() {
+  if (toastChecked) return;
+  toastChecked = true;
+
+  const now = new Date();
+  const todayStr = getLocalDateStr(now);
+
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = getLocalDateStr(tomorrow);
+
+  const dueToday = tasks.filter((t) => t.date === todayStr && !t.completed);
+  const dueTomorrow = tasks.filter(
+    (t) => t.date === tomorrowStr && !t.completed,
+  );
+
+  // Stagger the toasts slightly if both fire
+  if (dueToday.length > 0) {
+    showToast(
+      "Due Today!",
+      `You have ${dueToday.length} task${dueToday.length > 1 ? "s" : ""} due today.`,
+      "today",
+    );
+  }
+
+  if (dueTomorrow.length > 0) {
+    setTimeout(
+      () => {
+        showToast(
+          "Due Tomorrow",
+          `You have ${dueTomorrow.length} task${dueTomorrow.length > 1 ? "s" : ""} due tomorrow.`,
+          "tomorrow",
+        );
+      },
+      dueToday.length > 0 ? 400 : 0,
+    );
+  }
+}
 
 // ------------------------------
 // LOAD USER DATA
@@ -275,6 +503,7 @@ async function loadUserData() {
     renderTabs();
     renderDropdown();
     renderTasks();
+    checkDueTasks();
   });
   applyCategoryStyles("all");
 }
@@ -283,7 +512,7 @@ async function loadUserData() {
 // INTRO DISMISS ON SCROLL
 // ------------------------------
 const onScrollCheck = () => {
-  if (splashDismissed || introRemoved) return;
+  if (splashDismissed || introRemoved || scrollingToTop) return;
 
   const inputTop = inputArea.getBoundingClientRect().top;
   const headerBottom = header.getBoundingClientRect().bottom;
@@ -296,7 +525,13 @@ const onScrollCheck = () => {
     introWrapper.style.opacity = 1 - progress;
   }
 
-  if (inputTop <= headerBottom + 5) {
+  // Trigger when the intro section has scrolled up past the header bottom.
+  // Using introWrapper's bottom (not inputArea top) so this fires correctly
+  // regardless of what sticky `top` value the input area has.
+  const introBottom = introWrapper
+    ? introWrapper.getBoundingClientRect().bottom
+    : 0;
+  if (introBottom <= headerBottom + 5) {
     splashDismissed = true;
     introRemoved = true;
 
@@ -305,22 +540,27 @@ const onScrollCheck = () => {
       introWrapper.style.opacity = "0";
       introWrapper.style.transform = "translateY(-30px)";
       setTimeout(() => {
-        if (introWrapper.parentNode) {
-          introWrapper.remove();
-          document.body.classList.add("intro-dismissed");
+        // Hide instead of remove so it can be restored by the scroll-top button
+        introWrapper.style.display = "none";
+        document.body.classList.add("intro-dismissed");
 
+        if (scrollTopBtn) {
+          scrollTopBtn.classList.add("visible");
+          if (scrollTopBtnRight) scrollTopBtnRight.classList.add("visible");
+          positionScrollBtn();
+        }
+
+        requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const sentinelHeight =
-                parseInt(getComputedStyle(sentinel).height) || 30;
-              minScrollTop = sentinelHeight;
+            const sentinelHeight =
+              parseInt(getComputedStyle(sentinel).height) || 30;
+            minScrollTop = sentinelHeight;
 
-              window.addEventListener("scroll", lockScroll, {
-                passive: false,
-              });
+            window.addEventListener("scroll", lockScroll, {
+              passive: false,
             });
           });
-        }
+        });
       }, 300);
     }
   }
@@ -334,7 +574,19 @@ const lockScroll = () => {
 };
 
 // ------------------------------
-// COLOR GENERATION
+// POSITION SCROLL-TOP BUTTON
+// Keeps the ↑ arrow vertically centred with the sticky input bar
+// regardless of which category tab is active.
+// ------------------------------
+function positionScrollBtn() {
+  if (!scrollTopBtn || !inputArea) return;
+  const rect = inputArea.getBoundingClientRect();
+  const centre = rect.top + rect.height / 2 + "px";
+  scrollTopBtn.style.top = centre;
+  if (scrollTopBtnRight) scrollTopBtnRight.style.top = centre;
+}
+
+// ------------------------------
 // ------------------------------
 const predefinedColors = [
   {
@@ -478,6 +730,8 @@ function activateTab(tab) {
   moveIndicator(tab);
   currentFilter = tab.dataset.filter;
   renderTasks();
+  // Wait for the browser to re-layout after renderTasks before reading getBoundingClientRect
+  requestAnimationFrame(() => positionScrollBtn());
 }
 
 function moveIndicator(tab) {
@@ -1027,7 +1281,7 @@ if ("serviceWorker" in navigator) {
             ) {
               // New version available
               console.log("[Page] New version ready");
-              showUpdateBanner();
+              showUpdateBanner(registration);
             }
           });
         });
@@ -1035,7 +1289,7 @@ if ("serviceWorker" in navigator) {
         // Check if there's already an update waiting
         if (registration.waiting) {
           console.log("[Page] Update already waiting");
-          showUpdateBanner();
+          showUpdateBanner(registration);
         }
       })
       .catch((error) => {
@@ -1044,7 +1298,7 @@ if ("serviceWorker" in navigator) {
   });
 
   // Show update notification banner
-  function showUpdateBanner() {
+  function showUpdateBanner(registration) {
     // Don't show multiple banners
     if (document.getElementById("update-banner")) return;
 
@@ -1148,11 +1402,16 @@ if ("serviceWorker" in navigator) {
     }
 
     document.getElementById("updateNowBtn").addEventListener("click", () => {
-      navigator.serviceWorker.getRegistration().then((reg) => {
-        if (reg && reg.waiting) {
-          reg.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-      });
+      const btn = document.getElementById("updateNowBtn");
+      btn.textContent = "Updating...";
+      btn.disabled = true;
+
+      if (registration && registration.waiting) {
+        // Tell the waiting SW to activate
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+      // Force reload after short delay regardless — don't rely on controllerchange
+      setTimeout(() => window.location.reload(), 500);
     });
 
     document

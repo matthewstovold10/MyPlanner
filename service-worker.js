@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v7";
+const CACHE_VERSION = "v12";
 const CACHE_NAME = `myplanner-${CACHE_VERSION}`;
 
 const urlsToCache = [
@@ -22,12 +22,9 @@ const urlsToCache = [
   "./img/icons8-edit-96.png",
 ];
 
-// Install - cache files and skip waiting
+// Install - cache files, wait for activation signal
 self.addEventListener("install", (event) => {
   console.log("[SW] Installing version:", CACHE_VERSION);
-
-  // Force this service worker to become active immediately
-  self.skipWaiting();
 
   event.waitUntil(
     caches

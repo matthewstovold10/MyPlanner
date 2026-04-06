@@ -19,7 +19,11 @@ header,
 }
 
 #currentUserDisplay {
-  padding: 10.7px 16px;
+  padding: 0 16px;
+  height: 38px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
   background-color: #237627;
   border-radius: 8px 0 0 8px;
   border-right: none;
@@ -69,6 +73,9 @@ div:has(#loginBtn:hover) #currentUserDisplay {
 #loginBtn {
   border-radius: 0 8px 8px 0;
   margin-left: 0 !important;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 15px;
 }
 
 .login-overlay {
@@ -679,7 +686,7 @@ body {
 
 .search-dropdown {
   position: absolute;
-  top: 170px;
+  top: 190px;
   z-index: 998;
   display: flex;
   gap: 10px;
@@ -711,7 +718,7 @@ body {
 
 .search-dropdown.open {
   position: sticky;
-  top: 170px;
+  top: 190px;
   visibility: visible;
   opacity: 1;
   max-height: 200px;
@@ -845,18 +852,22 @@ body {
 
 .input-area {
   position: sticky;
-  top: 80px;
+  top: 100px;
   z-index: 999;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   border: 1px solid #e0e0e0;
   padding: 15px;
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-open .input-area {
+  margin-bottom: 0;
 }
 
 #introSentinel {
@@ -1828,4 +1839,53 @@ header .progress-bar {
 
 [data-theme="dark"] .task-filters .tab:not(.active) {
   color: #f0f0f0 !important;
+}
+
+/* ------------------------------
+   Scroll To Top Button
+------------------------------ */
+.scroll-top-btn {
+  position: fixed;
+  left: 10px;
+  top: 137px; /* dynamically overridden by JS — default = center of sticky input bar */
+  width: 20px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: #323232;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  /*transform: translateX(-6px);*/
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    color 0.2s ease;
+  padding: 0;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(0, -50%);
+}
+
+.scroll-top-btn:hover {
+  color: #555;
+}
+
+.scroll-top-btn--right {
+  left: auto;
+  right: 10px;
+}
+
+[data-theme="dark"] .scroll-top-btn {
+  color: #cecece;
+}
+
+[data-theme="dark"] .scroll-top-btn:hover {
+  color: #aaa;
 }
