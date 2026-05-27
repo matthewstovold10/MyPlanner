@@ -24,6 +24,8 @@ let introRemoved = false;
 let draggedElement = null;
 let draggedTaskId = null;
 let scrollingToTop = false;
+let currentView = "list";
+let calendarDate = new Date();
 
 let taskInput;
 let dateInput;
@@ -136,6 +138,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.addEventListener("click", (e) => {
+    if (
+      dropdownMenu.classList.contains("show") &&
+      !dropdownToggle.contains(e.target) &&
+      !dropdownMenu.contains(e.target)
+    ) {
+      dropdownMenu.classList.remove("show");
+      const arrow = document.getElementById("chooseCatArrow");
+      if (arrow) arrow.classList.remove("rotated");
+    }
+  });
+
   addTaskBtn.addEventListener("click", () => {
     const text = taskInput.value.trim();
     const date = dateInput.value;
@@ -242,6 +256,17 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTasks();
   });
 
+  const viewToggle = document.getElementById("viewToggle");
+  viewToggle.addEventListener("click", () => {
+    currentView = currentView === "list" ? "calendar" : "list";
+    const isCalendar = currentView === "calendar";
+    viewToggle.classList.toggle("active", isCalendar);
+    viewToggle.innerHTML = isCalendar
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> List`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Calendar`;
+    renderTasks();
+  });
+
   // Calendar picker
   if (calendarBtn && dateInput && typeof dateInput.showPicker === "function") {
     calendarBtn.addEventListener("click", () => {
@@ -275,6 +300,41 @@ document.addEventListener("DOMContentLoaded", () => {
       moveIndicator(activeTab);
     }
     positionScrollBtn();
+  });
+
+  // ── Mobile FAB + bottom drawer ──
+  const overlay = document.createElement("div");
+  overlay.className = "drawer-overlay";
+  document.body.appendChild(overlay);
+
+  const fab = document.createElement("button");
+  fab.className = "mobile-fab";
+  fab.setAttribute("aria-label", "Add task");
+  fab.textContent = "+";
+  document.body.appendChild(fab);
+
+  function openDrawer() {
+    inputArea.classList.add("drawer-open");
+    overlay.classList.add("visible");
+    fab.classList.add("fab-open");
+    taskInput.focus(); // must be synchronous (within user gesture) for iOS
+  }
+
+  function closeDrawer() {
+    inputArea.classList.remove("drawer-open");
+    overlay.classList.remove("visible");
+    fab.classList.remove("fab-open");
+    taskInput.blur();
+  }
+
+  fab.addEventListener("click", () => {
+    inputArea.classList.contains("drawer-open") ? closeDrawer() : openDrawer();
+  });
+
+  overlay.addEventListener("click", closeDrawer);
+
+  addTaskBtn.addEventListener("click", () => {
+    setTimeout(closeDrawer, 120);
   });
 
   window.addEventListener("userLoggedIn", () => {
@@ -871,9 +931,36 @@ function renderTabs() {
 // ------------------------------
 function renderTasks(taskArray = tasks) {
   taskArray = [...taskArray].sort((a, b) => {
-    if (a.flagged === b.flagged) return 0;
-    return a.flagged ? -1 : 1;
+    // Flagged incomplete always first
+    const aFlagged = a.flagged && !a.completed;
+    const bFlagged = b.flagged && !b.completed;
+    if (aFlagged !== bFlagged) return aFlagged ? -1 : 1;
+
+    // Completed always last
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+
+    // Both auto (no drag order): sort by date, soonest first, no-date last
+    if (a.manualOrder == null && b.manualOrder == null) {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return new Date(a.date) - new Date(b.date);
+    }
+
+    // Both manually ordered: respect drag position
+    if (a.manualOrder != null && b.manualOrder != null)
+      return a.manualOrder - b.manualOrder;
+
+    // Mixed: auto-sorted (null) appears before manually-ordered ones
+    return a.manualOrder == null ? -1 : 1;
   });
+
+  if (currentView === "calendar") {
+    renderCalendar(taskArray);
+    return;
+  }
+
+  tasksList.innerHTML = "";
 
   tasksList.innerHTML = "";
 
@@ -912,7 +999,7 @@ function renderTasks(taskArray = tasks) {
     if (task.date) {
       dateSpan = document.createElement("span");
       dateSpan.className = "task-date";
-      dateSpan.textContent = formatDate(task.date);
+      dateSpan.textContent = formatDateWithDay(task.date);
       if (!task.completed) {
         const urgency = getDateUrgency(task.date);
         if (urgency) dateSpan.classList.add(`date-${urgency}`);
@@ -959,12 +1046,317 @@ function renderTasks(taskArray = tasks) {
     tasksList.appendChild(li);
   });
 
+  if (tasksList.querySelectorAll("li").length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.innerHTML =
+      '<p class="empty-state-text">No tasks yet — add one above!</p>';
+    tasksList.appendChild(empty);
+  }
+
   updateProgress();
+}
+
+function renderCalendar(taskArray = tasks) {
+  tasksList.innerHTML = "";
+
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+
+  let filtered = taskArray;
+  if (currentFilter !== "all") {
+    filtered = filtered.filter(
+      (t) => (t.category || "").toLowerCase() === currentFilter,
+    );
+  }
+
+  // ── Header: prev / month title / next ──
+  const hdr = document.createElement("div");
+  hdr.className = "cal-header";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.className = "cal-nav";
+  prevBtn.textContent = "‹";
+  prevBtn.addEventListener("click", () => {
+    calendarDate = new Date(year, month - 1, 1);
+    renderTasks();
+  });
+
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "cal-nav";
+  nextBtn.textContent = "›";
+  nextBtn.addEventListener("click", () => {
+    calendarDate = new Date(year, month + 1, 1);
+    renderTasks();
+  });
+
+  const titleEl = document.createElement("span");
+  titleEl.className = "cal-title";
+  titleEl.textContent = calendarDate.toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
+
+  hdr.append(prevBtn, titleEl, nextBtn);
+  tasksList.appendChild(hdr);
+
+  // ── Day-of-week labels ──
+  const labels = document.createElement("div");
+  labels.className = "cal-grid cal-day-labels";
+  ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].forEach((d) => {
+    const el = document.createElement("div");
+    el.className = "cal-label";
+    el.textContent = d;
+    labels.appendChild(el);
+  });
+  tasksList.appendChild(labels);
+
+  // ── Day grid ──
+  const grid = document.createElement("div");
+  grid.className = "cal-grid";
+
+  const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7; // Mon=0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = getLocalDateStr(new Date());
+
+  // group tasks by date
+  const byDate = {};
+  filtered.forEach((t) => {
+    if (t.date) (byDate[t.date] = byDate[t.date] || []).push(t);
+  });
+
+  // empty leading cells
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    const empty = document.createElement("div");
+    empty.className = "cal-day cal-day--empty";
+    grid.appendChild(empty);
+  }
+
+  const pad = (n) => String(n).padStart(2, "0");
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${pad(month + 1)}-${pad(d)}`;
+    const dayTasks = byDate[dateStr] || [];
+
+    const cell = document.createElement("div");
+    cell.className = "cal-day";
+    if (dateStr === todayStr) cell.classList.add("cal-day--today");
+
+    const num = document.createElement("span");
+    num.className = "cal-day-num";
+    num.textContent = d;
+    cell.appendChild(num);
+
+    dayTasks.forEach((task) => {
+      const chip = document.createElement("div");
+      chip.className = `cal-task cat-${task.category.toLowerCase()}`;
+      if (task.completed) chip.classList.add("cal-task--done");
+      chip.textContent = task.text;
+      chip.title = task.text;
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showCalendarTaskPopup(task, chip);
+      });
+      cell.appendChild(chip);
+    });
+
+    grid.appendChild(cell);
+  }
+  tasksList.appendChild(grid);
+
+  // ── Undated tasks ──
+  const undated = filtered.filter((t) => !t.date);
+  if (undated.length) {
+    const section = document.createElement("div");
+    section.className = "cal-undated";
+    const lbl = document.createElement("h4");
+    lbl.textContent = "No due date";
+    section.appendChild(lbl);
+    undated.forEach((task) => {
+      const chip = document.createElement("div");
+      chip.className = `cal-task cat-${task.category.toLowerCase()}`;
+      if (task.completed) chip.classList.add("cal-task--done");
+      chip.textContent = task.text;
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showCalendarTaskPopup(task, chip);
+      });
+      section.appendChild(chip);
+    });
+    tasksList.appendChild(section);
+  }
+
+  updateProgress();
+}
+
+// ------------------------------
+// CALENDAR TASK POPUP
+// ------------------------------
+function showCalendarTaskPopup(task, chip) {
+  closeCalendarPopup();
+
+  const popup = document.createElement("div");
+  popup.id = "cal-task-popup";
+  popup.className = "cal-task-popup";
+
+  // Text input
+  const textInput = document.createElement("input");
+  textInput.type = "text";
+  textInput.className = "edit-text-input";
+  textInput.value = task.text;
+
+  // Complete toggle button
+  const completeBtn = document.createElement("button");
+  completeBtn.className =
+    "cal-popup-complete-btn" + (task.completed ? " completed" : "");
+  completeBtn.textContent = task.completed ? "✓ Completed" : "Mark complete";
+  completeBtn.addEventListener("click", () => {
+    task.completed = !task.completed;
+    completeBtn.textContent = task.completed ? "✓ Completed" : "Mark complete";
+    completeBtn.classList.toggle("completed", task.completed);
+    saveTasks();
+    renderTasks();
+  });
+  // Category select
+  const categoryWrapper = document.createElement("div");
+  categoryWrapper.className = "edit-select-wrapper";
+  const categoryDropdown = document.createElement("select");
+  categoryDropdown.className = "edit-category-select";
+  categories.forEach((cat) => {
+    if (cat === "all") return;
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+    if (cat === task.category) option.selected = true;
+    categoryDropdown.appendChild(option);
+  });
+  const arrow = document.createElement("span");
+  arrow.className = "edit-select-arrow";
+  arrow.innerHTML = `<img src="img/dropdown-arrow.svg">`;
+  categoryWrapper.appendChild(categoryDropdown);
+  categoryWrapper.appendChild(arrow);
+
+  // Date picker
+  const dateWrapper = document.createElement("div");
+  dateWrapper.className = "cal-popup-date-row";
+  const calButton = document.createElement("button");
+  calButton.className = "edit-calendar-btn cal-popup-cal-btn";
+  calButton.type = "button";
+  calButton.innerHTML = `<img src="img/icons8-calendar-24.png" alt="Calendar" />`;
+  const editDateInput = document.createElement("input");
+  editDateInput.type = "date";
+  editDateInput.className = "edit-date-input";
+  editDateInput.value = task.date || "";
+  const dateLabel = document.createElement("span");
+  dateLabel.className = "cal-popup-date-label";
+  dateLabel.textContent = task.date
+    ? formatDateWithDay(task.date)
+    : "No date set";
+  editDateInput.addEventListener("change", () => {
+    dateLabel.textContent = editDateInput.value
+      ? formatDateWithDay(editDateInput.value)
+      : "No date set";
+  });
+  calButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    editDateInput.showPicker?.();
+  });
+  dateWrapper.addEventListener("click", () => editDateInput.showPicker?.());
+  dateWrapper.appendChild(calButton);
+  dateWrapper.appendChild(dateLabel);
+  dateWrapper.appendChild(editDateInput);
+
+  // Save / Cancel buttons
+  const buttonGroup = document.createElement("div");
+  buttonGroup.className = "edit-buttons";
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "edit-save-btn";
+  saveBtn.textContent = "Save";
+  saveBtn.addEventListener("click", () => {
+    saveEdit(
+      task,
+      textInput.value,
+      categoryDropdown.value,
+      editDateInput.value,
+    );
+    closeCalendarPopup();
+  });
+  const cancelBtn = document.createElement("button");
+  cancelBtn.className = "edit-cancel-btn";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", closeCalendarPopup);
+  buttonGroup.appendChild(saveBtn);
+  buttonGroup.appendChild(cancelBtn);
+
+  popup.appendChild(textInput);
+  popup.appendChild(completeBtn);
+  popup.appendChild(categoryWrapper);
+  popup.appendChild(dateWrapper);
+  popup.appendChild(buttonGroup);
+
+  document.body.appendChild(popup);
+
+  // Position above the chip (fall back to below if not enough room)
+  popup.style.top = "-9999px";
+  popup.style.left = "-9999px";
+  requestAnimationFrame(() => {
+    const rect = chip.getBoundingClientRect();
+    const popupH = popup.offsetHeight;
+    const popupW = popup.offsetWidth;
+    const inputBarBottom = inputArea
+      ? inputArea.getBoundingClientRect().bottom
+      : 80;
+    const isBelow = rect.top - popupH - 8 < inputBarBottom;
+    let top = isBelow
+      ? rect.bottom + window.scrollY + 8
+      : rect.top + window.scrollY - popupH - 8;
+    if (isBelow) popup.classList.add("cal-task-popup--below");
+    let left = rect.left + window.scrollX + rect.width / 2 - popupW / 2;
+    left = Math.max(
+      8,
+      Math.min(left, window.scrollX + window.innerWidth - popupW - 8),
+    );
+    popup.style.top = top + "px";
+    popup.style.left = left + "px";
+    popup.classList.add("visible");
+  });
+
+  setTimeout(() => document.addEventListener("click", calPopupOutsideClick), 0);
+}
+
+function calPopupOutsideClick(e) {
+  const popup = document.getElementById("cal-task-popup");
+  if (popup && !popup.contains(e.target)) closeCalendarPopup();
+}
+
+function closeCalendarPopup() {
+  const popup = document.getElementById("cal-task-popup");
+  if (popup) popup.remove();
+  document.removeEventListener("click", calPopupOutsideClick);
 }
 
 function formatDate(dateString) {
   const options = { day: "numeric", month: "short", year: "numeric" };
   return new Date(dateString).toLocaleDateString("en-GB", options);
+}
+
+function formatDateWithDay(dateString) {
+  const d = new Date(dateString + "T00:00:00");
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function getDateUrgency(dateString) {
@@ -1041,6 +1433,8 @@ function enterEditMode(li, task) {
 
   const arrow = document.createElement("span");
   arrow.className = "edit-select-arrow";
+  arrow.style.cssText =
+    "position:absolute; right:8px; top:0; height:100%; display:flex; align-items:center; pointer-events:none;";
   arrow.innerHTML = `<img src="img/dropdown-arrow.svg">`;
 
   categoryWrapper.appendChild(categoryDropdown);
@@ -1085,6 +1479,9 @@ function enterEditMode(li, task) {
 
   const cancelBtn = document.createElement("button");
   cancelBtn.className = "edit-cancel-btn";
+  cancelBtn.style.setProperty("background-color", "#f45045", "important");
+  cancelBtn.style.setProperty("color", "white", "important");
+  cancelBtn.style.setProperty("border", "none", "important");
   cancelBtn.textContent = "Cancel";
   cancelBtn.addEventListener("click", () => {
     renderTasks();
@@ -1176,11 +1573,12 @@ function handleDrop(e) {
     }
   });
 
-  // Stable sort: flagged tasks always stay above unflagged ones,
-  // but preserve the drag order within each group.
   const flagged = reorderedTasks.filter((t) => t.flagged);
   const unflagged = reorderedTasks.filter((t) => !t.flagged);
   tasks = [...flagged, ...unflagged];
+  tasks.forEach((t, i) => {
+    t.manualOrder = i;
+  });
 
   saveTasks();
   renderTasks();
@@ -1223,15 +1621,20 @@ function getDragAfterElement(container, y) {
 // UPDATE PROGRESS
 // ------------------------------
 function updateProgress() {
-  const totalEls = document.querySelectorAll("#tasks li");
-  const completedEls = document.querySelectorAll("#tasks li.completed");
   const progressSection = document.querySelector("header .progress");
 
-  const percent =
-    totalEls.length > 0 ? (completedEls.length / totalEls.length) * 100 : 0;
+  const visibleTasks =
+    currentFilter === "all"
+      ? tasks
+      : tasks.filter((t) => (t.category || "").toLowerCase() === currentFilter);
+
+  const total = visibleTasks.length;
+  const completed = visibleTasks.filter((t) => t.completed).length;
+  const percent = total > 0 ? (completed / total) * 100 : 0;
+
   progressFill.style.width = percent + "%";
 
-  if (completedEls.length > 0) {
+  if (completed > 0) {
     progressSection.style.opacity = 1;
     progressFill.classList.add("flash");
 
@@ -1243,7 +1646,6 @@ function updateProgress() {
     progressSection.style.opacity = 0;
   }
 }
-
 // ------------------------------
 // SERVICE WORKER
 // ------------------------------
