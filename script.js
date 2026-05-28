@@ -26,6 +26,9 @@ let draggedTaskId = null;
 let scrollingToTop = false;
 let currentView = "list";
 let calendarDate = new Date();
+let _progressInitialised = false;
+let _progressVisible = false;
+let _progressHideTimer = null;
 
 let taskInput;
 let dateInput;
@@ -93,6 +96,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // EVENT LISTENERS
   // ------------------------------
+
+  // Throttle scroll handlers to one execution per animation frame
+  function rafThrottle(fn) {
+    let rafId = null;
+    return function (...args) {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        fn.apply(this, args);
+        rafId = null;
+      });
+    };
+  }
 
   // Scroll-to-top button — lifts lock, restores intro, scrolls back up
   function scrollToTopAction() {
@@ -214,9 +229,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const isDark =
       document.documentElement.getAttribute("data-theme") === "dark";
     const theme = isDark ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-    themeToggle.classList.toggle("theme-toggle--toggled", theme === "dark");
+    const newBg = theme === "dark" ? "#1e1e1e" : "#f5f5f5";
+
+    // Cover the page with a GPU-composited overlay while tiles repaint
+    const veil = document.createElement("div");
+    veil.style.cssText = `position:fixed;inset:0;z-index:99999;pointer-events:none;background:${newBg};opacity:0;transition:opacity 0.07s ease`;
+    document.body.appendChild(veil);
+
+    requestAnimationFrame(() => {
+      veil.style.opacity = "1";
+      setTimeout(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        themeToggle.classList.toggle("theme-toggle--toggled", theme === "dark");
+        // Wait for browser to finish repainting all tiles before revealing
+        setTimeout(() => {
+          veil.style.transition = "opacity 0.12s ease";
+          veil.style.opacity = "0";
+          veil.addEventListener("transitionend", () => veil.remove(), {
+            once: true,
+          });
+        }, 60);
+      }, 70);
+    });
   });
 
   searchToggleBtn.addEventListener("click", () => {
@@ -290,9 +325,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Scroll handlers
-  window.addEventListener("scroll", onScrollCheck, { passive: true });
-  window.addEventListener("scroll", positionScrollBtn, { passive: true });
-
+  window.addEventListener("scroll", rafThrottle(onScrollCheck), {
+    passive: true,
+  });
+  window.addEventListener("scroll", rafThrottle(positionScrollBtn), {
+    passive: true,
+  });
   // Window resize
   window.addEventListener("resize", () => {
     const activeTab = document.querySelector(".tab.active");
@@ -574,6 +612,9 @@ async function loadUserData() {
 const onScrollCheck = () => {
   if (splashDismissed || introRemoved || scrollingToTop) return;
 
+  // On mobile let the intro scroll naturally — never hide it or lock scroll
+  if (window.innerWidth <= 768) return;
+
   const inputTop = inputArea.getBoundingClientRect().top;
   const headerBottom = header.getBoundingClientRect().bottom;
   const scrollY = window.scrollY;
@@ -628,6 +669,7 @@ const onScrollCheck = () => {
 
 const lockScroll = () => {
   if (!introRemoved || minScrollTop === 0) return;
+  if (window.innerWidth <= 768) return;
   if (window.scrollY < minScrollTop) {
     window.scrollTo({ top: minScrollTop, behavior: "instant" });
   }
@@ -750,7 +792,9 @@ function applyCategoryStyles(cat) {
       }
       
       .tab[data-filter="${cat}"].active {
-        color: #000;
+        background-color: ${colors.light} !important;
+        border-color: ${colors.lightBorder} !important;
+        color: #000 !important;
       }
 
       [data-theme="dark"] .cat-${cat} {
@@ -760,7 +804,9 @@ function applyCategoryStyles(cat) {
       }
 
       [data-theme="dark"] .tab[data-filter="${cat}"].active {
-        color: #fff;
+        background-color: ${colors.dark} !important;
+        border-color: ${colors.darkBorder} !important;
+        color: #fff !important;
       }
 
       .tab-indicator.cat-${cat} {
@@ -1032,9 +1078,19 @@ function renderTasks(taskArray = tasks) {
 
     li.appendChild(dragBtn);
     li.appendChild(completeBtn);
-    li.appendChild(taskTextSpan);
-    li.appendChild(categorySpan);
-    if (dateSpan) li.appendChild(dateSpan);
+
+    const taskBody = document.createElement("div");
+    taskBody.className = "task-body";
+
+    const taskMeta = document.createElement("div");
+    taskMeta.className = "task-meta";
+    taskMeta.appendChild(categorySpan);
+    if (dateSpan) taskMeta.appendChild(dateSpan);
+
+    taskBody.appendChild(taskTextSpan);
+    taskBody.appendChild(taskMeta);
+
+    li.appendChild(taskBody);
     li.appendChild(actions);
 
     li.setAttribute("draggable", "true");
@@ -1050,7 +1106,9 @@ function renderTasks(taskArray = tasks) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
     empty.innerHTML =
-      '<p class="empty-state-text">No tasks yet — add one above!</p>';
+      window.innerWidth <= 480
+        ? '<p class="empty-state-text">No tasks yet — tap <strong>+</strong> to add one!</p>'
+        : '<p class="empty-state-text">No tasks yet — add one above!</p>';
     tasksList.appendChild(empty);
   }
 
@@ -1260,7 +1318,7 @@ function showCalendarTaskPopup(task, chip) {
     e.stopPropagation();
     editDateInput.showPicker?.();
   });
-  dateWrapper.addEventListener("click", () => editDateInput.showPicker?.());
+
   dateWrapper.appendChild(calButton);
   dateWrapper.appendChild(dateLabel);
   dateWrapper.appendChild(editDateInput);
@@ -1271,7 +1329,8 @@ function showCalendarTaskPopup(task, chip) {
   const saveBtn = document.createElement("button");
   saveBtn.className = "edit-save-btn";
   saveBtn.textContent = "Save";
-  saveBtn.addEventListener("click", () => {
+  saveBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     saveEdit(
       task,
       textInput.value,
@@ -1283,7 +1342,10 @@ function showCalendarTaskPopup(task, chip) {
   const cancelBtn = document.createElement("button");
   cancelBtn.className = "edit-cancel-btn";
   cancelBtn.textContent = "Cancel";
-  cancelBtn.addEventListener("click", closeCalendarPopup);
+  cancelBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeCalendarPopup();
+  });
   buttonGroup.appendChild(saveBtn);
   buttonGroup.appendChild(cancelBtn);
 
@@ -1295,32 +1357,53 @@ function showCalendarTaskPopup(task, chip) {
 
   document.body.appendChild(popup);
 
-  // Position above the chip (fall back to below if not enough room)
-  popup.style.top = "-9999px";
-  popup.style.left = "-9999px";
-  requestAnimationFrame(() => {
-    const rect = chip.getBoundingClientRect();
-    const popupH = popup.offsetHeight;
-    const popupW = popup.offsetWidth;
-    const inputBarBottom = inputArea
-      ? inputArea.getBoundingClientRect().bottom
-      : 80;
-    const isBelow = rect.top - popupH - 8 < inputBarBottom;
-    let top = isBelow
-      ? rect.bottom + window.scrollY + 8
-      : rect.top + window.scrollY - popupH - 8;
-    if (isBelow) popup.classList.add("cal-task-popup--below");
-    let left = rect.left + window.scrollX + rect.width / 2 - popupW / 2;
-    left = Math.max(
-      8,
-      Math.min(left, window.scrollX + window.innerWidth - popupW - 8),
-    );
-    popup.style.top = top + "px";
-    popup.style.left = left + "px";
-    popup.classList.add("visible");
-  });
+  const isMobile = window.innerWidth <= 768;
 
-  setTimeout(() => document.addEventListener("click", calPopupOutsideClick), 0);
+  if (isMobile) {
+    // Mobile: CSS bottom-sheet handles position — just make visible
+    requestAnimationFrame(() => popup.classList.add("visible"));
+
+    // Backdrop overlay
+    let backdrop = document.getElementById("cal-popup-backdrop");
+    if (!backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.id = "cal-popup-backdrop";
+      backdrop.style.cssText = backdrop.style.cssText =
+        "position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:1999;";
+      document.body.appendChild(backdrop);
+      requestAnimationFrame(() => (backdrop.style.opacity = "1"));
+    }
+    backdrop.addEventListener("click", closeCalendarPopup);
+  } else {
+    // Desktop: position above/below the chip
+    popup.style.top = "-9999px";
+    popup.style.left = "-9999px";
+    requestAnimationFrame(() => {
+      const rect = chip.getBoundingClientRect();
+      const popupH = popup.offsetHeight;
+      const popupW = popup.offsetWidth;
+      const inputBarBottom = inputArea
+        ? inputArea.getBoundingClientRect().bottom
+        : 80;
+      const isBelow = rect.top - popupH - 8 < inputBarBottom;
+      let top = isBelow
+        ? rect.bottom + window.scrollY + 8
+        : rect.top + window.scrollY - popupH - 8;
+      if (isBelow) popup.classList.add("cal-task-popup--below");
+      let left = rect.left + window.scrollX + rect.width / 2 - popupW / 2;
+      left = Math.max(
+        8,
+        Math.min(left, window.scrollX + window.innerWidth - popupW - 8),
+      );
+      popup.style.top = top + "px";
+      popup.style.left = left + "px";
+      popup.classList.add("visible");
+    });
+    setTimeout(
+      () => document.addEventListener("click", calPopupOutsideClick),
+      0,
+    );
+  }
 }
 
 function calPopupOutsideClick(e) {
@@ -1331,6 +1414,8 @@ function calPopupOutsideClick(e) {
 function closeCalendarPopup() {
   const popup = document.getElementById("cal-task-popup");
   if (popup) popup.remove();
+  const backdrop = document.getElementById("cal-popup-backdrop");
+  if (backdrop) backdrop.remove();
   document.removeEventListener("click", calPopupOutsideClick);
 }
 
@@ -1449,16 +1534,29 @@ function enterEditMode(li, task) {
   calButton.type = "button";
   calButton.innerHTML = `<img src="img/icons8-calendar-24.png" alt="Calendar" />`;
 
+  const dateLabel = document.createElement("span");
+  dateLabel.className = "edit-date-label";
+  dateLabel.textContent = task.date
+    ? formatDateWithDay(task.date)
+    : "No date set";
+
   const editDateInput = document.createElement("input");
   editDateInput.type = "date";
   editDateInput.className = "edit-date-input";
   editDateInput.value = task.date || "";
+
+  editDateInput.addEventListener("change", () => {
+    dateLabel.textContent = editDateInput.value
+      ? formatDateWithDay(editDateInput.value)
+      : "No date set";
+  });
 
   calButton.addEventListener("click", () => {
     editDateInput.showPicker?.();
   });
 
   dateWrapper.appendChild(calButton);
+  dateWrapper.appendChild(dateLabel);
   dateWrapper.appendChild(editDateInput);
 
   // BUTTONS
@@ -1634,16 +1732,32 @@ function updateProgress() {
 
   progressFill.style.width = percent + "%";
 
-  if (completed > 0) {
-    progressSection.style.opacity = 1;
-    progressFill.classList.add("flash");
+  if (!_progressInitialised) {
+    _progressInitialised = true;
+    return;
+  }
 
-    setTimeout(() => {
+  if (completed > 0 && !_progressVisible) {
+    _progressVisible = true;
+    progressSection.style.opacity = 1;
+    document.body.classList.add("progress-active");
+    progressFill.classList.add("flash");
+    clearTimeout(_progressHideTimer);
+    _progressHideTimer = setTimeout(() => {
       progressFill.classList.remove("flash");
       progressSection.style.opacity = 0;
+      _progressVisible = false;
+      _progressHideTimer = null;
+      setTimeout(() => {
+        document.body.classList.remove("progress-active");
+      }, 500);
     }, 3000);
-  } else {
+  } else if (completed === 0) {
+    clearTimeout(_progressHideTimer);
+    _progressHideTimer = null;
     progressSection.style.opacity = 0;
+    _progressVisible = false;
+    document.body.classList.remove("progress-active");
   }
 }
 // ------------------------------
@@ -1651,14 +1765,6 @@ function updateProgress() {
 // ------------------------------
 if ("serviceWorker" in navigator) {
   let refreshing = false;
-
-  // Reload page when new service worker takes control
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (refreshing) return;
-    console.log("[Page] New service worker activated, reloading...");
-    refreshing = true;
-    window.location.reload();
-  });
 
   window.addEventListener("load", () => {
     navigator.serviceWorker

@@ -2,20 +2,9 @@ html {
   scroll-behavior: smooth;
 }
 
-body,
-header,
-.intro-area,
-.general-btn,
-.input-area,
-.task-list li,
-.calendar-btn,
-.search-dropdown,
-.tab-group,
-.tab-indicator {
-  transition:
-    background-color 0.4s ease,
-    color 0.4s ease,
-    border-color 0.4s ease;
+/* ─ Splash logo: hidden everywhere except mobile splash ─ */
+.splash-logo-wrap {
+  display: none;
 }
 
 #currentUserDisplay {
@@ -83,7 +72,6 @@ div:has(#loginBtn:hover) #currentUserDisplay {
 }
 
 body.overlay-active .main-wrapper {
-  filter: blur(3px) brightness(1);
   pointer-events: none;
   user-select: none;
 }
@@ -100,6 +88,13 @@ body.overlay-active .main-wrapper {
   justify-content: center;
   align-items: center;
   z-index: 2000;
+}
+
+.login-overlay,
+.signup-overlay {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .login-box {
@@ -501,24 +496,24 @@ body {
 [data-theme="dark"] body::after {
   content: "";
   position: fixed;
-  width: 50px;
-  height: 50px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  filter: blur(2000px);
+  filter: blur(100px);
   pointer-events: none;
   z-index: -1;
 }
 
 [data-theme="dark"] body::before {
   background: rgba(76, 175, 80, 0.4);
-  top: 5000px;
-  left: -140px;
+  top: -60px;
+  left: -60px;
 }
 
 [data-theme="dark"] body::after {
   background: rgba(58, 122, 254, 0.4);
-  bottom: 0vh;
-  right: -10vw;
+  bottom: -60px;
+  right: -60px;
 }
 
 h1 {
@@ -555,10 +550,10 @@ body {
 .main-content::after {
   content: "";
   position: fixed;
-  width: 450px;
-  height: 450px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
-  filter: blur(1000px);
+  filter: blur(80px);
   z-index: -1;
   opacity: 0;
   transition: opacity 0.6s ease;
@@ -584,9 +579,9 @@ body.intro-dismissed .main-content::after {
 
 [data-theme="dark"] .main-content::before,
 [data-theme="dark"] .main-content::after {
-  width: 350px;
-  height: 350px;
-  filter: blur(500px);
+  width: 250px;
+  height: 250px;
+  filter: blur(80px);
 }
 
 header {
@@ -605,12 +600,6 @@ header {
 [data-theme="dark"] header {
   background: linear-gradient(90deg, #1e1e1e, #3a3a3a);
   color: #f0f0f0;
-}
-
-body {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
 }
 
 .theme-toggle {
@@ -669,10 +658,10 @@ body {
 .intro-area::after {
   content: "";
   position: absolute;
-  width: 500px;
-  height: 500px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
-  filter: blur(300px);
+  filter: blur(80px);
   z-index: -1;
   pointer-events: none;
 }
@@ -691,9 +680,9 @@ body {
 
 [data-theme="dark"] .intro-area::before,
 [data-theme="dark"] .intro-area::after {
-  width: 400px;
-  height: 400px;
-  filter: blur(400px);
+  width: 250px;
+  height: 250px;
+  filter: blur(80px);
 }
 
 [data-theme="dark"] .intro-area p {
@@ -1199,7 +1188,6 @@ body.intro-dismissed #introSentinel {
   flex-wrap: wrap;
   gap: 8px;
   background: #fafafa;
-  transition: background-color 0.4s ease;
   border-radius: 30px;
   padding: 6px;
   filter: url(#gooey);
@@ -1708,6 +1696,19 @@ body.intro-dismissed #introSentinel {
   gap: 5px;
 }
 
+.edit-date-label {
+  font-size: 14px;
+  color: #555;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .edit-date-label {
+  color: #aaa;
+}
+
 .edit-date-input {
   position: absolute;
   top: 100%;
@@ -1849,14 +1850,7 @@ body.intro-dismissed #introSentinel {
 /* ------------------------------
    Progress Bar
 ------------------------------ */
-header .progress {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  transition: opacity 0.5s ease;
-  margin: 0 20px;
-  opacity: 0;
-}
+/* progress bar now lives in .progress-strip, not the header */
 
 .flash {
   animation: pulse 1s infinite alternate;
@@ -1869,6 +1863,15 @@ header .progress {
   to {
     filter: brightness(1.5);
   }
+}
+
+header .progress {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+  margin: 0 20px;
+  opacity: 0;
 }
 
 header .progress-bar {
@@ -2121,7 +2124,7 @@ header .progress-bar {
 ------------------------------ */
 .cal-task-popup {
   position: absolute;
-  z-index: 500;
+  z-index: 2000;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -2141,7 +2144,7 @@ header .progress-bar {
 .cal-task-popup.visible {
   opacity: 1;
   transform: translateY(0);
-  pointer-events: all;
+  pointer-events: auto;
 }
 
 /* Arrow pointing down (popup sits above the chip) */
@@ -2257,6 +2260,7 @@ header .progress-bar {
 
 /* Date row */
 .cal-popup-date-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2294,6 +2298,20 @@ header .progress-bar {
   padding: 0 !important;
   margin: 0 !important;
   min-width: 24px;
+}
+
+.cal-popup-date-row .edit-date-input {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 1;
 }
 
 .scroll-top-btn.visible {
@@ -2368,6 +2386,18 @@ header .progress-bar {
 }
 
 /* ================================================================
+   LAYOUT WRAPPERS — transparent on desktop, real containers on mobile
+   ================================================================ */
+
+.task-body {
+  display: contents;
+}
+
+.task-meta {
+  display: contents;
+}
+
+/* ================================================================
    RESPONSIVE STYLES
    ================================================================ */
 
@@ -2375,192 +2405,979 @@ header .progress-bar {
   display: none;
 }
 
-/* ── Tablet ── */
+/* ── Tablet  481px – 768px ── */
 @media (max-width: 768px) {
-  body,
-  html {
-    padding: 0 10px;
-  }
-  header {
-    margin: 0 -20px;
-  }
-
-  .tab-group {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .tab-group::-webkit-scrollbar {
-    display: none;
-  }
-  .cal-day {
-    min-height: 90px;
-    font-size: clamp(9px, 1.5vw, 14px);
-  }
-}
-
-/* ── Mobile ── */
-@media (max-width: 480px) {
   body,
   html {
     padding: 0;
     overflow-x: hidden;
   }
 
-  /* ── Header ── */
   header {
     margin: 0;
-    padding: 10px 14px;
-    gap: 8px;
+    padding: 10px 16px;
+    gap: 10px;
   }
+
+  /* Activate structural wrappers */
+  .task-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .task-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+  }
+
+  .task-list li button.drag-btn {
+    display: none !important;
+  }
+
+  .task-category {
+    margin-left: 0;
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+
+  .task-date {
+    font-size: 12px;
+    margin-left: 0;
+  }
+
+  .cal-day {
+    min-height: 90px;
+    font-size: clamp(9px, 1.5vw, 14px);
+  }
+
+  /* ─ Calendar popup → bottom sheet on all mobile/tablet ─ */
+  .cal-task-popup {
+    position: fixed !important;
+    bottom: -100vh;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    /* No explicit width — left+right anchors constrain it; padding stays inside */
+    box-sizing: border-box !important;
+    width: auto !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0;
+    border: none;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.2);
+    padding: 8px 20px max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+    gap: 12px;
+    z-index: 2000;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: none;
+    transition: bottom 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* All children constrained within the sheet */
+  .cal-task-popup > * {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .cal-task-popup.visible {
+    bottom: 0;
+    pointer-events: auto;
+  }
+
+  /* Drag handle pill */
+  .cal-task-popup::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 5px;
+    background: #ddd;
+    border-radius: 3px;
+    margin: 4px auto 8px;
+    position: static;
+    transform: none;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  [data-theme="dark"] .cal-task-popup::before {
+    background: #555;
+  }
+
+  .cal-task-popup::after,
+  .cal-task-popup--below::before,
+  .cal-task-popup--below::after {
+    display: none !important;
+  }
+}
+
+/* ── Mobile  ≤ 480px ── */
+@media (max-width: 480px) {
+  /* ─ Page background — only body, not html, so blobs show through ─ */
+  body,
+  html {
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #ffffff;
+  }
+
+  [data-theme="dark"] body {
+    background-color: #1e1e1e;
+  }
+
+  /* ─ Mobile blobs: blue top-right (small), green mid-right (small) ─ */
+  .main-content::before,
+  body.intro-dismissed .main-content::before {
+    background: rgba(58, 122, 254, 0.45) !important;
+    top: -30px !important;
+    right: -30px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 8px !important;
+    height: 8px !important;
+    filter: blur(8px) !important;
+    opacity: 0.25 !important;
+  }
+
+  .main-content::after,
+  body.intro-dismissed .main-content::after {
+    background: rgba(76, 175, 80, 0.45) !important;
+    top: 40vh !important;
+    right: -30px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 8px !important;
+    height: 8px !important;
+    filter: blur(8px) !important;
+    opacity: 0.25 !important;
+  }
+
+  [data-theme="dark"] .main-content::before,
+  [data-theme="dark"] body.intro-dismissed .main-content::before,
+  [data-theme="dark"] .main-content::after,
+  [data-theme="dark"] body.intro-dismissed .main-content::after {
+    display: none !important; /* just hide them on mobile entirely */
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin: 0;
+    padding: 0 14px;
+    height: 60px;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.97) !important;
+  }
+
+  [data-theme="dark"] header {
+    background: rgba(30, 30, 30, 0.97) !important;
+  }
+
   header h1 {
     font-size: 1.15rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
+
   header .progress {
-    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: transparent;
+    padding: 6px 20px;
+    box-sizing: border-box;
+    flex: none;
+    display: flex;
+    pointer-events: none;
+  }
+
+  [data-theme="dark"] header .progress {
+    background: transparent;
+  }
+
+  header .progress-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  [data-theme="dark"] header .progress-bar {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  #progressFill {
+    border-radius: 5px;
   }
 
   #currentUserDisplay {
-    font-size: 12px;
-    padding: 0 8px;
-    max-width: 80px;
+    font-size: 13px;
+    padding: 0 10px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    height: 32px;
+    height: 34px;
     border-radius: 8px 0 0 8px;
   }
+
   #logoutBtn,
   #loginBtn {
-    font-size: 12px;
-    padding: 0 8px;
-    height: 32px;
+    font-size: 13px;
+    padding: 0 10px;
+    height: 34px;
     border-radius: 0 8px 8px 0;
   }
-  .theme-toggle {
-    font-size: 1.4rem;
+
+  /* Hide the user/login area while the login overlay is showing */
+  body.overlay-active #currentUserDisplay,
+  body.overlay-active #loginBtn,
+  body.overlay-active #logoutBtn {
+    display: none !important;
   }
 
-  /* ── Intro ── */
+  .theme-toggle {
+    font-size: 1.55rem;
+  }
+
+  /* ─ Intro — same feel as desktop, just scaled for mobile ─ */
   .intro-area {
-    padding: 36px 14px;
+    padding: 40px 2px 1px;
+    text-align: center;
+    align-items: center;
+    background: none;
+    overflow: visible;
+    margin: 0;
+    border-radius: 0;
   }
+
+  .intro-area::before {
+    background: rgba(76, 175, 80, 0.15) !important;
+  }
+
+  /* Mobile: introWrapper — fullscreen splash on launch */
+  #introWrapper {
+    position: fixed !important;
+    inset: 0 !important;
+    margin: 0 !important;
+    /* Colour blobs baked into the background gradient — no z-index fights */
+    background:
+      radial-gradient(
+        circle at 18% 18%,
+        rgba(76, 175, 80, 0.28) 0%,
+        transparent 52%
+      ),
+      radial-gradient(
+        circle at 82% 82%,
+        rgba(58, 122, 254, 0.22) 0%,
+        transparent 52%
+      ),
+      #f7f7f7;
+    z-index: 5000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none;
+    animation: myplannerSplash 6s ease forwards;
+  }
+
+  [data-theme="dark"] #introWrapper {
+    background:
+      radial-gradient(
+        circle at 18% 18%,
+        rgba(76, 175, 80, 0.2) 0%,
+        transparent 52%
+      ),
+      radial-gradient(
+        circle at 82% 82%,
+        rgba(58, 122, 254, 0.22) 0%,
+        transparent 52%
+      ),
+      #161616;
+  }
+
+  @keyframes myplannerSplash {
+    0%,
+    82% {
+      opacity: 1;
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* ─ Splash content block ─ */
+  #introWrapper .intro-area {
+    text-align: center !important;
+    padding: 0 40px !important;
+    background: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* ─ App-icon badge above the greeting — replaced by SVG logo ─ */
+  #introWrapper .intro-area::before {
+    display: none !important;
+  }
+
+  /* ─ SVG logo wrapper ─ */
+  #introWrapper .splash-logo-wrap {
+    display: block !important;
+    width: 90px !important;
+    height: 90px !important;
+    margin: 0 auto 24px !important;
+    animation: splashLogoIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both !important;
+  }
+
+  #introWrapper .splash-logo-svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* Circle draws in: circumference = 2π × 42 ≈ 264 */
+  #introWrapper .splash-circle {
+    stroke-dasharray: 264;
+    stroke-dashoffset: 264;
+    animation: splashDrawCircle 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both !important;
+  }
+
+  /* Tick draws in after circle is done (~1.25s total) */
+  #introWrapper .splash-tick {
+    stroke-dasharray: 85;
+    stroke-dashoffset: 85;
+    animation: splashDrawTick 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.15s both !important;
+  }
+
+  @keyframes splashLogoIn {
+    from {
+      opacity: 0;
+      transform: scale(0.45);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes splashDrawCircle {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes splashDrawTick {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* ─ Hide the blue blob pseudo on splash (not needed, bg handles it) ─ */
+  #introWrapper .intro-area::after {
+    display: none !important;
+  }
+
+  #introWrapper .intro-area h1 {
+    font-size: 27px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.4px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 10px !important;
+    animation: splashTextIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 1.75s both !important;
+  }
+
+  /* ─ Subtitle — appears just after h1 ─ */
+  #introWrapper .intro-area p {
+    font-size: 14px !important;
+    color: #888 !important;
+    margin: 0 !important;
+    line-height: 1.55 !important;
+    animation: splashTextIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 1.95s both !important;
+  }
+
+  [data-theme="dark"] #introWrapper .intro-area p {
+    color: #888 !important;
+  }
+
+  @keyframes splashTextIn {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .intro-area h1 {
-    font-size: 26px;
+    font-size: 22px;
   }
+
   .intro-area p {
     font-size: 14px;
   }
 
-  /* ── Main content: pad bottom so FAB doesn't cover last task ── */
+  /* ─ Main content pad ─ */
   .main-content {
-    padding: 0 14px 90px;
+    padding: 8px 0 110px;
+    transition: padding-top 0.4s ease;
   }
 
-  /* ── Input area → sliding bottom drawer ── */
+  body.progress-active .main-content {
+    padding-top: 30px;
+  }
+
+  /* ─ Hide scroll buttons on mobile ─ */
+  .scroll-top-btn,
+  .scroll-top-btn--right {
+    display: none !important;
+  }
+
+  /* ─ Sentinel: not needed on mobile (introWrapper is fixed, out of flow) ─ */
+  #introSentinel {
+    height: 0 !important;
+  }
+
+  /* ─ Filter / tab bar: inline, rounded, not sticky ─ */
+  .task-filters-row {
+    position: static;
+    z-index: auto;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 6px 8px 6px 12px;
+    margin: 0 12px 12px;
+    gap: 0;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.09);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  [data-theme="dark"] .task-filters-row {
+    background: rgba(44, 44, 46, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ─ Tab group: fills remaining row space, scrollable ─ */
+  .tab-group {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border-radius: 0;
+    filter: none !important;
+    box-shadow: none;
+    padding: 3px 20px 3px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+    align-items: center;
+    -webkit-mask-image: linear-gradient(to right, black 93%, transparent 100%);
+    mask-image: linear-gradient(to right, black 93%, transparent 100%);
+  }
+
+  .tab-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ─ View toggle: icon-only square button at end of row ─ */
+  .view-toggle-btn,
+  .view-toggle-btn.active {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0 6px;
+    padding: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0, 0, 0, 0.15) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #555 !important;
+    font-size: 0 !important; /* hide text label, keep SVG */
+    gap: 0;
+  }
+
+  .view-toggle-btn svg,
+  .view-toggle-btn.active svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  [data-theme="dark"] .view-toggle-btn,
+  [data-theme="dark"] .view-toggle-btn.active {
+    border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #ccc !important;
+  }
+
+  /* ─ Tab indicator hidden (gooey effect off on mobile) ─ */
+  .tab-indicator {
+    display: none !important;
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 6px 14px;
+    white-space: nowrap;
+    border-radius: 20px;
+    border: transparent;
+    background: #fff !important;
+    color: #555 !important;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  [data-theme="dark"] .tab {
+    border-color: transparent;
+    background: #2c2c2e !important;
+    color: #aaa !important;
+  }
+
+  .tab.active {
+    border-color: transparent;
+    background: #4caf50 !important;
+    color: #fff !important;
+    font-weight: 600;
+  }
+
+  [data-theme="dark"] .tab.active {
+    background: #3a7afe !important;
+    border-color: transparent;
+  }
+
+  /* ─ Hide "Your Tasks" heading ─ */
+  .task-list > h2 {
+    display: none;
+  }
+
+  /* ─ Task list wrapper ─ */
+  .task-list {
+    padding: 0 12px 0;
+    gap: 0;
+  }
+
+  .task-list ul {
+    margin: 0 !important;
+  }
+
+  /* ─ Task card ─ */
+  .task-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 12px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+    background: #fff;
+    border: none;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.07),
+      0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  [data-theme="dark"] .task-list li {
+    background: #2c2c2e;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ─ Drag button hidden ─ */
+  .task-list li button.drag-btn {
+    display: none !important;
+  }
+
+  /* ─ Complete button ─ */
+  .task-list li button:nth-child(2) {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    align-self: center;
+  }
+
+  /* ─ Task body wrapper (text + meta row) ─ */
+  .task-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 5px;
+  }
+
+  /* ─ Task text span ─ */
+  .task-list li .task-body > span {
+    display: block;
+    font-size: 15px;
+    line-height: 1.45;
+    word-break: break-word;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* ─ Task meta row (category + date) ─ */
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* ─ Category badge ─ */
+  .task-category {
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 10px;
+    margin-left: 0;
+  }
+
+  /* ─ Date badge ─ */
+  .task-date {
+    font-size: 11px;
+    margin-left: 0;
+  }
+
+  /* ─ Action buttons ─ */
+  .task-actions {
+    flex: 0 0 auto;
+    margin-left: 0;
+    align-self: center;
+    gap: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .task-actions button {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .task-list li button.flag-btn,
+  .task-list li button.edit-btn,
+  .task-list li button.delete-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flag-icon,
+  .edit-icon,
+  .delete-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ─ Edit mode ─ */
+  .task-list li.editing {
+    display: block !important;
+    padding: 14px !important;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .edit-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .edit-text-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+  }
+
+  /* Select wrapper: full width block so arrow stays attached */
+  .edit-select-wrapper {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+    box-sizing: border-box;
+  }
+
+  .edit-category-select {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .edit-date-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    gap: 8px !important;
+    flex: none !important;
+  }
+
+  .edit-date-wrapper .edit-date-input {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 2;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  [data-theme="dark"] .edit-date-wrapper {
+    border-color: #555 !important;
+    background: #2c2c2c !important;
+  }
+
+  /* Icon-only, not full width */
+  .edit-calendar-btn {
+    flex: 0 0 auto !important;
+    width: 22px !important;
+    height: 22px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    min-width: 0 !important;
+  }
+
+  #dateAdd {
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  /* Label fills remaining space */
+  .edit-date-label {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  /* Save / Cancel: side by side, equal width */
+  .edit-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+  }
+
+  .edit-save-btn,
+  .edit-cancel-btn {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    font-size: 15px !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ─ Input area → bottom drawer ─ */
   .input-area {
     position: fixed !important;
-    bottom: -500px;
+    bottom: -600px;
     left: 0;
     right: 0;
     top: auto !important;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    border-radius: 20px 20px 0 0;
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "drag drag"
+      "input input"
+      "dropdown calendar"
+      "add add";
+    column-gap: 10px;
+    row-gap: 12px;
+    border-radius: 24px 24px 0 0;
     border-left: none;
     border-right: none;
     border-bottom: none;
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: #fff;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.15);
     z-index: 1500;
-    padding: 8px 16px 36px;
-    gap: 10px;
+    padding: 6px 16px max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
     margin-bottom: 0;
-    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: bottom 0.38s cubic-bezier(0.32, 0.72, 0, 1);
   }
+
+  .input-area::before {
+    grid-area: drag;
+  }
+
+  #taskInput {
+    grid-area: input;
+  }
+
+  .input-area .dropdown {
+    grid-area: dropdown;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  .input-area .calendar-wrap {
+    grid-area: calendar;
+  }
+
+  #addTask {
+    grid-area: add;
+  }
+
+  /* Dropdown menu opens UPWARD on mobile so it doesn't go off the bottom */
+  .input-area .dropdown-menu {
+    top: auto !important;
+    bottom: calc(100% + 6px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+    max-height: 50vh;
+  }
+
   .input-area.drawer-open {
     bottom: 0;
   }
 
   [data-theme="dark"] .input-area {
-    border-top-color: #444;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.45);
+    background: #1c1c1e;
+    border-top-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.55);
   }
 
-  /* Drag handle at top of drawer */
+  /* Drag handle pill at top of drawer */
   .input-area::before {
     content: "";
     display: block;
-    width: 40px;
-    height: 4px;
+    width: 36px;
+    height: 5px;
     background: #ddd;
-    border-radius: 2px;
-    margin: 4px auto 6px;
+    border-radius: 3px;
+    margin: 4px auto 2px;
     flex-shrink: 0;
   }
+
   [data-theme="dark"] .input-area::before {
-    background: #555;
+    background: #444;
   }
 
-  /* font-size 16px prevents iOS from zooming on focus */
+  /* Task text input — 16px prevents iOS zoom-on-focus */
   #taskInput {
     flex: none;
     width: 100%;
     font-size: 16px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 13px 14px;
+    border-radius: 12px;
     box-sizing: border-box;
   }
 
+  /* Category dropdown */
   .dropdown {
     flex: 1;
   }
+
   #dropdownToggle {
     width: 100%;
-    font-size: 15px;
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .calendar-wrap {
     flex: 0 0 auto;
   }
 
-  /* Add button — prominent, full width */
+  /* Add button — full width, prominent */
   #addTask {
     flex: none;
     width: 100%;
     padding: 14px;
     font-size: 16px;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 12px;
     box-sizing: border-box;
   }
 
-  /* Search lives on desktop — hides from mobile drawer */
+  /* Search hidden on mobile */
   #searchToggle {
     display: none;
   }
+
   .search-dropdown {
     display: none !important;
   }
+
   .search-response {
     margin: 0 0 16px;
   }
 
-  /* ── Overlay behind drawer ── */
+  /* ─ Drawer backdrop overlay ─ */
   .drawer-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.42);
     z-index: 1400;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
   }
+
   .drawer-overlay.visible {
     display: block;
-    animation: mFadeIn 0.2s ease;
+    animation: mFadeIn 0.22s ease;
   }
 
   @keyframes mFadeIn {
@@ -2572,235 +3389,155 @@ header .progress-bar {
     }
   }
 
-  /* ── FAB ── */
+  /* ─ FAB ─ */
   .mobile-fab {
     display: flex;
     position: fixed;
-    bottom: 24px;
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
     right: 20px;
-    width: 58px;
-    height: 58px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: #4caf50;
     color: #fff;
-    font-size: 32px;
+    font-size: 30px;
     line-height: 1;
     border: none;
-    box-shadow: 0 4px 18px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.45);
     cursor: pointer;
     z-index: 1300;
     align-items: center;
     justify-content: center;
     transition:
-      transform 0.25s ease,
-      background 0.25s ease,
-      box-shadow 0.25s ease;
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background 0.22s ease,
+      box-shadow 0.22s ease;
   }
+
   .mobile-fab.fab-open {
-    transform: rotate(45deg);
+    transform: rotate(45deg) scale(0.9);
     background: #e53935;
-    box-shadow: 0 4px 18px rgba(229, 57, 53, 0.5);
+    box-shadow: 0 4px 20px rgba(229, 57, 53, 0.45);
   }
+
   [data-theme="dark"] .mobile-fab {
     background: #3a7afe;
-    box-shadow: 0 4px 18px rgba(58, 122, 254, 0.5);
+    box-shadow: 0 4px 20px rgba(58, 122, 254, 0.5);
   }
+
   [data-theme="dark"] .mobile-fab.fab-open {
     background: #e53935;
-    box-shadow: 0 4px 18px rgba(229, 57, 53, 0.5);
+    box-shadow: 0 4px 20px rgba(229, 57, 53, 0.45);
   }
 
-  /* ── Task cards ── */
-  .task-list li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    padding: 12px 10px;
-    margin-bottom: 8px;
-    border-radius: 12px;
-    gap: 4px 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  }
-  [data-theme="dark"] .task-list li {
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Invisible line-break between actions and the meta row */
-  .task-list li::after {
-    content: "";
-    flex-basis: 100%;
-    height: 0;
-    order: 4;
-  }
-
-  .task-list li button.drag-btn {
-    display: none !important;
-  }
-
-  /* Complete button */
-  .task-list li button:nth-child(2) {
-    order: 1;
-    flex: 0 0 36px;
-    width: 36px;
-    height: 36px;
-    align-self: flex-start;
-    margin-top: 2px;
-  }
-
-  /* Task text */
-  .task-list li > span:not(.task-category):not(.task-date) {
-    order: 2;
-    flex: 1;
-    min-width: 0;
-    font-size: 15px;
-    line-height: 1.4;
-    word-break: break-word;
-  }
-
-  /* Edit/flag/delete buttons */
-  .task-actions {
-    order: 3;
-    flex: 0 0 auto;
-    margin-left: 0;
-    align-self: flex-start;
-    gap: 0;
-  }
-  .task-actions button {
-    width: 36px;
-    height: 36px;
-  }
-
-  /* Category badge — second row, indented to align with text */
-  .task-category {
-    order: 5;
-    margin-left: calc(36px + 6px);
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-
-  /* Date — second row, after category */
-  .task-date {
-    order: 6;
-    font-size: 11px;
-    margin-left: 4px;
-  }
-
-  /* ── Edit mode ── */
-  .task-list li.editing {
-    flex-direction: column;
-  }
-  .edit-form {
-    gap: 10px;
-  }
-  .edit-text-input {
-    flex: 1 1 100%;
-    font-size: 16px;
-    min-width: 0;
-  }
-  .edit-select-wrapper,
-  .edit-date-wrapper {
-    flex: 1 1 auto;
-  }
-  .edit-save-btn,
-  .edit-cancel-btn {
-    flex: 1;
-    font-size: 15px;
-    padding: 10px;
-    min-width: unset;
-  }
-
-  /* ── Calendar ── */
+  /* ─ Calendar ─ */
   .cal-grid {
     gap: 3px;
   }
+
   .cal-label {
     font-size: 9px;
     padding: 2px 0;
   }
+
   .cal-day {
-    min-height: 50px;
-    padding: 2px;
+    min-height: 90px;
+    padding: 4px 3px;
   }
+
   .cal-day-num {
     font-size: 9px;
   }
+
   .cal-task {
     font-size: 8px;
     padding: 1px 2px;
     border-radius: 2px;
   }
+
   .cal-title {
     font-size: 0.9rem;
   }
+
   .cal-nav {
     width: 28px;
     height: 28px;
     font-size: 16px;
   }
-  .cal-task-popup {
-    width: calc(100vw - 24px);
-    max-width: 340px;
+
+  /* Calendar popup bottom sheet handled in the 768px block above */
+
+  /* ─ Login / Signup ─ */
+  .login-overlay,
+  .signup-overlay {
+    padding: 24px 20px;
+    align-items: center;
+    box-sizing: border-box;
   }
 
-  /* ── Tabs ── */
-  .tab-group {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .tab-group::-webkit-scrollbar {
-    display: none;
-  }
-  .tab {
-    font-size: 13px;
-    padding: 7px 12px;
-    white-space: nowrap;
+  .login-box,
+  .signup-box {
+    padding: 28px 22px 22px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
   }
 
-  /* ── Filters row ── */
-  .task-filters-row {
-    gap: 6px;
-    margin-top: 10px;
-  }
-  .view-toggle-btn {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  /* ── Login / Signup ── */
   .login-row,
   .signup-row {
     grid-template-columns: 1fr;
-    row-gap: 4px;
+    row-gap: 6px;
   }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .form-row label {
     text-align: left;
-    padding-bottom: 2px;
+    padding-bottom: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
   }
-  .login-box,
-  .signup-box {
-    padding: 20px;
-    width: 95%;
-    max-width: none;
+
+  [data-theme="dark"] .form-row label {
+    color: #aaa;
   }
+
+  .login-box input,
+  .signup-box input {
+    font-size: 16px;
+  }
+
   .option {
-    margin: 15px -20px -20px;
-    padding: 15px 20px 20px;
+    margin: 16px -22px -22px;
+    padding: 16px 22px 22px;
+    border-radius: 0 0 20px 20px;
   }
 
-  /* ── Scroll buttons ── */
-  .scroll-top-btn {
-    left: 2px;
-    font-size: 20px;
-  }
-  .scroll-top-btn--right {
-    right: 2px;
-  }
-
-  /* ── Empty state ── */
+  /* ─ Empty state ─ */
   .empty-state-text {
-    font-size: 17px;
+    font-size: 16px;
+  }
+
+  /* ─ Toast — lifted above FAB ─ */
+  #toast {
+    bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Remove blue blob in light mode */
+  body:not([data-theme="dark"]) .intro-area::after,
+  body:not([data-theme="dark"]) .main-content::after {
+    display: none;
   }
 }

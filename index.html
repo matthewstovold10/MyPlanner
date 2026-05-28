@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyPlanner</title>
+    <!-- Apply saved theme before first paint to prevent flash of light mode -->
+    <script>
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
@@ -11,7 +20,11 @@
     />
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0d6efd" />
-    <link rel="icon" href="icons/icon-512.png" type="image/png" />
+    <link rel="icon" href="icons/icon-192-transparent.png" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/icon-192-flat-try.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MyPlanner" />
 
     <script>
       if ("scrollRestoration" in history) {
@@ -168,6 +181,36 @@
       <main class="main-content">
         <div id="introWrapper">
           <section class="intro-area">
+            <div class="splash-logo-wrap" aria-hidden="true">
+              <svg
+                class="splash-logo-svg"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  class="splash-circle"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  stroke="#4a7afe"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                  stroke-dasharray="264"
+                  stroke-dashoffset="264"
+                />
+                <path
+                  class="splash-tick"
+                  d="M27 52 L42 68 L73 34"
+                  stroke="#4a7afe"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-dasharray="70"
+                  stroke-dashoffset="70"
+                />
+              </svg>
+            </div>
             <h1 id="introGreeting"></h1>
             <p>Track your tasks and goals all in one place.</p>
           </section>
@@ -284,12 +327,14 @@
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
+        signInWithRedirect,
+        getRedirectResult,
         updateProfile,
       } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyD2xU7vC6eo5Hn5biVHPeYd1vUibnIwp0o",
-        authDomain: "mypanner-77655.firebaseapp.com",
+        authDomain: "mypanner-77655.web.app",
         projectId: "mypanner-77655",
         storageBucket: "mypanner-77655.firebasestorage.app",
         messagingSenderId: "70262178120",
@@ -383,6 +428,36 @@
         }, 500);
       }
 
+      // Set a day-based greeting immediately so the CSS splash animation
+      // (which fires at 1.75s) always has text ready — auth may resolve later.
+      // Uses a cached name from localStorage so the personalised version shows
+      // straight away on every load after the first login.
+      (function () {
+        const el = document.getElementById("introGreeting");
+        if (!el) return;
+        const n = localStorage.getItem("cachedUserName");
+        const g = n
+          ? [
+              `A fresh week starts tomorrow, ${n}`,
+              `New week, let's get organised, ${n}`,
+              `Keep the momentum going, ${n}`,
+              `Halfway there, stay on track, ${n}`,
+              `Almost the weekend, push through, ${n}`,
+              `Finish the week strong, ${n}`,
+              `Even weekends need a plan, ${n}`,
+            ]
+          : [
+              "Plan your week",
+              "New week, let's get organised",
+              "Keep the momentum going",
+              "Halfway there, stay on track",
+              "Almost the weekend, push through",
+              "Finish the week strong",
+              "Even weekends need a plan",
+            ];
+        setGreetingWithDots(el, g[new Date().getDay()]);
+      })();
+
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           loginOverlay.style.display = "none";
@@ -392,6 +467,7 @@
           loginBtn.style.display = "none";
           currentUserDisplay.textContent = `Hello, ${(user.displayName || user.email).split(" ")[0]}`;
           const _name = (user.displayName || user.email).split(" ")[0];
+          localStorage.setItem("cachedUserName", _name);
           const _dayGreetings = [
             `A fresh week starts tomorrow, ${_name}`,
             `New week, let's get organised, ${_name}`,
@@ -402,8 +478,9 @@
             `Even weekends need a plan, ${_name}`,
           ];
           const _introEl = document.getElementById("introGreeting");
-          if (_introEl)
+          if (_introEl) {
             setGreetingWithDots(_introEl, _dayGreetings[new Date().getDay()]);
+          }
           window.currentFirebaseUser = user;
           window.dispatchEvent(new Event("userLoggedIn"));
         } else {
@@ -425,11 +502,9 @@
               "Even weekends need a plan",
             ];
             const _introElGuest = document.getElementById("introGreeting");
-            if (_introElGuest)
-              setGreetingWithDots(
-                _introElGuest,
-                _guestGreetings[new Date().getDay()],
-              );
+            if (_introElGuest) {
+              setGreetingWithDots(_introElGuest, _guestGreetings[new Date().getDay()]);
+            }
             window.dispatchEvent(new Event("userLoggedIn"));
           } else {
             document.body.classList.add("overlay-active");
@@ -488,13 +563,27 @@
         }
       });
 
+      const isPWA =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+
       async function googleSignIn() {
         try {
-          await signInWithPopup(auth, provider);
+          if (isPWA) {
+            await signInWithRedirect(auth, provider);
+          } else {
+            await signInWithPopup(auth, provider);
+          }
         } catch (err) {
           alert(err.message);
         }
       }
+
+      getRedirectResult(auth).catch((err) => {
+        if (err && err.code && err.code !== "auth/no-auth-event") {
+          console.error("Redirect sign-in error:", err);
+        }
+      });
 
       document
         .getElementById("googleLogin")
@@ -512,6 +601,7 @@
 
       logoutBtn.addEventListener("click", async () => {
         localStorage.removeItem("currentUser");
+        localStorage.removeItem("cachedUserName");
         await signOut(auth);
         location.reload();
       });
@@ -524,5 +614,48 @@
       document.body.classList.add("overlay-active");
     </script>
     <script type="module" src="script.js"></script>
+
+    <script>
+      /* Splash logo stroke animation — JS only, no !important CSS conflicts */
+      (function () {
+        if (window.innerWidth > 480) return;
+
+        var CIRCLE_LEN = 264; /* 2π × 42 */
+        var TICK_LEN = 70; /* path M27,52 L42,68 L73,34 */
+
+        function ease(t) {
+          return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+
+        function animateDash(el, len, ms, onDone) {
+          el.style.strokeDasharray = len;
+          el.style.strokeDashoffset = len;
+          var start = null;
+          function step(ts) {
+            if (!start) start = ts;
+            var p = Math.min((ts - start) / ms, 1);
+            el.style.strokeDashoffset = len * (1 - ease(p));
+            if (p < 1) {
+              requestAnimationFrame(step);
+            } else {
+              el.style.strokeDashoffset = 0;
+              if (onDone) onDone();
+            }
+          }
+          requestAnimationFrame(step);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          var circle = document.querySelector(".splash-circle");
+          var tick = document.querySelector(".splash-tick");
+          if (!circle || !tick) return;
+          setTimeout(function () {
+            animateDash(circle, CIRCLE_LEN, 900, function () {
+              animateDash(tick, TICK_LEN, 550, null);
+            });
+          }, 300);
+        });
+      })();
+    </script>
   </body>
 </html>
