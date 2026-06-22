@@ -2822,7 +2822,7 @@ header .progress-bar {
     align-items: center !important;
     justify-content: center !important;
     pointer-events: none;
-    animation: myplannerSplash 7s ease forwards;
+    animation: myplannerSplash 5s ease forwards;
   }
 
   [data-theme="dark"] #introWrapper {
