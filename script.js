@@ -32,6 +32,7 @@ let _progressHideTimer = null;
 
 let taskInput;
 let dateInput;
+let endDateInput;
 let addTaskBtn;
 let tasksList;
 let progressFill;
@@ -60,6 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   taskInput = document.getElementById("taskInput");
   dateInput = document.getElementById("dateAdd");
+  endDateInput = document.getElementById("endDateAdd");
+  const endDateBtn = document.getElementById("endDateBtn");
+  const dateRangeArrow = document.getElementById("dateRangeArrow");
   addTaskBtn = document.getElementById("addTask");
   tasksList = document.getElementById("tasks");
   progressFill = document.getElementById("progressFill");
@@ -168,12 +172,14 @@ document.addEventListener("DOMContentLoaded", () => {
   addTaskBtn.addEventListener("click", () => {
     const text = taskInput.value.trim();
     const date = dateInput.value;
+    const endDate = endDateInput.value;
     const category = selectedCategory || "school";
     if (text) {
       const newTask = {
         id: Date.now(),
         text,
         date: date || null,
+        endDate: endDate || null,
         category,
         completed: false,
         flagged: false,
@@ -182,6 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
       tasks.push(newTask);
       taskInput.value = "";
       dateInput.value = "";
+      endDateInput.value = "";
+      calendarBtn.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+      calendarBtn.classList.remove("calendar-btn--active");
+      dateRangeArrow.style.display = "none";
+      endDateBtn.style.display = "none";
+      endDateBtn.textContent = "End date";
       saveTasks();
       renderTasks();
     }
@@ -313,6 +325,47 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 0);
     });
   }
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  // Start date button — transforms from icon to date text when a date is set
+  dateInput.addEventListener("change", () => {
+    if (dateInput.value) {
+      const d = new Date(dateInput.value + "T00:00:00");
+      calendarBtn.textContent = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      calendarBtn.classList.add("calendar-btn--active");
+      dateRangeArrow.style.display = "";
+      endDateBtn.style.display = "";
+      endDateInput.min = dateInput.value;
+      if (endDateInput.value && endDateInput.value < dateInput.value) {
+        endDateInput.value = "";
+        endDateBtn.textContent = "End date";
+      }
+    } else {
+      calendarBtn.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+      calendarBtn.classList.remove("calendar-btn--active");
+      dateRangeArrow.style.display = "none";
+      endDateBtn.style.display = "none";
+      endDateInput.value = "";
+      endDateBtn.textContent = "End date";
+    }
+  });
+
+  endDateBtn.addEventListener("click", () => {
+    endDateInput.style.pointerEvents = "auto";
+    endDateInput.focus();
+    endDateInput.showPicker?.();
+    setTimeout(() => { endDateInput.style.pointerEvents = "none"; }, 0);
+  });
+
+  endDateInput.addEventListener("change", () => {
+    if (endDateInput.value) {
+      const d = new Date(endDateInput.value + "T00:00:00");
+      endDateBtn.textContent = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    } else {
+      endDateBtn.textContent = "End date";
+    }
+  });
 
   // Enter key — add task
   taskInput.addEventListener("keydown", (e) => {
@@ -1045,10 +1098,18 @@ function renderTasks(taskArray = tasks) {
     if (task.date) {
       dateSpan = document.createElement("span");
       dateSpan.className = "task-date";
-      dateSpan.textContent = formatDateWithDay(task.date);
-      if (!task.completed) {
-        const urgency = getDateUrgency(task.date);
-        if (urgency) dateSpan.classList.add(`date-${urgency}`);
+      if (task.endDate) {
+        dateSpan.textContent = `${formatDateWithDay(task.date)} – ${formatDateWithDay(task.endDate)}`;
+        if (!task.completed) {
+          const urgency = getDateUrgency(task.endDate);
+          if (urgency) dateSpan.classList.add(`date-${urgency}`);
+        }
+      } else {
+        dateSpan.textContent = formatDateWithDay(task.date);
+        if (!task.completed) {
+          const urgency = getDateUrgency(task.date);
+          if (urgency) dateSpan.classList.add(`date-${urgency}`);
+        }
       }
     }
 
@@ -1180,7 +1241,17 @@ function renderCalendar(taskArray = tasks) {
   // group tasks by date
   const byDate = {};
   filtered.forEach((t) => {
-    if (t.date) (byDate[t.date] = byDate[t.date] || []).push(t);
+    if (!t.date) return;
+    if (t.endDate) {
+      const start = new Date(t.date + "T00:00:00");
+      const end = new Date(t.endDate + "T00:00:00");
+      for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
+        const key = getLocalDateStr(cur);
+        (byDate[key] = byDate[key] || []).push(t);
+      }
+    } else {
+      (byDate[t.date] = byDate[t.date] || []).push(t);
+    }
   });
 
   // empty leading cells
@@ -1293,35 +1364,100 @@ function showCalendarTaskPopup(task, chip) {
   categoryWrapper.appendChild(categoryDropdown);
   categoryWrapper.appendChild(arrow);
 
-  // Date picker
-  const dateWrapper = document.createElement("div");
-  dateWrapper.className = "cal-popup-date-row";
+  // Date container — same unified style as add task bar and list edit
+  const popupMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const dateContainer = document.createElement("div");
+  dateContainer.className = "calendar-wrap cal-popup-date-container";
+
   const calButton = document.createElement("button");
-  calButton.className = "edit-calendar-btn cal-popup-cal-btn";
   calButton.type = "button";
-  calButton.innerHTML = `<img src="img/icons8-calendar-24.png" alt="Calendar" />`;
+  calButton.className = "calendar-btn";
+
   const editDateInput = document.createElement("input");
   editDateInput.type = "date";
   editDateInput.className = "edit-date-input";
   editDateInput.value = task.date || "";
-  const dateLabel = document.createElement("span");
-  dateLabel.className = "cal-popup-date-label";
-  dateLabel.textContent = task.date
-    ? formatDateWithDay(task.date)
-    : "No date set";
-  editDateInput.addEventListener("change", () => {
-    dateLabel.textContent = editDateInput.value
-      ? formatDateWithDay(editDateInput.value)
-      : "No date set";
-  });
+
+  const popupArrow = document.createElement("span");
+  popupArrow.className = "date-range-arrow";
+  popupArrow.textContent = "→";
+  popupArrow.style.display = task.date ? "" : "none";
+
+  const popupEndBtn = document.createElement("button");
+  popupEndBtn.type = "button";
+  popupEndBtn.className = "end-date-btn";
+  popupEndBtn.style.display = task.date ? "" : "none";
+
+  const popupEndDateInput = document.createElement("input");
+  popupEndDateInput.type = "date";
+  popupEndDateInput.className = "edit-date-input";
+  popupEndDateInput.value = task.endDate || "";
+  popupEndDateInput.min = task.date || "";
+
+  // Initialise from existing task data
+  if (task.date) {
+    const d = new Date(task.date + "T00:00:00");
+    calButton.textContent = `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`;
+    calButton.classList.add("calendar-btn--active");
+  } else {
+    calButton.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+  }
+  popupEndBtn.textContent = task.endDate
+    ? (() => { const d = new Date(task.endDate + "T00:00:00"); return `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`; })()
+    : "End date";
+
   calButton.addEventListener("click", (e) => {
     e.stopPropagation();
+    editDateInput.style.pointerEvents = "auto";
+    editDateInput.focus();
     editDateInput.showPicker?.();
+    setTimeout(() => { editDateInput.style.pointerEvents = "none"; }, 0);
   });
 
-  dateWrapper.appendChild(calButton);
-  dateWrapper.appendChild(dateLabel);
-  dateWrapper.appendChild(editDateInput);
+  editDateInput.addEventListener("change", () => {
+    if (editDateInput.value) {
+      const d = new Date(editDateInput.value + "T00:00:00");
+      calButton.textContent = `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`;
+      calButton.classList.add("calendar-btn--active");
+      popupArrow.style.display = "";
+      popupEndBtn.style.display = "";
+      popupEndDateInput.min = editDateInput.value;
+      if (popupEndDateInput.value && popupEndDateInput.value < editDateInput.value) {
+        popupEndDateInput.value = "";
+        popupEndBtn.textContent = "End date";
+      }
+    } else {
+      calButton.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+      calButton.classList.remove("calendar-btn--active");
+      popupArrow.style.display = "none";
+      popupEndBtn.style.display = "none";
+      popupEndDateInput.value = "";
+      popupEndBtn.textContent = "End date";
+    }
+  });
+
+  popupEndBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    popupEndDateInput.style.pointerEvents = "auto";
+    popupEndDateInput.focus();
+    popupEndDateInput.showPicker?.();
+    setTimeout(() => { popupEndDateInput.style.pointerEvents = "none"; }, 0);
+  });
+
+  popupEndDateInput.addEventListener("change", () => {
+    if (popupEndDateInput.value) {
+      const d = new Date(popupEndDateInput.value + "T00:00:00");
+      popupEndBtn.textContent = `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`;
+    } else {
+      popupEndBtn.textContent = "End date";
+    }
+  });
+
+  dateContainer.appendChild(calButton);
+  dateContainer.appendChild(editDateInput);
+  dateContainer.appendChild(popupArrow);
+  dateContainer.appendChild(popupEndBtn);
+  dateContainer.appendChild(popupEndDateInput);
 
   // Save / Cancel buttons
   const buttonGroup = document.createElement("div");
@@ -1336,6 +1472,7 @@ function showCalendarTaskPopup(task, chip) {
       textInput.value,
       categoryDropdown.value,
       editDateInput.value,
+      popupEndDateInput.value,
     );
     closeCalendarPopup();
   });
@@ -1352,7 +1489,7 @@ function showCalendarTaskPopup(task, chip) {
   popup.appendChild(textInput);
   popup.appendChild(completeBtn);
   popup.appendChild(categoryWrapper);
-  popup.appendChild(dateWrapper);
+  popup.appendChild(dateContainer);
   popup.appendChild(buttonGroup);
 
   document.body.appendChild(popup);
@@ -1525,39 +1662,101 @@ function enterEditMode(li, task) {
   categoryWrapper.appendChild(categoryDropdown);
   categoryWrapper.appendChild(arrow);
 
-  // DATE PICKER
-  const dateWrapper = document.createElement("div");
-  dateWrapper.className = "edit-date-wrapper";
+  // DATE CONTAINER — same style as add task bar
+  const editMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const dateContainer = document.createElement("div");
+  dateContainer.className = "calendar-wrap edit-date-container";
 
-  const calButton = document.createElement("button");
-  calButton.className = "edit-calendar-btn";
-  calButton.type = "button";
-  calButton.innerHTML = `<img src="img/icons8-calendar-24.png" alt="Calendar" />`;
-
-  const dateLabel = document.createElement("span");
-  dateLabel.className = "edit-date-label";
-  dateLabel.textContent = task.date
-    ? formatDateWithDay(task.date)
-    : "No date set";
+  const editCalBtn = document.createElement("button");
+  editCalBtn.type = "button";
+  editCalBtn.className = "calendar-btn";
 
   const editDateInput = document.createElement("input");
   editDateInput.type = "date";
   editDateInput.className = "edit-date-input";
   editDateInput.value = task.date || "";
 
-  editDateInput.addEventListener("change", () => {
-    dateLabel.textContent = editDateInput.value
-      ? formatDateWithDay(editDateInput.value)
-      : "No date set";
-  });
+  const editArrow = document.createElement("span");
+  editArrow.className = "date-range-arrow";
+  editArrow.textContent = "→";
+  editArrow.style.display = task.date ? "" : "none";
 
-  calButton.addEventListener("click", () => {
+  const editEndBtn = document.createElement("button");
+  editEndBtn.type = "button";
+  editEndBtn.className = "end-date-btn";
+  editEndBtn.style.display = task.date ? "" : "none";
+
+  const editEndDateInput = document.createElement("input");
+  editEndDateInput.type = "date";
+  editEndDateInput.className = "edit-date-input";
+  editEndDateInput.value = task.endDate || "";
+  editEndDateInput.min = task.date || "";
+
+  // Initialise button states from existing task data
+  if (task.date) {
+    const d = new Date(task.date + "T00:00:00");
+    editCalBtn.textContent = `${d.getDate()} ${editMonths[d.getMonth()]} ${d.getFullYear()}`;
+    editCalBtn.classList.add("calendar-btn--active");
+  } else {
+    editCalBtn.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+  }
+  if (task.endDate) {
+    const d = new Date(task.endDate + "T00:00:00");
+    editEndBtn.textContent = `${d.getDate()} ${editMonths[d.getMonth()]} ${d.getFullYear()}`;
+  } else {
+    editEndBtn.textContent = "End date";
+  }
+
+  editCalBtn.addEventListener("click", () => {
+    editDateInput.style.pointerEvents = "auto";
+    editDateInput.focus();
     editDateInput.showPicker?.();
+    setTimeout(() => { editDateInput.style.pointerEvents = "none"; }, 0);
   });
 
-  dateWrapper.appendChild(calButton);
-  dateWrapper.appendChild(dateLabel);
-  dateWrapper.appendChild(editDateInput);
+  editDateInput.addEventListener("change", () => {
+    if (editDateInput.value) {
+      const d = new Date(editDateInput.value + "T00:00:00");
+      editCalBtn.textContent = `${d.getDate()} ${editMonths[d.getMonth()]} ${d.getFullYear()}`;
+      editCalBtn.classList.add("calendar-btn--active");
+      editArrow.style.display = "";
+      editEndBtn.style.display = "";
+      editEndDateInput.min = editDateInput.value;
+      if (editEndDateInput.value && editEndDateInput.value < editDateInput.value) {
+        editEndDateInput.value = "";
+        editEndBtn.textContent = "End date";
+      }
+    } else {
+      editCalBtn.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
+      editCalBtn.classList.remove("calendar-btn--active");
+      editArrow.style.display = "none";
+      editEndBtn.style.display = "none";
+      editEndDateInput.value = "";
+      editEndBtn.textContent = "End date";
+    }
+  });
+
+  editEndBtn.addEventListener("click", () => {
+    editEndDateInput.style.pointerEvents = "auto";
+    editEndDateInput.focus();
+    editEndDateInput.showPicker?.();
+    setTimeout(() => { editEndDateInput.style.pointerEvents = "none"; }, 0);
+  });
+
+  editEndDateInput.addEventListener("change", () => {
+    if (editEndDateInput.value) {
+      const d = new Date(editEndDateInput.value + "T00:00:00");
+      editEndBtn.textContent = `${d.getDate()} ${editMonths[d.getMonth()]} ${d.getFullYear()}`;
+    } else {
+      editEndBtn.textContent = "End date";
+    }
+  });
+
+  dateContainer.appendChild(editCalBtn);
+  dateContainer.appendChild(editDateInput);
+  dateContainer.appendChild(editArrow);
+  dateContainer.appendChild(editEndBtn);
+  dateContainer.appendChild(editEndDateInput);
 
   // BUTTONS
   const buttonGroup = document.createElement("div");
@@ -1572,6 +1771,7 @@ function enterEditMode(li, task) {
       textInput.value,
       categoryDropdown.value,
       editDateInput.value,
+      editEndDateInput.value,
     );
   });
 
@@ -1591,7 +1791,7 @@ function enterEditMode(li, task) {
   // BUILD FORM
   editForm.appendChild(textInput);
   editForm.appendChild(categoryWrapper);
-  editForm.appendChild(dateWrapper);
+  editForm.appendChild(dateContainer);
   editForm.appendChild(buttonGroup);
 
   li.appendChild(editForm);
@@ -1600,7 +1800,7 @@ function enterEditMode(li, task) {
   textInput.select();
 }
 
-function saveEdit(task, newText, newCategory, newDate) {
+function saveEdit(task, newText, newCategory, newDate, newEndDate) {
   const trimmedText = newText.trim();
   if (!trimmedText) {
     alert("Task text cannot be empty");
@@ -1610,6 +1810,7 @@ function saveEdit(task, newText, newCategory, newDate) {
   task.text = trimmedText;
   task.category = newCategory;
   task.date = newDate || null;
+  task.endDate = newEndDate || null;
 
   saveTasks();
   renderTasks();

@@ -181,35 +181,38 @@
       <main class="main-content">
         <div id="introWrapper">
           <section class="intro-area">
-            <div class="splash-logo-wrap" aria-hidden="true">
-              <svg
-                class="splash-logo-svg"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  class="splash-circle"
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  stroke="#4a7afe"
-                  stroke-width="7"
-                  stroke-linecap="round"
-                  stroke-dasharray="264"
-                  stroke-dashoffset="264"
-                />
-                <path
-                  class="splash-tick"
-                  d="M27 52 L42 68 L73 34"
-                  stroke="#4a7afe"
-                  stroke-width="7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-dasharray="70"
-                  stroke-dashoffset="70"
-                />
-              </svg>
+            <div class="splash-brand-row">
+              <div class="splash-logo-wrap" aria-hidden="true">
+                <svg
+                  class="splash-logo-svg"
+                  viewBox="0 0 100 100"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    class="splash-circle"
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    stroke="#4a7afe"
+                    stroke-width="7"
+                    stroke-linecap="round"
+                    stroke-dasharray="264"
+                    stroke-dashoffset="264"
+                  />
+                  <path
+                    class="splash-tick"
+                    d="M27 52 L42 68 L70 37"
+                    stroke="#4a7afe"
+                    stroke-width="7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-dasharray="64"
+                    stroke-dashoffset="64"
+                  />
+                </svg>
+              </div>
+              <div class="splash-brand-name">MyPlanner</div>
             </div>
             <h1 id="introGreeting"></h1>
             <p>Track your tasks and goals all in one place.</p>
@@ -254,6 +257,9 @@
               <img src="img/icons8-calendar-24.png" />
             </button>
             <input type="date" id="dateAdd" />
+            <span id="dateRangeArrow" class="date-range-arrow" style="display:none">→</span>
+            <button id="endDateBtn" class="end-date-btn" style="display:none">End date</button>
+            <input type="date" id="endDateAdd" />
           </div>
 
           <button id="addTask" class="general-btn">Add</button>
@@ -621,7 +627,7 @@
         if (window.innerWidth > 480) return;
 
         var CIRCLE_LEN = 264; /* 2π × 42 */
-        var TICK_LEN = 70; /* path M27,52 L42,68 L73,34 */
+        var TICK_LEN = 64; /* path M27,52 L42,68 L70,37 */
 
         function ease(t) {
           return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;

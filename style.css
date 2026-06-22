@@ -2,8 +2,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ─ Splash logo: hidden everywhere except mobile splash ─ */
-.splash-logo-wrap {
+/* ─ Splash logo + brand name: hidden everywhere except mobile splash ─ */
+.splash-logo-wrap,
+.splash-brand-name,
+.splash-brand-row {
   display: none;
 }
 
@@ -1074,6 +1076,35 @@ body.intro-dismissed #introSentinel {
   align-items: center;
 }
 
+.calendar-wrap:has(.calendar-btn--active) {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-wrap:has(.calendar-btn--active) .calendar-btn {
+  border: none;
+  box-shadow: none;
+}
+
+.calendar-wrap:has(.calendar-btn--active) .end-date-btn {
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .calendar-wrap:has(.calendar-btn--active) {
+  border-color: #555;
+}
+
+.date-range-arrow {
+  color: #888;
+  font-size: 14px;
+  flex-shrink: 0;
+  pointer-events: none;
+  line-height: 1;
+  padding: 0 4px;
+}
+
 .calendar-btn {
   width: 44px;
   height: 40px;
@@ -1116,6 +1147,18 @@ body.intro-dismissed #introSentinel {
   filter: brightness(0) invert(1);
 }
 
+.calendar-btn--active {
+  width: auto;
+  padding: 0 6px 0 10px;
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .calendar-btn--active {
+  color: #ddd;
+}
+
 #dateAdd {
   position: absolute;
   top: 100%;
@@ -1128,6 +1171,52 @@ body.intro-dismissed #introSentinel {
   padding: 0;
   margin: 0;
   outline: none;
+}
+
+#endDateAdd {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+.end-date-btn {
+  padding: 0 10px 0 6px;
+  height: 40px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  color: #555;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease;
+  flex-shrink: 0;
+}
+
+.end-date-btn:hover {
+  background-color: #f0f0f0;
+}
+
+[data-theme="dark"] .end-date-btn {
+  background-color: #2c2c2c;
+  border-color: #555;
+  color: #ccc;
+}
+
+[data-theme="dark"] .end-date-btn:hover {
+  background-color: #3a3a3a;
 }
 
 .general-btn {
@@ -2259,6 +2348,26 @@ header .progress-bar {
 }
 
 /* Date row */
+.cal-popup-date-container {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.cal-popup-date-container .calendar-btn {
+  height: 36px;
+  width: 36px;
+}
+
+.cal-popup-date-container .calendar-btn--active {
+  height: 36px;
+  width: auto;
+}
+
+.cal-popup-date-container .end-date-btn {
+  height: 36px;
+  font-size: 13px;
+}
+
 .cal-popup-date-row {
   position: relative;
   display: flex;
@@ -2419,6 +2528,12 @@ header .progress-bar {
     gap: 10px;
   }
 
+  /* ─ Tablet/mid-range: restore side padding for task content ─ */
+  .main-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   /* Activate structural wrappers */
   .task-body {
     display: flex;
@@ -2537,6 +2652,12 @@ header .progress-bar {
 
   body {
     background-color: #ffffff;
+  }
+
+  /* ─ Remove mid-range padding — mobile handles its own layout ─ */
+  .main-content {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   [data-theme="dark"] body {
@@ -2701,7 +2822,7 @@ header .progress-bar {
     align-items: center !important;
     justify-content: center !important;
     pointer-events: none;
-    animation: myplannerSplash 6s ease forwards;
+    animation: myplannerSplash 7s ease forwards;
   }
 
   [data-theme="dark"] #introWrapper {
@@ -2721,7 +2842,7 @@ header .progress-bar {
 
   @keyframes myplannerSplash {
     0%,
-    82% {
+    80% {
       opacity: 1;
       visibility: visible;
     }
@@ -2745,13 +2866,23 @@ header .progress-bar {
     display: none !important;
   }
 
+  /* ─ Logo + name side-by-side row ─ */
+  #introWrapper .intro-area .splash-brand-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    margin: 0 0 20px !important;
+    animation: splashLogoIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both !important;
+  }
+
   /* ─ SVG logo wrapper ─ */
   #introWrapper .splash-logo-wrap {
     display: block !important;
-    width: 90px !important;
-    height: 90px !important;
-    margin: 0 auto 24px !important;
-    animation: splashLogoIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both !important;
+    width: 54px !important;
+    height: 54px !important;
+    margin: 0 !important;
+    animation: none !important;
   }
 
   #introWrapper .splash-logo-svg {
@@ -2770,8 +2901,8 @@ header .progress-bar {
 
   /* Tick draws in after circle is done (~1.25s total) */
   #introWrapper .splash-tick {
-    stroke-dasharray: 85;
-    stroke-dashoffset: 85;
+    stroke-dasharray: 64;
+    stroke-dashoffset: 64;
     animation: splashDrawTick 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.15s both !important;
   }
 
@@ -2796,6 +2927,25 @@ header .progress-bar {
     to {
       stroke-dashoffset: 0;
     }
+  }
+
+  /* ─ Brand name below the tick ─ */
+  .splash-brand-name {
+    display: none;
+  }
+
+  #introWrapper .intro-area .splash-brand-name {
+    display: block !important;
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+    color: #1a1a1a !important;
+    margin: 0 !important;
+    animation: none !important;
+  }
+
+  [data-theme="dark"] #introWrapper .intro-area .splash-brand-name {
+    color: #ffffff !important;
   }
 
   /* ─ Hide the blue blob pseudo on splash (not needed, bg handles it) ─ */
@@ -3155,6 +3305,40 @@ header .progress-bar {
     flex: none !important;
   }
 
+  .edit-date-container {
+    width: 100% !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+  }
+
+  .edit-date-container .calendar-btn {
+    height: 44px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    flex-shrink: 0;
+  }
+
+  .edit-date-container .end-date-btn {
+    height: 44px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .edit-date-container:has(.calendar-btn--active) {
+    border-color: #ddd !important;
+    box-shadow: none !important;
+  }
+
+  [data-theme="dark"] .edit-date-container {
+    border-color: #555 !important;
+    background: #2c2c2c !important;
+  }
+
   .edit-date-wrapper .edit-date-input {
     position: absolute !important;
     top: 0 !important;
@@ -3232,12 +3416,13 @@ header .progress-bar {
     right: 0;
     top: auto !important;
     display: grid !important;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "drag drag"
-      "input input"
-      "dropdown calendar"
-      "add add";
+      "drag"
+      "input"
+      "dropdown"
+      "calendar"
+      "add";
     column-gap: 10px;
     row-gap: 12px;
     border-radius: 24px 24px 0 0;
@@ -3270,13 +3455,99 @@ header .progress-bar {
 
   .input-area .calendar-wrap {
     grid-area: calendar;
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+    box-sizing: border-box;
+    justify-content: center;
+    box-shadow: none !important;
+  }
+
+  .input-area .calendar-wrap,
+  .input-area .calendar-wrap:has(.calendar-btn--active) {
+    border-radius: 12px !important;
+    box-shadow: none !important;
+  }
+
+  .input-area .calendar-wrap #dateAdd,
+  .input-area .calendar-wrap #endDateAdd {
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    top: 100% !important;
+  }
+
+  .input-area .calendar-wrap .calendar-btn,
+  .input-area .calendar-wrap .calendar-btn--active {
+    height: 44px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 15px !important;
+    color: #333 !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+  }
+
+  /* Placeholder when no date selected */
+  .input-area .calendar-wrap .calendar-btn:not(.calendar-btn--active)::after {
+    content: "Add date";
+    font-size: 15px;
+    color: #aaa;
+    margin-left: 6px;
+  }
+
+  .input-area .calendar-wrap .end-date-btn {
+    height: 44px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 15px !important;
+    color: #333 !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Arrow — JS controls display, CSS controls size/colour */
+  .input-area .calendar-wrap .date-range-arrow {
+    font-size: 15px !important;
+    color: #888 !important;
+  }
+
+  /* Dark mode: match the task input background exactly (#1a1a1a) */
+  [data-theme="dark"] .input-area .calendar-wrap,
+  [data-theme="dark"] .input-area .calendar-wrap:has(.calendar-btn--active) {
+    background: #1a1a1a !important;
+    border-color: #555 !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+  }
+
+  [data-theme="dark"] .input-area .calendar-wrap .calendar-btn,
+  [data-theme="dark"] .input-area .calendar-wrap .calendar-btn--active,
+  [data-theme="dark"] .input-area .calendar-wrap .end-date-btn {
+    color: #f0f0f0 !important;
+    background: transparent !important;
+  }
+
+  [data-theme="dark"] .input-area .calendar-wrap .date-range-arrow {
+    color: #aaa !important;
+  }
+
+  [data-theme="dark"]
+    .input-area
+    .calendar-wrap
+    .calendar-btn:not(.calendar-btn--active)::after {
+    color: #666 !important;
   }
 
   #addTask {
     grid-area: add;
   }
 
-  /* Dropdown menu opens UPWARD on mobile so it doesn't go off the bottom */
   .input-area .dropdown-menu {
     top: auto !important;
     bottom: calc(100% + 6px) !important;
@@ -3342,7 +3613,6 @@ header .progress-bar {
     flex: 0 0 auto;
   }
 
-  /* Add button — full width, prominent */
   #addTask {
     flex: none;
     width: 100%;
@@ -3366,7 +3636,6 @@ header .progress-bar {
     margin: 0 0 16px;
   }
 
-  /* ─ Drawer backdrop overlay ─ */
   .drawer-overlay {
     display: none;
     position: fixed;
@@ -3389,7 +3658,6 @@ header .progress-bar {
     }
   }
 
-  /* ─ FAB ─ */
   .mobile-fab {
     display: flex;
     position: fixed;
@@ -3465,9 +3733,6 @@ header .progress-bar {
     font-size: 16px;
   }
 
-  /* Calendar popup bottom sheet handled in the 768px block above */
-
-  /* ─ Login / Signup ─ */
   .login-overlay,
   .signup-overlay {
     padding: 24px 20px;
@@ -3519,12 +3784,10 @@ header .progress-bar {
     border-radius: 0 0 20px 20px;
   }
 
-  /* ─ Empty state ─ */
   .empty-state-text {
     font-size: 16px;
   }
 
-  /* ─ Toast — lifted above FAB ─ */
   #toast {
     bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 80px));
     left: 12px;
@@ -3535,7 +3798,6 @@ header .progress-bar {
 }
 
 @media (max-width: 768px) {
-  /* Remove blue blob in light mode */
   body:not([data-theme="dark"]) .intro-area::after,
   body:not([data-theme="dark"]) .main-content::after {
     display: none;

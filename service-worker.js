@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v73";
+const CACHE_VERSION = "v97";
 const CACHE_NAME = `myplanner-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
