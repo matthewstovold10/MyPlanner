@@ -4,11 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyPlanner</title>
-    <!-- Apply saved theme before first paint to prevent flash of light mode -->
     <script>
       (function () {
         var t = localStorage.getItem("theme");
-        if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        if (
+          t === "dark" ||
+          (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
           document.documentElement.setAttribute("data-theme", "dark");
         }
       })();
@@ -20,7 +22,11 @@
     />
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0d6efd" />
-    <link rel="icon" href="icons/icon-192-transparent.png?v=2" type="image/png" />
+    <link
+      rel="icon"
+      href="icons/icon-192-transparent.png?v=2"
+      type="image/png"
+    />
     <link rel="apple-touch-icon" href="icons/icon-192-flat-try.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -257,8 +263,15 @@
               <img src="img/icons8-calendar-24.png" />
             </button>
             <input type="date" id="dateAdd" />
-            <span id="dateRangeArrow" class="date-range-arrow" style="display:none">→</span>
-            <button id="endDateBtn" class="end-date-btn" style="display:none">End date</button>
+            <span
+              id="dateRangeArrow"
+              class="date-range-arrow"
+              style="display: none"
+              >→</span
+            >
+            <button id="endDateBtn" class="end-date-btn" style="display: none">
+              End date
+            </button>
             <input type="date" id="endDateAdd" />
           </div>
 
@@ -434,10 +447,6 @@
         }, 500);
       }
 
-      // Set a day-based greeting immediately so the CSS splash animation
-      // (which fires at 1.75s) always has text ready — auth may resolve later.
-      // Uses a cached name from localStorage so the personalised version shows
-      // straight away on every load after the first login.
       (function () {
         const el = document.getElementById("introGreeting");
         if (!el) return;
@@ -509,7 +518,10 @@
             ];
             const _introElGuest = document.getElementById("introGreeting");
             if (_introElGuest) {
-              setGreetingWithDots(_introElGuest, _guestGreetings[new Date().getDay()]);
+              setGreetingWithDots(
+                _introElGuest,
+                _guestGreetings[new Date().getDay()],
+              );
             }
             window.dispatchEvent(new Event("userLoggedIn"));
           } else {
@@ -622,12 +634,11 @@
     <script type="module" src="script.js"></script>
 
     <script>
-      /* Splash logo stroke animation — JS only, no !important CSS conflicts */
       (function () {
         if (window.innerWidth > 480) return;
 
-        var CIRCLE_LEN = 264; /* 2π × 42 */
-        var TICK_LEN = 64; /* path M27,52 L42,68 L70,37 */
+        var CIRCLE_LEN = 264;
+        var TICK_LEN = 64;
 
         function ease(t) {
           return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;

@@ -1,4 +1,3 @@
-// --- FIREBASE FIRESTORE IMPORTS ---
 import {
   collection,
   doc,
@@ -97,11 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
   injectToastStyles();
   loadUserData();
 
-  // ------------------------------
-  // EVENT LISTENERS
-  // ------------------------------
-
-  // Throttle scroll handlers to one execution per animation frame
   function rafThrottle(fn) {
     let rafId = null;
     return function (...args) {
@@ -113,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Scroll-to-top button — lifts lock, restores intro, scrolls back up
   function scrollToTopAction() {
     window.removeEventListener("scroll", lockScroll);
     splashDismissed = false;
@@ -243,7 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const theme = isDark ? "light" : "dark";
     const newBg = theme === "dark" ? "#1e1e1e" : "#f5f5f5";
 
-    // Cover the page with a GPU-composited overlay while tiles repaint
     const veil = document.createElement("div");
     veil.style.cssText = `position:fixed;inset:0;z-index:99999;pointer-events:none;background:${newBg};opacity:0;transition:opacity 0.07s ease`;
     document.body.appendChild(veil);
@@ -254,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.setAttribute("data-theme", theme);
         localStorage.setItem("theme", theme);
         themeToggle.classList.toggle("theme-toggle--toggled", theme === "dark");
-        // Wait for browser to finish repainting all tiles before revealing
+
         setTimeout(() => {
           veil.style.transition = "opacity 0.12s ease";
           veil.style.opacity = "0";
@@ -314,7 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTasks();
   });
 
-  // Calendar picker
   if (calendarBtn && dateInput && typeof dateInput.showPicker === "function") {
     calendarBtn.addEventListener("click", () => {
       dateInput.style.pointerEvents = "auto";
@@ -326,9 +317,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-  // Start date button — transforms from icon to date text when a date is set
   dateInput.addEventListener("change", () => {
     if (dateInput.value) {
       const d = new Date(dateInput.value + "T00:00:00");
@@ -355,7 +358,9 @@ document.addEventListener("DOMContentLoaded", () => {
     endDateInput.style.pointerEvents = "auto";
     endDateInput.focus();
     endDateInput.showPicker?.();
-    setTimeout(() => { endDateInput.style.pointerEvents = "none"; }, 0);
+    setTimeout(() => {
+      endDateInput.style.pointerEvents = "none";
+    }, 0);
   });
 
   endDateInput.addEventListener("change", () => {
@@ -367,24 +372,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Enter key — add task
   taskInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addTaskBtn.click();
   });
 
-  // Enter key — trigger search
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") searchSubmit.click();
   });
 
-  // Scroll handlers
   window.addEventListener("scroll", rafThrottle(onScrollCheck), {
     passive: true,
   });
   window.addEventListener("scroll", rafThrottle(positionScrollBtn), {
     passive: true,
   });
-  // Window resize
+
   window.addEventListener("resize", () => {
     const activeTab = document.querySelector(".tab.active");
     if (activeTab) {
@@ -393,7 +395,6 @@ document.addEventListener("DOMContentLoaded", () => {
     positionScrollBtn();
   });
 
-  // ── Mobile FAB + bottom drawer ──
   const overlay = document.createElement("div");
   overlay.className = "drawer-overlay";
   document.body.appendChild(overlay);
@@ -408,7 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inputArea.classList.add("drawer-open");
     overlay.classList.add("visible");
     fab.classList.add("fab-open");
-    taskInput.focus(); // must be synchronous (within user gesture) for iOS
+    taskInput.focus();
   }
 
   function closeDrawer() {
@@ -435,9 +436,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ------------------------------
-// IN-APP TOAST NOTIFICATIONS
-// ------------------------------
 let toastChecked = false;
 
 function injectToastStyles() {
@@ -594,7 +592,6 @@ function checkDueTasks() {
     (t) => t.date === tomorrowStr && !t.completed,
   );
 
-  // Stagger the toasts slightly if both fire
   if (dueToday.length > 0) {
     showToast(
       "Due Today!",
@@ -617,9 +614,6 @@ function checkDueTasks() {
   }
 }
 
-// ------------------------------
-// LOAD USER DATA
-// ------------------------------
 async function loadUserData() {
   console.log("Loading user data for:", currentUser);
 
@@ -659,13 +653,9 @@ async function loadUserData() {
   applyCategoryStyles("all");
 }
 
-// ------------------------------
-// INTRO DISMISS ON SCROLL
-// ------------------------------
 const onScrollCheck = () => {
   if (splashDismissed || introRemoved || scrollingToTop) return;
 
-  // On mobile let the intro scroll naturally — never hide it or lock scroll
   if (window.innerWidth <= 768) return;
 
   const inputTop = inputArea.getBoundingClientRect().top;
@@ -679,9 +669,6 @@ const onScrollCheck = () => {
     introWrapper.style.opacity = 1 - progress;
   }
 
-  // Trigger when the intro section has scrolled up past the header bottom.
-  // Using introWrapper's bottom (not inputArea top) so this fires correctly
-  // regardless of what sticky `top` value the input area has.
   const introBottom = introWrapper
     ? introWrapper.getBoundingClientRect().bottom
     : 0;
@@ -694,7 +681,6 @@ const onScrollCheck = () => {
       introWrapper.style.opacity = "0";
       introWrapper.style.transform = "translateY(-30px)";
       setTimeout(() => {
-        // Hide instead of remove so it can be restored by the scroll-top button
         introWrapper.style.display = "none";
         document.body.classList.add("intro-dismissed");
 
@@ -728,11 +714,6 @@ const lockScroll = () => {
   }
 };
 
-// ------------------------------
-// POSITION SCROLL-TOP BUTTON
-// Keeps the ↑ arrow vertically centred with the sticky input bar
-// regardless of which category tab is active.
-// ------------------------------
 function positionScrollBtn() {
   if (!scrollTopBtn || !inputArea) return;
   const rect = inputArea.getBoundingClientRect();
@@ -741,8 +722,6 @@ function positionScrollBtn() {
   if (scrollTopBtnRight) scrollTopBtnRight.style.top = centre;
 }
 
-// ------------------------------
-// ------------------------------
 const predefinedColors = [
   {
     light: "hsl(210, 70%, 85%)",
@@ -876,9 +855,6 @@ function applyCategoryStyles(cat) {
   document.head.appendChild(style);
 }
 
-// ------------------------------
-// TAB ACTIVATION
-// ------------------------------
 function activateTab(tab) {
   document
     .querySelectorAll(".tab")
@@ -889,7 +865,6 @@ function activateTab(tab) {
   moveIndicator(tab);
   currentFilter = tab.dataset.filter;
   renderTasks();
-  // Wait for the browser to re-layout after renderTasks before reading getBoundingClientRect
   requestAnimationFrame(() => positionScrollBtn());
 }
 
@@ -900,9 +875,6 @@ function moveIndicator(tab) {
   indicator.style.top = tab.offsetTop + "px";
 }
 
-// ------------------------------
-// MAIN CATEGORY DROPDOWN OPTIONS
-// ------------------------------
 function renderDropdown() {
   dropdownMenu.innerHTML = "";
 
@@ -985,7 +957,6 @@ function deleteCategory(cat) {
   if (allTab) activateTab(allTab);
 }
 
-// Save categories separately
 async function saveCategoriesOnly() {
   if (currentUser === "guest") return;
 
@@ -993,14 +964,10 @@ async function saveCategoriesOnly() {
   await updateDoc(userRef, { categories });
 }
 
-// ------------------------------
-// RENDER TABS
-// ------------------------------
 function renderTabs() {
   document.querySelectorAll(".tab-group .tab").forEach((t) => t.remove());
 
   categories.forEach((cat, index) => {
-    // Apply category styles immediately
     if (cat !== "") {
       applyCategoryStyles(cat);
     }
@@ -1025,32 +992,23 @@ function renderTabs() {
   });
 }
 
-// ------------------------------
-// RENDER TASKS
-// ------------------------------
 function renderTasks(taskArray = tasks) {
   taskArray = [...taskArray].sort((a, b) => {
-    // Flagged incomplete always first
     const aFlagged = a.flagged && !a.completed;
     const bFlagged = b.flagged && !b.completed;
     if (aFlagged !== bFlagged) return aFlagged ? -1 : 1;
 
-    // Completed always last
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
 
-    // Both auto (no drag order): sort by date, soonest first, no-date last
     if (a.manualOrder == null && b.manualOrder == null) {
       if (!a.date && !b.date) return 0;
       if (!a.date) return 1;
       if (!b.date) return -1;
       return new Date(a.date) - new Date(b.date);
     }
-
-    // Both manually ordered: respect drag position
     if (a.manualOrder != null && b.manualOrder != null)
       return a.manualOrder - b.manualOrder;
 
-    // Mixed: auto-sorted (null) appears before manually-ordered ones
     return a.manualOrder == null ? -1 : 1;
   });
 
@@ -1189,7 +1147,6 @@ function renderCalendar(taskArray = tasks) {
     );
   }
 
-  // ── Header: prev / month title / next ──
   const hdr = document.createElement("div");
   hdr.className = "cal-header";
 
@@ -1219,7 +1176,6 @@ function renderCalendar(taskArray = tasks) {
   hdr.append(prevBtn, titleEl, nextBtn);
   tasksList.appendChild(hdr);
 
-  // ── Day-of-week labels ──
   const labels = document.createElement("div");
   labels.className = "cal-grid cal-day-labels";
   ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].forEach((d) => {
@@ -1230,22 +1186,24 @@ function renderCalendar(taskArray = tasks) {
   });
   tasksList.appendChild(labels);
 
-  // ── Day grid ──
   const grid = document.createElement("div");
   grid.className = "cal-grid";
 
-  const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7; // Mon=0
+  const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const todayStr = getLocalDateStr(new Date());
 
-  // group tasks by date
   const byDate = {};
   filtered.forEach((t) => {
     if (!t.date) return;
     if (t.endDate) {
       const start = new Date(t.date + "T00:00:00");
       const end = new Date(t.endDate + "T00:00:00");
-      for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
+      for (
+        let cur = new Date(start);
+        cur <= end;
+        cur.setDate(cur.getDate() + 1)
+      ) {
         const key = getLocalDateStr(cur);
         (byDate[key] = byDate[key] || []).push(t);
       }
@@ -1254,7 +1212,6 @@ function renderCalendar(taskArray = tasks) {
     }
   });
 
-  // empty leading cells
   for (let i = 0; i < firstDayOfWeek; i++) {
     const empty = document.createElement("div");
     empty.className = "cal-day cal-day--empty";
@@ -1292,7 +1249,6 @@ function renderCalendar(taskArray = tasks) {
   }
   tasksList.appendChild(grid);
 
-  // ── Undated tasks ──
   const undated = filtered.filter((t) => !t.date);
   if (undated.length) {
     const section = document.createElement("div");
@@ -1317,9 +1273,6 @@ function renderCalendar(taskArray = tasks) {
   updateProgress();
 }
 
-// ------------------------------
-// CALENDAR TASK POPUP
-// ------------------------------
 function showCalendarTaskPopup(task, chip) {
   closeCalendarPopup();
 
@@ -1327,13 +1280,11 @@ function showCalendarTaskPopup(task, chip) {
   popup.id = "cal-task-popup";
   popup.className = "cal-task-popup";
 
-  // Text input
   const textInput = document.createElement("input");
   textInput.type = "text";
   textInput.className = "edit-text-input";
   textInput.value = task.text;
 
-  // Complete toggle button
   const completeBtn = document.createElement("button");
   completeBtn.className =
     "cal-popup-complete-btn" + (task.completed ? " completed" : "");
@@ -1345,7 +1296,7 @@ function showCalendarTaskPopup(task, chip) {
     saveTasks();
     renderTasks();
   });
-  // Category select
+
   const categoryWrapper = document.createElement("div");
   categoryWrapper.className = "edit-select-wrapper";
   const categoryDropdown = document.createElement("select");
@@ -1364,8 +1315,20 @@ function showCalendarTaskPopup(task, chip) {
   categoryWrapper.appendChild(categoryDropdown);
   categoryWrapper.appendChild(arrow);
 
-  // Date container — same unified style as add task bar and list edit
-  const popupMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const popupMonths = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const dateContainer = document.createElement("div");
   dateContainer.className = "calendar-wrap cal-popup-date-container";
 
@@ -1394,7 +1357,6 @@ function showCalendarTaskPopup(task, chip) {
   popupEndDateInput.value = task.endDate || "";
   popupEndDateInput.min = task.date || "";
 
-  // Initialise from existing task data
   if (task.date) {
     const d = new Date(task.date + "T00:00:00");
     calButton.textContent = `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`;
@@ -1403,7 +1365,10 @@ function showCalendarTaskPopup(task, chip) {
     calButton.innerHTML = `<img src="img/icons8-calendar-24.png" />`;
   }
   popupEndBtn.textContent = task.endDate
-    ? (() => { const d = new Date(task.endDate + "T00:00:00"); return `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`; })()
+    ? (() => {
+        const d = new Date(task.endDate + "T00:00:00");
+        return `${d.getDate()} ${popupMonths[d.getMonth()]} ${d.getFullYear()}`;
+      })()
     : "End date";
 
   calButton.addEventListener("click", (e) => {
@@ -1411,7 +1376,9 @@ function showCalendarTaskPopup(task, chip) {
     editDateInput.style.pointerEvents = "auto";
     editDateInput.focus();
     editDateInput.showPicker?.();
-    setTimeout(() => { editDateInput.style.pointerEvents = "none"; }, 0);
+    setTimeout(() => {
+      editDateInput.style.pointerEvents = "none";
+    }, 0);
   });
 
   editDateInput.addEventListener("change", () => {
@@ -1422,7 +1389,10 @@ function showCalendarTaskPopup(task, chip) {
       popupArrow.style.display = "";
       popupEndBtn.style.display = "";
       popupEndDateInput.min = editDateInput.value;
-      if (popupEndDateInput.value && popupEndDateInput.value < editDateInput.value) {
+      if (
+        popupEndDateInput.value &&
+        popupEndDateInput.value < editDateInput.value
+      ) {
         popupEndDateInput.value = "";
         popupEndBtn.textContent = "End date";
       }
@@ -1441,7 +1411,9 @@ function showCalendarTaskPopup(task, chip) {
     popupEndDateInput.style.pointerEvents = "auto";
     popupEndDateInput.focus();
     popupEndDateInput.showPicker?.();
-    setTimeout(() => { popupEndDateInput.style.pointerEvents = "none"; }, 0);
+    setTimeout(() => {
+      popupEndDateInput.style.pointerEvents = "none";
+    }, 0);
   });
 
   popupEndDateInput.addEventListener("change", () => {
@@ -1459,7 +1431,6 @@ function showCalendarTaskPopup(task, chip) {
   dateContainer.appendChild(popupEndBtn);
   dateContainer.appendChild(popupEndDateInput);
 
-  // Save / Cancel buttons
   const buttonGroup = document.createElement("div");
   buttonGroup.className = "edit-buttons";
   const saveBtn = document.createElement("button");
@@ -1497,10 +1468,8 @@ function showCalendarTaskPopup(task, chip) {
   const isMobile = window.innerWidth <= 768;
 
   if (isMobile) {
-    // Mobile: CSS bottom-sheet handles position — just make visible
     requestAnimationFrame(() => popup.classList.add("visible"));
 
-    // Backdrop overlay
     let backdrop = document.getElementById("cal-popup-backdrop");
     if (!backdrop) {
       backdrop = document.createElement("div");
@@ -1512,7 +1481,6 @@ function showCalendarTaskPopup(task, chip) {
     }
     backdrop.addEventListener("click", closeCalendarPopup);
   } else {
-    // Desktop: position above/below the chip
     popup.style.top = "-9999px";
     popup.style.left = "-9999px";
     requestAnimationFrame(() => {
@@ -1614,15 +1582,12 @@ function autoSizeSelect(selectEl) {
   temp.textContent = selectEl.options[selectEl.selectedIndex].text;
 
   document.body.appendChild(temp);
-  const width = temp.getBoundingClientRect().width + 40; // padding + arrow
+  const width = temp.getBoundingClientRect().width + 40;
   document.body.removeChild(temp);
 
   selectEl.style.width = width + "px";
 }
 
-// ------------------------------
-// EDIT MODE FUNCTIONS
-// ------------------------------
 function enterEditMode(li, task) {
   li.dataset.editMode = "true";
   li.innerHTML = "";
@@ -1631,13 +1596,11 @@ function enterEditMode(li, task) {
   const editForm = document.createElement("div");
   editForm.className = "edit-form";
 
-  // TEXT INPUT
   const textInput = document.createElement("input");
   textInput.type = "text";
   textInput.className = "edit-text-input";
   textInput.value = task.text;
 
-  // CATEGORY SELECT (native + custom arrow)
   const categoryWrapper = document.createElement("div");
   categoryWrapper.className = "edit-select-wrapper";
 
@@ -1662,8 +1625,20 @@ function enterEditMode(li, task) {
   categoryWrapper.appendChild(categoryDropdown);
   categoryWrapper.appendChild(arrow);
 
-  // DATE CONTAINER — same style as add task bar
-  const editMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const editMonths = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const dateContainer = document.createElement("div");
   dateContainer.className = "calendar-wrap edit-date-container";
 
@@ -1692,7 +1667,6 @@ function enterEditMode(li, task) {
   editEndDateInput.value = task.endDate || "";
   editEndDateInput.min = task.date || "";
 
-  // Initialise button states from existing task data
   if (task.date) {
     const d = new Date(task.date + "T00:00:00");
     editCalBtn.textContent = `${d.getDate()} ${editMonths[d.getMonth()]} ${d.getFullYear()}`;
@@ -1711,7 +1685,9 @@ function enterEditMode(li, task) {
     editDateInput.style.pointerEvents = "auto";
     editDateInput.focus();
     editDateInput.showPicker?.();
-    setTimeout(() => { editDateInput.style.pointerEvents = "none"; }, 0);
+    setTimeout(() => {
+      editDateInput.style.pointerEvents = "none";
+    }, 0);
   });
 
   editDateInput.addEventListener("change", () => {
@@ -1722,7 +1698,10 @@ function enterEditMode(li, task) {
       editArrow.style.display = "";
       editEndBtn.style.display = "";
       editEndDateInput.min = editDateInput.value;
-      if (editEndDateInput.value && editEndDateInput.value < editDateInput.value) {
+      if (
+        editEndDateInput.value &&
+        editEndDateInput.value < editDateInput.value
+      ) {
         editEndDateInput.value = "";
         editEndBtn.textContent = "End date";
       }
@@ -1740,7 +1719,9 @@ function enterEditMode(li, task) {
     editEndDateInput.style.pointerEvents = "auto";
     editEndDateInput.focus();
     editEndDateInput.showPicker?.();
-    setTimeout(() => { editEndDateInput.style.pointerEvents = "none"; }, 0);
+    setTimeout(() => {
+      editEndDateInput.style.pointerEvents = "none";
+    }, 0);
   });
 
   editEndDateInput.addEventListener("change", () => {
@@ -1758,7 +1739,6 @@ function enterEditMode(li, task) {
   dateContainer.appendChild(editEndBtn);
   dateContainer.appendChild(editEndDateInput);
 
-  // BUTTONS
   const buttonGroup = document.createElement("div");
   buttonGroup.className = "edit-buttons";
 
@@ -1788,7 +1768,6 @@ function enterEditMode(li, task) {
   buttonGroup.appendChild(saveBtn);
   buttonGroup.appendChild(cancelBtn);
 
-  // BUILD FORM
   editForm.appendChild(textInput);
   editForm.appendChild(categoryWrapper);
   editForm.appendChild(dateContainer);
@@ -1816,9 +1795,6 @@ function saveEdit(task, newText, newCategory, newDate, newEndDate) {
   renderTasks();
 }
 
-// ------------------------------
-// DRAG AND DROP HANDLERS
-// ------------------------------
 function handleDragStart(e) {
   if (!e.currentTarget._allowDrag) {
     e.preventDefault();
@@ -1916,9 +1892,6 @@ function getDragAfterElement(container, y) {
   ).element;
 }
 
-// ------------------------------
-// UPDATE PROGRESS
-// ------------------------------
 function updateProgress() {
   const progressSection = document.querySelector("header .progress");
 
@@ -1961,9 +1934,7 @@ function updateProgress() {
     document.body.classList.remove("progress-active");
   }
 }
-// ------------------------------
-// SERVICE WORKER
-// ------------------------------
+
 if ("serviceWorker" in navigator) {
   let refreshing = false;
 
@@ -1973,12 +1944,10 @@ if ("serviceWorker" in navigator) {
       .then((registration) => {
         console.log("[Page] Service Worker registered successfully");
 
-        // Check for updates every 30 seconds
         setInterval(() => {
           registration.update();
         }, 30000);
 
-        // Handle updates
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
           console.log("[Page] New service worker found");
@@ -1988,14 +1957,12 @@ if ("serviceWorker" in navigator) {
               newWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
-              // New version available
               console.log("[Page] New version ready");
               showUpdateBanner(registration);
             }
           });
         });
 
-        // Check if there's already an update waiting
         if (registration.waiting) {
           console.log("[Page] Update already waiting");
           showUpdateBanner(registration);
@@ -2006,9 +1973,7 @@ if ("serviceWorker" in navigator) {
       });
   });
 
-  // Show update notification banner
   function showUpdateBanner(registration) {
-    // Don't show multiple banners
     if (document.getElementById("update-banner")) return;
 
     const banner = document.createElement("div");
@@ -2033,7 +1998,6 @@ if ("serviceWorker" in navigator) {
       max-width: 90%;
     `;
 
-    // Check theme for dark mode styling
     const isDark =
       document.documentElement.getAttribute("data-theme") === "dark";
     if (isDark) {
@@ -2074,7 +2038,6 @@ if ("serviceWorker" in navigator) {
 
     document.body.appendChild(banner);
 
-    // Add animation styles
     if (!document.getElementById("update-banner-styles")) {
       const style = document.createElement("style");
       style.id = "update-banner-styles";
@@ -2116,10 +2079,8 @@ if ("serviceWorker" in navigator) {
       btn.disabled = true;
 
       if (registration && registration.waiting) {
-        // Tell the waiting SW to activate
         registration.waiting.postMessage({ type: "SKIP_WAITING" });
       }
-      // Force reload after short delay regardless — don't rely on controllerchange
       setTimeout(() => window.location.reload(), 500);
     });
 

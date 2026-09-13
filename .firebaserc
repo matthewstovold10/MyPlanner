@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "mypanner-77655"
-  }
+  },
+  "targets": {
+    "mypanner-77655": {
+      "hosting": {
+        "main": [
+          "myplanner-ms"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

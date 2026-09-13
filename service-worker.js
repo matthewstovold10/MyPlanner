@@ -29,9 +29,6 @@ const STATIC_ASSETS = [
   "./img/icons8-edit-96.png",
 ];
 
-// Domains that should NEVER be intercepted by the SW.
-// Firebase handles its own caching/auth internally — intercepting it
-// adds latency and can break requests.
 const SKIP_DOMAINS = [
   "firestore.googleapis.com",
   "firebase.googleapis.com",
@@ -54,10 +51,9 @@ function shouldSkip(url) {
   }
 }
 
-// Install — pre-cache static assets and activate immediately
 self.addEventListener("install", (event) => {
   console.log("[SW] Installing:", CACHE_VERSION);
-  self.skipWaiting(); // activate straight away, no waiting for old tabs
+  self.skipWaiting();
   event.waitUntil(
     caches
       .open(CACHE_NAME)
@@ -66,7 +62,6 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate — delete old caches and take control immediately
 self.addEventListener("activate", (event) => {
   console.log("[SW] Activating:", CACHE_VERSION);
   event.waitUntil(
@@ -86,17 +81,13 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch — cache-first for static assets, network-only for everything else
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-
-  // Let Firebase and other API calls go straight to the network untouched
   if (request.method !== "GET" || shouldSkip(request.url)) return;
 
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) {
-        // Serve from cache immediately, refresh in background
         fetch(request)
           .then((fresh) => {
             if (fresh && fresh.status === 200) {
@@ -107,7 +98,6 @@ self.addEventListener("fetch", (event) => {
         return cached;
       }
 
-      // Not in cache — fetch from network and cache for next time
       return fetch(request)
         .then((response) => {
           if (response && response.status === 200) {
@@ -127,7 +117,6 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Allow manual skip-waiting from the page if needed
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });

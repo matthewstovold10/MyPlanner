@@ -1373,13 +1373,11 @@ body.intro-dismissed #introSentinel {
   border-left: none;
 }
 
-/* Due today or overdue */
 .task-date.date-overdue {
   color: #c0392b;
   font-weight: 600;
 }
 
-/* Due within the next 5 days */
 .task-date.date-soon {
   color: #d48f07;
   font-weight: 600;
@@ -1526,7 +1524,6 @@ body.intro-dismissed #introSentinel {
   transition: transform 0.15s ease;
 }
 
-/* Icon sizing */
 .delete-icon {
   width: 20px;
   height: 20px;
@@ -1552,7 +1549,6 @@ body.intro-dismissed #introSentinel {
   background-color: rgba(37, 35, 35, 0.83);
 }
 
-/* Dark theme tweaks */
 [data-theme="dark"] .task-list li button.delete-btn {
   color: #ff6b6b;
 }
@@ -1655,9 +1651,6 @@ body.intro-dismissed #introSentinel {
   box-shadow: none !important;
 }
 
-/* ------------------------------
-   Edit Mode Styles
------------------------------- */
 .task-list li.editing {
   padding: 15px;
   background-color: #fff;
@@ -1936,11 +1929,6 @@ body.intro-dismissed #introSentinel {
   background-color: #1258a0 !important;
 }
 
-/* ------------------------------
-   Progress Bar
------------------------------- */
-/* progress bar now lives in .progress-strip, not the header */
-
 .flash {
   animation: pulse 1s infinite alternate;
 }
@@ -2045,7 +2033,6 @@ header .progress-bar {
   transition: 0.2s;
 }
 
-/* ── Calendar ── */
 .cal-header {
   display: flex;
   align-items: center;
@@ -2177,19 +2164,14 @@ header .progress-bar {
   padding: 4px 10px;
 }
 
-/* remove the old margin-top since .task-filters-row handles it now */
 .task-filters {
   margin-top: 0;
 }
 
-/* ------------------------------
-   Scroll To Top Button
------------------------------- */
 .scroll-top-btn {
   position: fixed;
   left: 10px;
-  top: 137px; /* dynamically overridden by JS — default = center of sticky input bar */
-  width: 20px;
+  top: 137px;
   background: none;
   border: none;
   box-shadow: none;
@@ -2200,7 +2182,6 @@ header .progress-bar {
   z-index: 998;
   opacity: 0;
   pointer-events: none;
-  /*transform: translateX(-6px);*/
   transition:
     opacity 0.25s ease,
     transform 0.25s ease,
@@ -2208,9 +2189,6 @@ header .progress-bar {
   padding: 0;
 }
 
-/* ------------------------------
-   Calendar Task Popup
------------------------------- */
 .cal-task-popup {
   position: absolute;
   z-index: 2000;
@@ -2236,7 +2214,6 @@ header .progress-bar {
   pointer-events: auto;
 }
 
-/* Arrow pointing down (popup sits above the chip) */
 .cal-task-popup::before,
 .cal-task-popup::after {
   content: "";
@@ -2259,7 +2236,6 @@ header .progress-bar {
   border-top: 8px solid #fff;
 }
 
-/* Arrow pointing up (popup sits below the chip) */
 .cal-task-popup--below::before {
   bottom: auto;
   top: -10px;
@@ -2324,7 +2300,6 @@ header .progress-bar {
   color: #4caf50;
 }
 
-/* Full-width elements inside popup */
 .cal-task-popup .edit-text-input {
   width: 100%;
   box-sizing: border-box;
@@ -2494,10 +2469,6 @@ header .progress-bar {
   background-clip: text;
 }
 
-/* ================================================================
-   LAYOUT WRAPPERS — transparent on desktop, real containers on mobile
-   ================================================================ */
-
 .task-body {
   display: contents;
 }
@@ -2506,15 +2477,10 @@ header .progress-bar {
   display: contents;
 }
 
-/* ================================================================
-   RESPONSIVE STYLES
-   ================================================================ */
-
 .mobile-fab {
   display: none;
 }
 
-/* ── Tablet  481px – 768px ── */
 @media (max-width: 768px) {
   body,
   html {
@@ -2528,13 +2494,11 @@ header .progress-bar {
     gap: 10px;
   }
 
-  /* ─ Tablet/mid-range: restore side padding for task content ─ */
   .main-content {
     padding-left: 16px;
     padding-right: 16px;
   }
 
-  /* Activate structural wrappers */
   .task-body {
     display: flex;
     flex-direction: column;
@@ -2579,14 +2543,12 @@ header .progress-bar {
     font-size: clamp(9px, 1.5vw, 14px);
   }
 
-  /* ─ Calendar popup → bottom sheet on all mobile/tablet ─ */
   .cal-task-popup {
     position: fixed !important;
     bottom: -100vh;
     top: auto !important;
     left: 0 !important;
     right: 0 !important;
-    /* No explicit width — left+right anchors constrain it; padding stays inside */
     box-sizing: border-box !important;
     width: auto !important;
     max-width: 100% !important;
@@ -2602,7 +2564,6 @@ header .progress-bar {
     transition: bottom 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
-  /* All children constrained within the sheet */
   .cal-task-popup > * {
     box-sizing: border-box;
     max-width: 100%;
@@ -2613,7 +2574,6 @@ header .progress-bar {
     pointer-events: auto;
   }
 
-  /* Drag handle pill */
   .cal-task-popup::before {
     content: "";
     display: block;
@@ -2641,9 +2601,7 @@ header .progress-bar {
   }
 }
 
-/* ── Mobile  ≤ 480px ── */
 @media (max-width: 480px) {
-  /* ─ Page background — only body, not html, so blobs show through ─ */
   body,
   html {
     padding: 0;
@@ -2654,7 +2612,6 @@ header .progress-bar {
     background-color: #ffffff;
   }
 
-  /* ─ Remove mid-range padding — mobile handles its own layout ─ */
   .main-content {
     padding-left: 0;
     padding-right: 0;
@@ -2664,7 +2621,6 @@ header .progress-bar {
     background-color: #1e1e1e;
   }
 
-  /* ─ Mobile blobs: blue top-right (small), green mid-right (small) ─ */
   .main-content::before,
   body.intro-dismissed .main-content::before {
     background: rgba(58, 122, 254, 0.45) !important;
@@ -2695,7 +2651,7 @@ header .progress-bar {
   [data-theme="dark"] body.intro-dismissed .main-content::before,
   [data-theme="dark"] .main-content::after,
   [data-theme="dark"] body.intro-dismissed .main-content::after {
-    display: none !important; /* just hide them on mobile entirely */
+    display: none !important;
   }
 
   header {
@@ -2773,7 +2729,6 @@ header .progress-bar {
     border-radius: 0 8px 8px 0;
   }
 
-  /* Hide the user/login area while the login overlay is showing */
   body.overlay-active #currentUserDisplay,
   body.overlay-active #loginBtn,
   body.overlay-active #logoutBtn {
@@ -2784,7 +2739,6 @@ header .progress-bar {
     font-size: 1.55rem;
   }
 
-  /* ─ Intro — same feel as desktop, just scaled for mobile ─ */
   .intro-area {
     padding: 40px 2px 1px;
     text-align: center;
@@ -2799,12 +2753,10 @@ header .progress-bar {
     background: rgba(76, 175, 80, 0.15) !important;
   }
 
-  /* Mobile: introWrapper — fullscreen splash on launch */
   #introWrapper {
     position: fixed !important;
     inset: 0 !important;
     margin: 0 !important;
-    /* Colour blobs baked into the background gradient — no z-index fights */
     background:
       radial-gradient(
         circle at 18% 18%,
@@ -2852,7 +2804,6 @@ header .progress-bar {
     }
   }
 
-  /* ─ Splash content block ─ */
   #introWrapper .intro-area {
     text-align: center !important;
     padding: 0 40px !important;
@@ -2861,12 +2812,10 @@ header .progress-bar {
     z-index: 1 !important;
   }
 
-  /* ─ App-icon badge above the greeting — replaced by SVG logo ─ */
   #introWrapper .intro-area::before {
     display: none !important;
   }
 
-  /* ─ Logo + name side-by-side row ─ */
   #introWrapper .intro-area .splash-brand-row {
     display: flex !important;
     align-items: center !important;
@@ -2876,7 +2825,6 @@ header .progress-bar {
     animation: splashLogoIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both !important;
   }
 
-  /* ─ SVG logo wrapper ─ */
   #introWrapper .splash-logo-wrap {
     display: block !important;
     width: 54px !important;
@@ -2892,14 +2840,12 @@ header .progress-bar {
     overflow: visible !important;
   }
 
-  /* Circle draws in: circumference = 2π × 42 ≈ 264 */
   #introWrapper .splash-circle {
     stroke-dasharray: 264;
     stroke-dashoffset: 264;
     animation: splashDrawCircle 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both !important;
   }
 
-  /* Tick draws in after circle is done (~1.25s total) */
   #introWrapper .splash-tick {
     stroke-dasharray: 64;
     stroke-dashoffset: 64;
@@ -2929,7 +2875,6 @@ header .progress-bar {
     }
   }
 
-  /* ─ Brand name below the tick ─ */
   .splash-brand-name {
     display: none;
   }
@@ -2948,7 +2893,6 @@ header .progress-bar {
     color: #ffffff !important;
   }
 
-  /* ─ Hide the blue blob pseudo on splash (not needed, bg handles it) ─ */
   #introWrapper .intro-area::after {
     display: none !important;
   }
@@ -2962,7 +2906,6 @@ header .progress-bar {
     animation: splashTextIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 1.75s both !important;
   }
 
-  /* ─ Subtitle — appears just after h1 ─ */
   #introWrapper .intro-area p {
     font-size: 14px !important;
     color: #888 !important;
@@ -2994,7 +2937,6 @@ header .progress-bar {
     font-size: 14px;
   }
 
-  /* ─ Main content pad ─ */
   .main-content {
     padding: 8px 0 110px;
     transition: padding-top 0.4s ease;
@@ -3004,18 +2946,15 @@ header .progress-bar {
     padding-top: 30px;
   }
 
-  /* ─ Hide scroll buttons on mobile ─ */
   .scroll-top-btn,
   .scroll-top-btn--right {
     display: none !important;
   }
 
-  /* ─ Sentinel: not needed on mobile (introWrapper is fixed, out of flow) ─ */
   #introSentinel {
     height: 0 !important;
   }
 
-  /* ─ Filter / tab bar: inline, rounded, not sticky ─ */
   .task-filters-row {
     position: static;
     z-index: auto;
@@ -3036,7 +2975,6 @@ header .progress-bar {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   }
 
-  /* ─ Tab group: fills remaining row space, scrollable ─ */
   .tab-group {
     flex: 1;
     min-width: 0;
@@ -3059,7 +2997,6 @@ header .progress-bar {
     display: none;
   }
 
-  /* ─ View toggle: icon-only square button at end of row ─ */
   .view-toggle-btn,
   .view-toggle-btn.active {
     display: flex;
@@ -3074,7 +3011,7 @@ header .progress-bar {
     border: 1.5px solid rgba(0, 0, 0, 0.15) !important;
     background: rgba(0, 0, 0, 0.05) !important;
     color: #555 !important;
-    font-size: 0 !important; /* hide text label, keep SVG */
+    font-size: 0 !important;
     gap: 0;
   }
 
@@ -3092,7 +3029,6 @@ header .progress-bar {
     color: #ccc !important;
   }
 
-  /* ─ Tab indicator hidden (gooey effect off on mobile) ─ */
   .tab-indicator {
     display: none !important;
   }
@@ -3127,12 +3063,10 @@ header .progress-bar {
     border-color: transparent;
   }
 
-  /* ─ Hide "Your Tasks" heading ─ */
   .task-list > h2 {
     display: none;
   }
 
-  /* ─ Task list wrapper ─ */
   .task-list {
     padding: 0 12px 0;
     gap: 0;
@@ -3142,7 +3076,6 @@ header .progress-bar {
     margin: 0 !important;
   }
 
-  /* ─ Task card ─ */
   .task-list li {
     display: flex;
     align-items: center;
@@ -3162,12 +3095,10 @@ header .progress-bar {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
   }
 
-  /* ─ Drag button hidden ─ */
   .task-list li button.drag-btn {
     display: none !important;
   }
 
-  /* ─ Complete button ─ */
   .task-list li button:nth-child(2) {
     flex: 0 0 36px;
     width: 36px;
@@ -3176,7 +3107,6 @@ header .progress-bar {
     align-self: center;
   }
 
-  /* ─ Task body wrapper (text + meta row) ─ */
   .task-body {
     display: flex;
     flex-direction: column;
@@ -3185,7 +3115,6 @@ header .progress-bar {
     gap: 5px;
   }
 
-  /* ─ Task text span ─ */
   .task-list li .task-body > span {
     display: block;
     font-size: 15px;
@@ -3195,7 +3124,6 @@ header .progress-bar {
     white-space: normal;
   }
 
-  /* ─ Task meta row (category + date) ─ */
   .task-meta {
     display: flex;
     align-items: center;
@@ -3203,7 +3131,6 @@ header .progress-bar {
     flex-wrap: wrap;
   }
 
-  /* ─ Category badge ─ */
   .task-category {
     font-size: 11px;
     padding: 2px 9px;
@@ -3211,13 +3138,11 @@ header .progress-bar {
     margin-left: 0;
   }
 
-  /* ─ Date badge ─ */
   .task-date {
     font-size: 11px;
     margin-left: 0;
   }
 
-  /* ─ Action buttons ─ */
   .task-actions {
     flex: 0 0 auto;
     margin-left: 0;
@@ -3252,7 +3177,6 @@ header .progress-bar {
     height: 18px;
   }
 
-  /* ─ Edit mode ─ */
   .task-list li.editing {
     display: block !important;
     padding: 14px !important;
@@ -3276,7 +3200,6 @@ header .progress-bar {
     flex: none !important;
   }
 
-  /* Select wrapper: full width block so arrow stays attached */
   .edit-select-wrapper {
     display: block !important;
     position: relative !important;
@@ -3359,7 +3282,6 @@ header .progress-bar {
     background: #2c2c2c !important;
   }
 
-  /* Icon-only, not full width */
   .edit-calendar-btn {
     flex: 0 0 auto !important;
     width: 22px !important;
@@ -3380,14 +3302,10 @@ header .progress-bar {
     pointer-events: auto;
     z-index: 2;
   }
-
-  /* Label fills remaining space */
   .edit-date-label {
     flex: 1;
     font-size: 14px;
   }
-
-  /* Save / Cancel: side by side, equal width */
   .edit-buttons {
     display: flex !important;
     flex-direction: row !important;
@@ -3408,7 +3326,6 @@ header .progress-bar {
     box-sizing: border-box !important;
   }
 
-  /* ─ Input area → bottom drawer ─ */
   .input-area {
     position: fixed !important;
     bottom: -600px;
@@ -3492,7 +3409,6 @@ header .progress-bar {
     width: auto !important;
   }
 
-  /* Placeholder when no date selected */
   .input-area .calendar-wrap .calendar-btn:not(.calendar-btn--active)::after {
     content: "Add date";
     font-size: 15px;
@@ -3511,13 +3427,11 @@ header .progress-bar {
     box-sizing: border-box !important;
   }
 
-  /* Arrow — JS controls display, CSS controls size/colour */
   .input-area .calendar-wrap .date-range-arrow {
     font-size: 15px !important;
     color: #888 !important;
   }
 
-  /* Dark mode: match the task input background exactly (#1a1a1a) */
   [data-theme="dark"] .input-area .calendar-wrap,
   [data-theme="dark"] .input-area .calendar-wrap:has(.calendar-btn--active) {
     background: #1a1a1a !important;
@@ -3569,7 +3483,6 @@ header .progress-bar {
     box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.55);
   }
 
-  /* Drag handle pill at top of drawer */
   .input-area::before {
     content: "";
     display: block;
@@ -3585,7 +3498,6 @@ header .progress-bar {
     background: #444;
   }
 
-  /* Task text input — 16px prevents iOS zoom-on-focus */
   #taskInput {
     flex: none;
     width: 100%;
@@ -3595,7 +3507,6 @@ header .progress-bar {
     box-sizing: border-box;
   }
 
-  /* Category dropdown */
   .dropdown {
     flex: 1;
   }
@@ -3623,7 +3534,6 @@ header .progress-bar {
     box-sizing: border-box;
   }
 
-  /* Search hidden on mobile */
   #searchToggle {
     display: none;
   }
@@ -3698,7 +3608,6 @@ header .progress-bar {
     box-shadow: 0 4px 20px rgba(229, 57, 53, 0.45);
   }
 
-  /* ─ Calendar ─ */
   .cal-grid {
     gap: 3px;
   }
