@@ -1150,104 +1150,180 @@ function renderCalendar(taskArray = tasks) {
   const hdr = document.createElement("div");
   hdr.className = "cal-header";
 
+  const titleEl = document.createElement("h2");
+  titleEl.className = "cal-title";
+  titleEl.textContent = calendarDate.toLocaleDateString("en-GB", {
+    month: "long",
+  });
+  const yearEl = document.createElement("span");
+  yearEl.textContent = ` ${year}`;
+  titleEl.appendChild(yearEl);
+
+  const nav = document.createElement("div");
+  nav.className = "cal-nav-group";
+
   const prevBtn = document.createElement("button");
   prevBtn.className = "cal-nav";
   prevBtn.textContent = "‹";
+  prevBtn.setAttribute("aria-label", "Previous month");
   prevBtn.addEventListener("click", () => {
     calendarDate = new Date(year, month - 1, 1);
+    renderTasks();
+  });
+
+  const todayBtn = document.createElement("button");
+  todayBtn.className = "cal-nav cal-today-btn";
+  todayBtn.textContent = "Today";
+  todayBtn.addEventListener("click", () => {
+    calendarDate = new Date();
     renderTasks();
   });
 
   const nextBtn = document.createElement("button");
   nextBtn.className = "cal-nav";
   nextBtn.textContent = "›";
+  nextBtn.setAttribute("aria-label", "Next month");
   nextBtn.addEventListener("click", () => {
     calendarDate = new Date(year, month + 1, 1);
     renderTasks();
   });
 
-  const titleEl = document.createElement("span");
-  titleEl.className = "cal-title";
-  titleEl.textContent = calendarDate.toLocaleDateString("en-GB", {
-    month: "long",
-    year: "numeric",
-  });
-
-  hdr.append(prevBtn, titleEl, nextBtn);
+  nav.append(prevBtn, todayBtn, nextBtn);
+  hdr.append(titleEl, nav);
   tasksList.appendChild(hdr);
 
+  const sheet = document.createElement("div");
+  sheet.className = "cal-sheet";
+
   const labels = document.createElement("div");
-  labels.className = "cal-grid cal-day-labels";
+  labels.className = "cal-weekdays";
   ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].forEach((d) => {
     const el = document.createElement("div");
-    el.className = "cal-label";
     el.textContent = d;
     labels.appendChild(el);
   });
-  tasksList.appendChild(labels);
+  sheet.appendChild(labels);
 
-  const grid = document.createElement("div");
-  grid.className = "cal-grid";
-
-  const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
   const todayStr = getLocalDateStr(new Date());
+  const addDays = (d, n) => {
+    const x = new Date(d);
+    x.setDate(x.getDate() + n);
+    return x;
+  };
+  const dayDiff = (a, b) =>
+    Math.round(
+      (new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 86400000,
+    );
+  const endOf = (t) => (t.endDate && t.endDate > t.date ? t.endDate : t.date);
+  const isMultiDay = (t) => endOf(t) !== t.date;
+  const shortDate = (s) =>
+    new Date(s + "T00:00:00").toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+    });
+  // Pull the hue out of the category colour so bars can be tinted per theme
+  const hueFor = (cat) => {
+    const m = /hsla?\(\s*([\d.]+)/.exec(generateColorForCategory(cat).light);
+    return m ? m[1] : 0;
+  };
 
-  const byDate = {};
-  filtered.forEach((t) => {
-    if (!t.date) return;
-    if (t.endDate) {
-      const start = new Date(t.date + "T00:00:00");
-      const end = new Date(t.endDate + "T00:00:00");
-      for (
-        let cur = new Date(start);
-        cur <= end;
-        cur.setDate(cur.getDate() + 1)
-      ) {
-        const key = getLocalDateStr(cur);
-        (byDate[key] = byDate[key] || []).push(t);
-      }
-    } else {
-      (byDate[t.date] = byDate[t.date] || []).push(t);
+  // Full weeks, Monday to Sunday, including days from the months either side
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const gridStart = addDays(first, -((first.getDay() + 6) % 7));
+  const gridEnd = addDays(last, 6 - ((last.getDay() + 6) % 7));
+  const dated = filtered.filter((t) => t.date);
+
+  for (let ws = gridStart; ws <= gridEnd; ws = addDays(ws, 7)) {
+    const weekStart = getLocalDateStr(ws);
+    const weekEnd = getLocalDateStr(addDays(ws, 6));
+
+    const week = document.createElement("div");
+    week.className = "cal-week";
+
+    const days = document.createElement("div");
+    days.className = "cal-week-days";
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(ws, i);
+      const cell = document.createElement("div");
+      cell.className = "cal-cell";
+      if (d.getMonth() !== month) cell.classList.add("cal-cell--out");
+      if (getLocalDateStr(d) === todayStr) cell.classList.add("cal-cell--today");
+      const num = document.createElement("span");
+      num.className = "cal-num";
+      num.textContent = d.getDate();
+      cell.appendChild(num);
+      days.appendChild(cell);
     }
-  });
 
-  for (let i = 0; i < firstDayOfWeek; i++) {
-    const empty = document.createElement("div");
-    empty.className = "cal-day cal-day--empty";
-    grid.appendChild(empty);
-  }
+    // Each task becomes one element spanning its days in this week.
+    // Multi-day tasks get lanes first (longest first) so they stay on top.
+    const items = dated
+      .filter((t) => t.date <= weekEnd && endOf(t) >= weekStart)
+      .map((t) => {
+        const from = t.date < weekStart ? weekStart : t.date;
+        const to = endOf(t) > weekEnd ? weekEnd : endOf(t);
+        return {
+          task: t,
+          col: dayDiff(weekStart, from),
+          span: dayDiff(from, to) + 1,
+        };
+      })
+      .sort(
+        (a, b) =>
+          isMultiDay(b.task) - isMultiDay(a.task) ||
+          b.span - a.span ||
+          a.col - b.col,
+      );
 
-  const pad = (n) => String(n).padStart(2, "0");
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${pad(month + 1)}-${pad(d)}`;
-    const dayTasks = byDate[dateStr] || [];
+    const events = document.createElement("div");
+    events.className = "cal-events";
+    const lanes = [];
+    items.forEach(({ task, col, span }) => {
+      let lane = 0;
+      while ((lanes[lane] || []).some((c) => c >= col && c < col + span))
+        lane++;
+      for (let c = col; c < col + span; c++)
+        (lanes[lane] = lanes[lane] || []).push(c);
 
-    const cell = document.createElement("div");
-    cell.className = "cal-day";
-    if (dateStr === todayStr) cell.classList.add("cal-day--today");
+      const multi = isMultiDay(task);
+      const ev = document.createElement("div");
+      ev.className = `cal-ev ${multi ? "cal-ev--span" : "cal-ev--single"}`;
+      ev.style.setProperty("--h", hueFor(task.category));
+      ev.style.gridColumn = `${col + 1} / span ${span}`;
+      ev.style.gridRow = lane + 1;
+      if (task.completed) ev.classList.add("cal-ev--done");
 
-    const num = document.createElement("span");
-    num.className = "cal-day-num";
-    num.textContent = d;
-    cell.appendChild(num);
+      const label = document.createElement("span");
+      label.className = "cal-ev-text";
+      label.textContent = task.text;
+      ev.appendChild(label);
 
-    dayTasks.forEach((task) => {
-      const chip = document.createElement("div");
-      chip.className = `cal-task cat-${task.category.toLowerCase()}`;
-      if (task.completed) chip.classList.add("cal-task--done");
-      chip.textContent = task.text;
-      chip.title = task.text;
-      chip.addEventListener("click", (e) => {
+      if (multi) {
+        ev.title = `${task.text} · ${shortDate(task.date)} – ${shortDate(endOf(task))}`;
+        if (task.date < weekStart) ev.classList.add("cal-ev--cont-left");
+        if (endOf(task) > weekEnd) ev.classList.add("cal-ev--cont-right");
+        if (span >= 2) {
+          const len = document.createElement("span");
+          len.className = "cal-ev-len";
+          len.textContent = `${dayDiff(task.date, endOf(task)) + 1} days`;
+          ev.appendChild(len);
+        }
+      } else {
+        ev.title = task.text;
+      }
+
+      ev.addEventListener("click", (e) => {
         e.stopPropagation();
-        showCalendarTaskPopup(task, chip);
+        showCalendarTaskPopup(task, ev);
       });
-      cell.appendChild(chip);
+      events.appendChild(ev);
     });
 
-    grid.appendChild(cell);
+    week.append(days, events);
+    sheet.appendChild(week);
   }
-  tasksList.appendChild(grid);
+  tasksList.appendChild(sheet);
 
   const undated = filtered.filter((t) => !t.date);
   if (undated.length) {

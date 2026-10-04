@@ -2037,100 +2037,236 @@ header .progress-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 14px;
   margin-top: 30px;
 }
 .cal-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.cal-title span {
+  color: #888;
+  font-weight: 400;
+}
+.cal-nav-group {
+  display: flex;
+  gap: 6px;
 }
 .cal-nav {
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
+  background: #fff;
+  border: 1px solid #e4e7e4;
+  border-radius: 8px;
+  min-width: 34px;
+  height: 34px;
   font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  padding-bottom: 4px;
+  padding: 0 0 3px;
   color: #333;
-  transition: background-colour 0.2s;
+  transition: border-color 0.2s;
 }
 .cal-nav:hover {
-  background: #f0f0f0;
+  border-color: #4caf50;
+}
+.cal-today-btn {
+  font-size: 14px;
+  padding: 0 12px;
 }
 [data-theme="dark"] .cal-nav {
+  background: #262626;
+  border-color: #363636;
   color: #f0f0f0;
 }
 [data-theme="dark"] .cal-nav:hover {
-  background: #3a3a3a;
+  border-color: #3a7afe;
 }
 
-.cal-grid {
+/* Month sheet: one card, hairline dividers, a lane grid of task bars on top of each week */
+.cal-sheet {
+  --cal-surface: #fff;
+  --cal-weekend: #f8faf8;
+  --cal-line: #e4e7e4;
+  --cal-muted: #888;
+  --cal-faint: #c3c8c3;
+  --cal-accent: #4caf50;
+  --cal-bar-sat: 70%;
+  --cal-bar-bg-l: 88%;
+  --cal-bar-fg-l: 27%;
+  --cal-dot-l: 48%;
+  --cal-lane: 22px;
+  --cal-head: 34px;
+  background: var(--cal-surface);
+  border: 1px solid var(--cal-line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(30, 40, 30, 0.06),
+    0 4px 16px rgba(30, 40, 30, 0.05);
+}
+[data-theme="dark"] .cal-sheet {
+  --cal-surface: #262626;
+  --cal-weekend: #222;
+  --cal-line: #363636;
+  --cal-muted: #9a9a9a;
+  --cal-faint: #565656;
+  --cal-accent: #3a7afe;
+  --cal-bar-sat: 42%;
+  --cal-bar-bg-l: 30%;
+  --cal-bar-fg-l: 88%;
+  --cal-dot-l: 62%;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.25);
+}
+.cal-weekdays,
+.cal-week-days,
+.cal-events {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
-  width: 100%;
 }
-.cal-day-labels {
-  margin-bottom: 4px;
+.cal-weekdays {
+  border-bottom: 1px solid var(--cal-line);
 }
-.cal-label {
-  text-align: center;
-  font-size: 12px;
+.cal-weekdays div {
+  padding: 10px 10px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cal-muted);
+}
+.cal-weekdays div:nth-child(n + 6) {
+  color: var(--cal-faint);
+}
+.cal-week {
+  position: relative;
+  border-bottom: 1px solid var(--cal-line);
+}
+.cal-week:last-child {
+  border-bottom: 0;
+}
+.cal-week-days {
+  position: absolute;
+  inset: 0;
+}
+.cal-cell {
+  border-right: 1px solid var(--cal-line);
+  padding: 6px 8px;
+}
+.cal-cell:last-child {
+  border-right: 0;
+}
+.cal-cell:nth-child(n + 6) {
+  background: var(--cal-weekend);
+}
+.cal-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
   font-weight: 600;
-  color: #888;
-  padding: 4px 0;
+  font-variant-numeric: tabular-nums;
 }
-.cal-day {
-  min-height: 150px;
-  border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  background: #fafafa;
+.cal-cell--out .cal-num {
+  color: var(--cal-faint);
+}
+.cal-cell--today .cal-num {
+  background: var(--cal-accent);
+  color: #fff;
+}
+.cal-events {
+  position: relative;
+  pointer-events: none;
+  padding: var(--cal-head) 0 10px;
+  grid-auto-rows: var(--cal-lane);
+  row-gap: 3px;
+  min-height: 132px;
+}
+
+.cal-ev {
+  --h: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  margin: 0 4px;
   min-width: 0;
-  width: 100%;
-  font-size: clamp(10px, 1vw, 16px);
-  padding: clamp(4px, 0.8vw, 10px);
-  box-sizing: border-box;
-}
-.cal-day--empty {
-  border-color: transparent;
-  background: transparent;
-}
-.cal-day--today {
-  border-color: #4caf50;
-  background: #f0faf1;
-}
-[data-theme="dark"] .cal-day {
-  background: #2c2c2c;
-  border-color: #3a3a3a;
-}
-[data-theme="dark"] .cal-day--today {
-  border-color: #3a7afe;
-  background: #1a2540;
-}
-
-.cal-day-num {
-  font-size: 12px;
-  font-weight: 600;
-  color: #aaa;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
   line-height: 1;
-  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 6px;
+  padding: 0 8px;
+  transition: filter 0.15s;
 }
-.cal-day--today .cal-day-num {
-  color: #4caf50;
+.cal-ev-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
-[data-theme="dark"] .cal-day--today .cal-day-num {
-  color: #3a7afe;
+.cal-ev-len {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+/* Multi-day: one solid bar spanning its columns */
+.cal-ev--span {
+  background: hsl(var(--h) var(--cal-bar-sat) var(--cal-bar-bg-l));
+  color: hsl(var(--h) 55% var(--cal-bar-fg-l));
+  font-weight: 700;
+}
+.cal-ev--span:hover {
+  filter: brightness(0.96) saturate(1.1);
+}
+.cal-ev--cont-left {
+  margin-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-left: 10px;
+}
+.cal-ev--cont-left::before {
+  content: "‹";
+  opacity: 0.55;
+  margin-right: -2px;
+}
+.cal-ev--cont-right {
+  margin-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.cal-ev--cont-right .cal-ev-len::after {
+  content: " ›";
+}
+/* Single day: coloured dot + text, no box */
+.cal-ev--single::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: hsl(var(--h) 65% var(--cal-dot-l));
+}
+.cal-ev--single:hover {
+  background: hsl(var(--h) var(--cal-bar-sat) var(--cal-bar-bg-l) / 0.55);
+}
+.cal-ev--done {
+  opacity: 0.5;
+}
+.cal-ev--done .cal-ev-text {
+  text-decoration: line-through;
 }
 
+/* Undated task chips */
 .cal-task {
   font-size: 15px;
   padding: 2px 5px;
@@ -2538,9 +2674,9 @@ header .progress-bar {
     margin-left: 0;
   }
 
-  .cal-day {
-    min-height: 90px;
-    font-size: clamp(9px, 1.5vw, 14px);
+  .cal-ev {
+    font-size: 11px;
+    padding: 0 6px;
   }
 
   .cal-task-popup {
@@ -3608,22 +3744,62 @@ header .progress-bar {
     box-shadow: 0 4px 20px rgba(229, 57, 53, 0.45);
   }
 
-  .cal-grid {
+  /* Phone calendar: slim bars, single-day tasks shown as dots */
+  .cal-sheet {
+    --cal-lane: 16px;
+    --cal-head: 28px;
+    border-radius: 12px;
+  }
+
+  .cal-weekdays div {
+    padding: 8px 0;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .cal-cell {
+    padding: 4px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .cal-num {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .cal-events {
+    row-gap: 2px;
+    min-height: 84px;
+    padding-bottom: 6px;
+  }
+
+  .cal-ev {
+    margin: 0 2px;
+    font-size: 9.5px;
+    padding: 0 4px;
+    border-radius: 4px;
     gap: 3px;
   }
 
-  .cal-label {
-    font-size: 9px;
-    padding: 2px 0;
+  .cal-ev-len,
+  .cal-ev--cont-left::before {
+    display: none;
   }
 
-  .cal-day {
-    min-height: 90px;
-    padding: 4px 3px;
+  .cal-ev--cont-left {
+    padding-left: 4px;
   }
 
-  .cal-day-num {
-    font-size: 9px;
+  .cal-ev--single {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .cal-ev--single .cal-ev-text {
+    display: none;
   }
 
   .cal-task {
@@ -3633,13 +3809,18 @@ header .progress-bar {
   }
 
   .cal-title {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
   }
 
   .cal-nav {
-    width: 28px;
-    height: 28px;
+    min-width: 30px;
+    height: 30px;
     font-size: 16px;
+  }
+
+  .cal-today-btn {
+    font-size: 12px;
+    padding: 0 10px;
   }
 
   .login-overlay,
