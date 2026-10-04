@@ -14,7 +14,7 @@ What it does
 -Progress bar that fills as you tick things off
 -Light and dark mode
 
-- nstallable as a PWA, so it runs like an app on mobile
+Installable as a PWA, so it runs like an app on mobile
 
 Built with
 
