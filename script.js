@@ -17,12 +17,8 @@ let tasks = [];
 
 let selectedCategory = "all";
 let currentFilter = "all";
-let splashDismissed = false;
-let minScrollTop = 0;
-let introRemoved = false;
 let draggedElement = null;
 let draggedTaskId = null;
-let scrollingToTop = false;
 let currentView = "list";
 const TASKS_PAGE_SIZE = 15;
 let visibleTaskCount = TASKS_PAGE_SIZE;
@@ -52,8 +48,6 @@ let dropdownToggle;
 let dropdownMenu;
 let header;
 let inputArea;
-let introWrapper;
-let sentinel;
 let calendarBtn;
 let scrollTopBtn;
 let scrollTopBtnRight;
@@ -89,8 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
   dropdownMenu = document.getElementById("dropdownMenu");
   header = document.querySelector("header");
   inputArea = document.querySelector(".input-area");
-  introWrapper = document.getElementById("introWrapper");
-  sentinel = document.getElementById("introSentinel");
   calendarBtn = document.getElementById("calendarBtn");
   scrollTopBtn = document.getElementById("scrollTopBtn");
   scrollTopBtnRight = document.getElementById("scrollTopBtnRight");
@@ -117,27 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function scrollToTopAction() {
-    window.removeEventListener("scroll", lockScroll);
-    splashDismissed = false;
-    introRemoved = false;
-    minScrollTop = 0;
-    scrollingToTop = true;
-
-    if (introWrapper) {
-      introWrapper.style.display = "";
-      introWrapper.style.opacity = "1";
-      introWrapper.style.transform = "translateY(0)";
-      introWrapper.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-    }
-
-    document.body.classList.remove("intro-dismissed");
-    scrollTopBtn.classList.remove("visible");
-    if (scrollTopBtnRight) scrollTopBtnRight.classList.remove("visible");
     window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      scrollingToTop = false;
-    }, 800);
   }
 
   if (scrollTopBtn) {
@@ -391,9 +363,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") searchSubmit.click();
   });
 
-  window.addEventListener("scroll", rafThrottle(onScrollCheck), {
-    passive: true,
-  });
   window.addEventListener("scroll", rafThrottle(positionScrollBtn), {
     passive: true,
   });
@@ -664,69 +633,11 @@ async function loadUserData() {
   applyCategoryStyles("all");
 }
 
-const onScrollCheck = () => {
-  if (splashDismissed || introRemoved || scrollingToTop) return;
-
-  if (window.innerWidth <= 768) return;
-
-  const inputTop = inputArea.getBoundingClientRect().top;
-  const headerBottom = header.getBoundingClientRect().bottom;
-  const scrollY = window.scrollY;
-
-  if (introWrapper && scrollY > 0) {
-    const maxScroll = 150;
-    const progress = Math.min(scrollY / maxScroll, 1);
-    introWrapper.style.transform = `translateY(-${progress * 30}px)`;
-    introWrapper.style.opacity = 1 - progress;
-  }
-
-  const introBottom = introWrapper
-    ? introWrapper.getBoundingClientRect().bottom
-    : 0;
-  if (introBottom <= headerBottom + 5) {
-    splashDismissed = true;
-    introRemoved = true;
-
-    if (introWrapper) {
-      introWrapper.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-      introWrapper.style.opacity = "0";
-      introWrapper.style.transform = "translateY(-30px)";
-      setTimeout(() => {
-        introWrapper.style.display = "none";
-        document.body.classList.add("intro-dismissed");
-
-        if (scrollTopBtn) {
-          scrollTopBtn.classList.add("visible");
-          if (scrollTopBtnRight) scrollTopBtnRight.classList.add("visible");
-          positionScrollBtn();
-        }
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            const sentinelHeight =
-              parseInt(getComputedStyle(sentinel).height) || 30;
-            minScrollTop = sentinelHeight;
-
-            window.addEventListener("scroll", lockScroll, {
-              passive: false,
-            });
-          });
-        });
-      }, 300);
-    }
-  }
-};
-
-const lockScroll = () => {
-  if (!introRemoved || minScrollTop === 0) return;
-  if (window.innerWidth <= 768) return;
-  if (window.scrollY < minScrollTop) {
-    window.scrollTo({ top: minScrollTop, behavior: "instant" });
-  }
-};
-
 function positionScrollBtn() {
   if (!scrollTopBtn || !inputArea) return;
+  const scrolled = window.scrollY > 150;
+  scrollTopBtn.classList.toggle("visible", scrolled);
+  if (scrollTopBtnRight) scrollTopBtnRight.classList.toggle("visible", scrolled);
   const rect = inputArea.getBoundingClientRect();
   const centre = rect.top + rect.height / 2 + "px";
   scrollTopBtn.style.top = centre;
