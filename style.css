@@ -2566,6 +2566,33 @@ header .progress-bar {
   }
 }
 
+.load-more-btn {
+  display: block;
+  margin: 12px auto 4px;
+  padding: 13px 20px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  background-color: #f5f7fa;
+  border: 1px solid #555555;
+  border-radius: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.load-more-btn:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.load-more-btn[hidden] {
+  display: none;
+}
+
+[data-theme="dark"] .load-more-btn {
+  background-color: #2c2c2c;
+}
+
 .empty-state {
   text-align: center;
   padding: 50px 20px;

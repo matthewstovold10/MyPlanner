@@ -24,6 +24,9 @@ let draggedElement = null;
 let draggedTaskId = null;
 let scrollingToTop = false;
 let currentView = "list";
+const TASKS_PAGE_SIZE = 15;
+let visibleTaskCount = TASKS_PAGE_SIZE;
+let lastRenderedTasks = null;
 let calendarDate = new Date();
 let _progressInitialised = false;
 let _progressVisible = false;
@@ -54,6 +57,7 @@ let sentinel;
 let calendarBtn;
 let scrollTopBtn;
 let scrollTopBtnRight;
+let loadMoreBtn;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Script loaded");
@@ -65,6 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const dateRangeArrow = document.getElementById("dateRangeArrow");
   addTaskBtn = document.getElementById("addTask");
   tasksList = document.getElementById("tasks");
+  loadMoreBtn = document.getElementById("loadMoreBtn");
+  loadMoreBtn.addEventListener("click", () => {
+    visibleTaskCount += TASKS_PAGE_SIZE;
+    renderTasks(lastRenderedTasks || tasks);
+  });
   progressFill = document.getElementById("progressFill");
   themeToggle = document.getElementById("theme-toggle");
   searchToggleBtn = document.getElementById("searchToggle");
@@ -272,6 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   searchSubmit.addEventListener("click", () => {
     const query = searchInput.value.trim().toLowerCase();
+    resetTaskPaging();
 
     if (!query) {
       renderTasks();
@@ -292,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("searchReset").addEventListener("click", () => {
     searchInput.value = "";
     searchInput.focus();
+    resetTaskPaging();
     renderTasks();
   });
 
@@ -864,6 +875,7 @@ function activateTab(tab) {
   indicator.classList.add(`cat-${tab.dataset.filter}`);
   moveIndicator(tab);
   currentFilter = tab.dataset.filter;
+  resetTaskPaging();
   renderTasks();
   requestAnimationFrame(() => positionScrollBtn());
 }
@@ -992,8 +1004,8 @@ function renderTabs() {
   });
 }
 
-function renderTasks(taskArray = tasks) {
-  taskArray = [...taskArray].sort((a, b) => {
+function sortTasksForDisplay(taskArray) {
+  return [...taskArray].sort((a, b) => {
     const aFlagged = a.flagged && !a.completed;
     const bFlagged = b.flagged && !b.completed;
     if (aFlagged !== bFlagged) return aFlagged ? -1 : 1;
@@ -1011,6 +1023,16 @@ function renderTasks(taskArray = tasks) {
 
     return a.manualOrder == null ? -1 : 1;
   });
+}
+
+function resetTaskPaging() {
+  visibleTaskCount = TASKS_PAGE_SIZE;
+}
+
+function renderTasks(taskArray = tasks) {
+  lastRenderedTasks = taskArray;
+  taskArray = sortTasksForDisplay(taskArray);
+  loadMoreBtn.hidden = true;
 
   if (currentView === "calendar") {
     renderCalendar(taskArray);
@@ -1019,15 +1041,18 @@ function renderTasks(taskArray = tasks) {
 
   tasksList.innerHTML = "";
 
-  tasksList.innerHTML = "";
+  const filteredTasks = taskArray.filter(
+    (task) =>
+      currentFilter === "all" ||
+      (task.category || "").toLowerCase() === currentFilter,
+  );
+  const remaining = filteredTasks.length - visibleTaskCount;
+  if (remaining > 0) {
+    loadMoreBtn.hidden = false;
+    loadMoreBtn.textContent = `Load more (${remaining} remaining)`;
+  }
 
-  taskArray.forEach((task) => {
-    if (
-      currentFilter !== "all" &&
-      (task.category || "").toLowerCase() !== currentFilter
-    )
-      return;
-
+  filteredTasks.slice(0, visibleTaskCount).forEach((task) => {
     const li = document.createElement("li");
     li.dataset.id = task.id;
     li.dataset.category = task.category;
@@ -1913,16 +1938,19 @@ function handleDrop(e) {
     e.stopPropagation();
   }
 
-  const reorderedTasks = [];
-  const listItems = tasksList.querySelectorAll("li");
-
-  listItems.forEach((li) => {
-    const taskId = li.dataset.id;
-    const task = tasks.find((t) => t.id == taskId);
-    if (task) {
-      reorderedTasks.push(task);
-    }
+  // Only some tasks are on screen (paging, category filter), so slot the
+  // reordered visible tasks back into the positions they held and keep
+  // every hidden task where it was.
+  const visibleTasks = [];
+  tasksList.querySelectorAll("li").forEach((li) => {
+    const task = tasks.find((t) => t.id == li.dataset.id);
+    if (task) visibleTasks.push(task);
   });
+  const visibleSet = new Set(visibleTasks);
+  let next = 0;
+  const reorderedTasks = sortTasksForDisplay(tasks).map((t) =>
+    visibleSet.has(t) ? visibleTasks[next++] : t,
+  );
 
   const flagged = reorderedTasks.filter((t) => t.flagged);
   const unflagged = reorderedTasks.filter((t) => !t.flagged);
