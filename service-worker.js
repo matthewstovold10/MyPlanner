@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v100";
+const CACHE_VERSION = "v101";
 const CACHE_NAME = `myplanner-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -57,7 +57,11 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then((cache) =>
+        cache.addAll(
+          STATIC_ASSETS.map((url) => new Request(url, { cache: "reload" })),
+        ),
+      )
       .catch((err) => console.error("[SW] Cache install failed:", err)),
   );
 });
@@ -81,9 +85,48 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// The page, styles and script must be fresh on first open after a deploy,
+// so fetch them from the network and only fall back to the cache offline.
+function isAppShell(request) {
+  if (request.mode === "navigate") return true;
+  const url = new URL(request.url);
+  return (
+    url.origin === self.location.origin &&
+    /\.(html|css|js)$/.test(url.pathname)
+  );
+}
+
+function networkFirst(request) {
+  return fetch(request, { cache: "no-cache" })
+    .then((response) => {
+      if (response && response.status === 200) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((c) => c.put(request, clone));
+      }
+      return response;
+    })
+    .catch(() =>
+      caches
+        .match(request, { ignoreSearch: request.mode === "navigate" })
+        .then(
+          (cached) =>
+            cached ||
+            new Response("Offline - content not available", {
+              status: 503,
+              statusText: "Service Unavailable",
+            }),
+        ),
+    );
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET" || shouldSkip(request.url)) return;
+
+  if (isAppShell(request)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then((cached) => {
