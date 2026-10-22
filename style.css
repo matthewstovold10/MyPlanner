@@ -10,15 +10,15 @@ html {
   background:
     radial-gradient(
       circle at 18% 18%,
-      rgba(76, 175, 80, 0.28) 0%,
+      rgba(76, 175, 80, 0.1) 0%,
       transparent 52%
     ),
     radial-gradient(
       circle at 82% 82%,
-      rgba(58, 122, 254, 0.22) 0%,
+      rgba(58, 122, 254, 0.1) 0%,
       transparent 52%
     ),
-    #f7f7f7;
+    #eeede9;
   z-index: 5000 !important;
   display: flex !important;
   align-items: center !important;
@@ -31,12 +31,12 @@ html {
   background:
     radial-gradient(
       circle at 18% 18%,
-      rgba(76, 175, 80, 0.2) 0%,
+      rgba(76, 175, 80, 0.1) 0%,
       transparent 52%
     ),
     radial-gradient(
       circle at 82% 82%,
-      rgba(58, 122, 254, 0.22) 0%,
+      rgba(58, 122, 254, 0.1) 0%,
       transparent 52%
     ),
     #161616;
@@ -266,7 +266,7 @@ body.overlay-active .main-wrapper {
 }
 
 .login-box {
-  background: white;
+  background: var(--light-surface);
   padding: 30px;
   border-radius: 12px;
   width: 90%;
@@ -395,7 +395,7 @@ body.overlay-active .main-wrapper {
 .login-box .guest-btn {
   width: 100%;
   padding: 12px;
-  background: #fff;
+  background: var(--light-surface);
   color: black;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -439,7 +439,7 @@ body.overlay-active .main-wrapper {
 .guest-btn {
   width: 100%;
   padding: 12px;
-  background: #fff;
+  background: var(--light-surface);
   color: #4caf50;
   border: none;
   border-radius: 6px;
@@ -471,7 +471,7 @@ body.overlay-active .main-wrapper {
 }
 
 .signup-box {
-  background: white;
+  background: var(--light-surface);
   padding: 30px;
   border-radius: 12px;
   width: 90%;
@@ -535,7 +535,7 @@ body.overlay-active .main-wrapper {
 .signup-box .guest-btn {
   width: 100%;
   padding: 12px;
-  background: white;
+  background: var(--light-surface);
   color: black;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -641,6 +641,8 @@ body.overlay-active .main-wrapper {
 }
 
 :root {
+  --light-page: #eeede9;
+  --light-surface: #faf9f6;
   --blob-1: rgba(76, 175, 80, 0.4);
   --blob-2: rgba(58, 122, 254, 0.4);
 }
@@ -653,7 +655,7 @@ body.overlay-active .main-wrapper {
 body {
   position: relative;
   font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color: var(--light-page);
   color: #333;
   margin: 0;
   padding: 0 20px;
@@ -673,13 +675,13 @@ body {
 }
 
 [data-theme="dark"] body::before {
-  background: rgba(76, 175, 80, 0.4);
+  background: rgba(76, 175, 80, 0.15);
   top: -60px;
   left: -60px;
 }
 
 [data-theme="dark"] body::after {
-  background: rgba(58, 122, 254, 0.4);
+  background: rgba(58, 122, 254, 0.15);
   bottom: -60px;
   right: -60px;
 }
@@ -729,13 +731,13 @@ body {
 }
 
 .main-content::before {
-  background: rgba(76, 175, 80, 0.4);
+  background: rgba(76, 175, 80, 0.15);
   top: 20vh;
   left: -140px;
 }
 
 .main-content::after {
-  background: rgba(58, 122, 254, 0.4);
+  background: rgba(58, 122, 254, 0.15);
   bottom: 10vh;
   right: -20vw;
 }
@@ -761,7 +763,7 @@ header {
   align-items: center;
   padding: 20px;
   margin: 0 -40px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -835,13 +837,13 @@ header {
 }
 
 .intro-area::before {
-  background: rgba(76, 175, 80, 0.4);
+  background: rgba(76, 175, 80, 0.15);
   top: -60px;
   left: -140px;
 }
 
 .intro-area::after {
-  background: rgba(58, 122, 254, 0.4);
+  background: rgba(58, 122, 254, 0.15);
   bottom: -40vh;
   right: -20vw;
 }
@@ -913,7 +915,7 @@ header {
   margin-bottom: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 0 15px;
 }
@@ -928,7 +930,7 @@ header {
   padding: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow:
     0 2px 5px rgba(0, 0, 0, 0.1),
     0 0 150px 6px rgba(0, 0, 0, 0.04);
@@ -959,7 +961,7 @@ header {
   padding: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -1009,7 +1011,7 @@ header {
   flex: 0 0 auto;
   cursor: pointer;
   border: 1px solid #ddd;
-  background: #fff;
+  background: var(--light-surface);
   color: #333;
   padding: 10px 15px;
   border-radius: 5px;
@@ -1072,7 +1074,7 @@ header {
   border: 1px solid #e0e0e0;
   padding: 15px;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow:
     0 2px 5px rgba(0, 0, 0, 0),
     0 0 60px 6px rgba(0, 0, 0, 0.04);
@@ -1156,7 +1158,7 @@ header {
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateX(3px);
-  background: #fff;
+  background: var(--light-surface);
   border: 1px solid #ddd;
   border-radius: 5px;
   min-width: 178px;
@@ -1267,7 +1269,7 @@ header {
   height: 40px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
@@ -1350,7 +1352,7 @@ header {
   font-size: 13px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  background: #fff;
+  background: var(--light-surface);
   cursor: pointer;
   color: #555;
   white-space: nowrap;
@@ -1810,7 +1812,7 @@ header {
 
 .task-list li.editing {
   padding: 15px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   display: block;
@@ -1871,7 +1873,7 @@ header {
   font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   color: #333;
   height: 40px;
   cursor: pointer;
@@ -1967,7 +1969,7 @@ header {
   height: 40px;
   border: 1px solid #ddd !important;
   border-radius: 5px;
-  background-color: #fff;
+  background-color: var(--light-surface);
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
@@ -2154,7 +2156,7 @@ header .progress-bar {
   font-size: 14px;
   font-family: inherit;
   border-radius: 20px;
-  background: #fff;
+  background: var(--light-surface);
   color: #333;
   cursor: pointer;
   transition:
@@ -2213,7 +2215,7 @@ header .progress-bar {
   gap: 6px;
 }
 .cal-nav {
-  background: #fff;
+  background: var(--light-surface);
   border: 1px solid #e4e7e4;
   border-radius: 8px;
   min-width: 34px;
@@ -2485,7 +2487,7 @@ header .progress-bar {
 .cal-task-popup {
   position: absolute;
   z-index: 2000;
-  background: #fff;
+  background: var(--light-surface);
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 14px;
@@ -2566,7 +2568,7 @@ header .progress-bar {
   padding: 8px 12px;
   border-radius: 5px;
   border: 1px solid #ddd;
-  background: #fff;
+  background: var(--light-surface);
   color: #333;
   cursor: pointer;
   font-size: 14px;
@@ -2644,7 +2646,7 @@ header .progress-bar {
   padding: 6px 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  background: #fff;
+  background: var(--light-surface);
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -2929,7 +2931,7 @@ header .progress-bar {
   }
 
   body {
-    background-color: #ffffff;
+    background-color: var(--light-page);
   }
 
   .main-content {
@@ -3180,7 +3182,7 @@ header .progress-bar {
     white-space: nowrap;
     border-radius: 20px;
     border: transparent;
-    background: #fff !important;
+    background: var(--light-surface) !important;
     color: #555 !important;
     flex-shrink: 0;
     margin-bottom: 0;
@@ -3224,7 +3226,7 @@ header .progress-bar {
     padding: 13px 12px;
     margin-bottom: 8px;
     border-radius: 14px;
-    background: #fff;
+    background: var(--light-surface);
     border: none;
     box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.07),
@@ -3363,7 +3365,7 @@ header .progress-bar {
     padding: 6px 10px !important;
     border: 1px solid #ddd !important;
     border-radius: 5px !important;
-    background: #fff !important;
+    background: var(--light-surface) !important;
     box-sizing: border-box !important;
     gap: 8px !important;
     flex: none !important;
@@ -3488,7 +3490,7 @@ header .progress-bar {
     border-right: none;
     border-bottom: none;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    background: #fff;
+    background: var(--light-surface);
     box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.15);
     z-index: 1500;
     padding: 6px 16px max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
@@ -3517,7 +3519,7 @@ header .progress-bar {
     height: 44px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    background: #fff;
+    background: var(--light-surface);
     box-sizing: border-box;
     justify-content: center;
     box-shadow: none !important;
